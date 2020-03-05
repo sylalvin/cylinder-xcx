@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/bind/bind",
     "pages/index/index",
     "pages/code/code",
     "pages/scan/scan",

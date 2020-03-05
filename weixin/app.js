@@ -26,6 +26,19 @@ App({
     })
   },
   globalData: {
-    userInfo: null
+    userInfo: null,
+    nowTime :function() {
+      var myDate = new Date();
+      var myDay = myDate.getDate();
+      var myMonth = myDate.getMonth();
+      if (myDay < 10){
+        myDay = '0' + myDay;  //补齐
+      }
+      if (myMonth + 1 < 10) {
+        myMonth = '0' + (myMonth + 1);  //补齐
+      }
+      return myDate.getFullYear() + '-' + myMonth + '-' + myDay;
+      
+    }
   }
 })
