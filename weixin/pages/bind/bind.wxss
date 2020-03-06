@@ -1,3 +1,6 @@
 page {
   padding-top: 30rpx;
 }
+.search_item{
+  padding-left: 276rpx;
+}

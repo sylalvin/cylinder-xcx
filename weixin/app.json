@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/bind/bind",
     "pages/index/index",
+    "pages/bind/bind",
     "pages/code/code",
     "pages/scan/scan",
     "pages/detail/detail"

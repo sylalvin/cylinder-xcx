@@ -46,8 +46,10 @@
               <text>客户回瓶</text>
             </view>
             <view class="item">
-              <view class="icon"><image src="../../images/func_6.png" class="icon"></image></view>
-              <text>气瓶绑码</text>
+              <navigator url="/pages/bind/bind">
+                <view class="icon"><image src="../../images/func_6.png" class="icon"></image></view>
+                <text>气瓶绑码</text>
+              </navigator>
             </view>
             <view class="item">
               <view class="icon"><image src="../../images/func_7.png" class="icon"></image></view>

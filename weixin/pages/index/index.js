@@ -92,17 +92,23 @@ Page({
                       success: res3 => {
                         console.log(res3)
                         if(res3.data.code == 200) {
+                          console.log(res3.data.data.name);
+                          console.log(res3.data.data.id);
                           wx.setStorage({
-                            key: "pj_cylinder_name",
+                            key: "pj_employee_name",
                             data: res3.data.data.name
                           });
                           wx.setStorage({
-                            key: "pj_cylinder_mobile",
+                            key: "pj_employee_mobile",
                             data: res3.data.data.mobile
                           });
                           wx.setStorage({
-                            key: "pj_cylinder_position",
+                            key: "pj_employee_position",
                             data: res3.data.data.position
+                          });
+                          wx.setStorage({
+                            key: "pj_employee_id",
+                            data: res3.data.data.id
                           });
                           console.log(res3.data.data.name);
                           console.log(res3.data.data.mobile);
