@@ -1,5 +1,7 @@
 {
   "pages": [
+    "pages/addFilling/addFilling",
+    "pages/filling/filling",
     "pages/index/index",
     "pages/bind/bind",
     "pages/code/code",
@@ -9,7 +11,7 @@
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "二维码条形码",
+    "navigationBarTitleText": "气瓶追溯管理系统",
     "navigationBarBackgroundColor": "#f8f8f8",
     "backgroundColor": "#f8f8f8"
   },
