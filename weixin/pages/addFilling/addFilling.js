@@ -13,23 +13,27 @@ Page({
     gasMediumName: "",
     sliderOffset: 0,
     sliderLeft: 0,
+    productionBatch: "",
     purenessItems: ["普", "2N", "3N", "4N", "5N", "6N"],
     purenessIndex: 0,
     areaItems: ["满瓶仓", "维修仓"],
+    areaValues: [2, 3],
     areaIndex: 0,
+    remark: "",
     saomao: 0,
     sanping: 0,
     jige: 0,
     zongqiping: 0,
     beginTime:"",
-    list:[]
+    list:[],
+    cylinderIdList:[]
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-
+    var that = this;
   },
 
   /**
@@ -110,6 +114,10 @@ Page({
     });
   },
 
+  onChangeProductionBatch: function(e) {
+    this.setData({"productionBatch": e.detail.value});
+  },
+
   onChangePureness: function(e) {
     var value = e.detail.value
     this.setData({ "purenessIndex": value})
@@ -120,8 +128,12 @@ Page({
     this.setData({ "areaIndex": e.detail.value })
   },
 
+  onChangeRemark: function(e) {
+    this.setData({"remark":e.detail.value});
+  },
+
   onAddCylinder: function(e) {
-    var that = this;
+    var that = this
     wx.scanCode({
       success: (res) => {
         console.log(res);
@@ -165,25 +177,38 @@ Page({
                 },
                 data: { cylinderNumber: code},
                 success: res => {
-                  console.log(res.data.data.id);
-                  console.log(res.data.data.gasMediumName);
-                  console.log(res.data.data.gasMediumId);
-                  console.log(res.data.data.setId);
-                  console.log(res);
-                  that.setData({ gasMediumName: res.data.data.gasMediumName});
-                  //增加对气瓶的判断
-                  if (this.data.gasMediumName != "" && this.data.gasMediumName != res.data.data.gasMediumName) {
-                    wx.showToast({
-                      title: "您扫码气瓶所属介质与第一次扫码介质不同",
-                      icon: 'none',
-                      duration: 2000
-                    });
-                    return false;
-                  }
-                  if (res.data.data.setId>0) {
-                    that.setData({ "saomao": that.data.saomao + 1, "jige": that.data.jige + 1, "zongqiping": that.data.zongqiping + 1 })
+                  if (res.data.code == 200) {
+                    if (this.data.gasMediumName == "") {
+                      that.setData({ "gasMediumName": res.data.data.gasMediumName });
+                    }
+
+                    //增加对气瓶的判断
+                    if (this.data.gasMediumName != "" && this.data.gasMediumName != res.data.data.gasMediumName) {
+                      wx.showToast({
+                        title: "您扫码气瓶所属介质是" + res.data.data.gasMediumName + ",不是" + this.data.gasMediumName,
+                        icon: 'none',
+                        duration: 5000
+                      });
+                      return false;
+                    }
+                    //增加气瓶ID Begin
+                    if (this.data.cylinderIdList.indexOf(res.data.data.id) < 0) {
+                      that.setData({
+                        "cylinderIdList": this.data.cylinderIdList.concat(res.data.data.id)
+                      });
+                    }
+                    //增加气瓶ID End
+                    if (res.data.data.setId > 0) {
+                      that.setData({ "saomao": that.data.saomao + 1, "jige": that.data.jige + 1, "zongqiping": that.data.zongqiping + 1 })
+                    } else {
+                      that.setData({ "saomao": that.data.saomao + 1, "sanping": that.data.sanping + 1, "zongqiping": that.data.zongqiping + 1 })
+                    }
                   } else {
-                    that.setData({ "saomao": that.data.saomao + 1, "sanping": that.data.sanping + 1, "zongqiping": that.data.zongqiping + 1 })
+                    wx.showToast({
+                      title: "没有此二维码的相关数据",
+                      icon: 'none',
+                      duration: 3600
+                    });
                   }
                 }
               });
@@ -196,7 +221,7 @@ Page({
               wx.showToast({
                 title: "重复扫码",
                 icon: 'none',
-                duration: 2000
+                duration: 3600
               });
             }
 
@@ -208,13 +233,22 @@ Page({
   },
 
   onSubmitMission: function(e) {
-    console.log(this.data.list.length);
-    if(this.data.list.length == 0){
+    var that = this
+    if(this.data.beginTime == "") {
+      wx.showToast({
+        title: "请添加开始时间",
+        icon: 'none',
+        duration: 3000
+      });
+      return ;
+    }
+    if(this.data.cylinderIdList.length == 0){
       wx.showToast({
         title: "请添加气瓶",
         icon: 'none',
         duration: 3000
       });
+      return false;
     } else {
       wx.request({
         url: 'http://localhost:18090/api/addDetection',
@@ -223,9 +257,24 @@ Page({
           "Content-Type": "application/x-www-form-urlencoded",
           "qcmappversion": "1.0.5"
         },
-        data: { unitId: 1, employeeId: wx.getStorageSync('pj_employee_id'), beginDate: "2020-03-09 20:20:20", productionBatch: "29889900",pureness: 2, cylinderIdList: [1, 2, 12], remark: "测试添加 2020-03-10 18：31：39", creator: wx.getStorageSync('pj_employee_name') },
+        data: { unitId: 1, employeeId: wx.getStorageSync('pj_employee_id'), beginDate: new Date().getFullYear() + "-" + ((new Date().getMonth() + 1) < 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)) + "-" + ((new Date().getDate() < 10) ? ("0" + new Date().getDate()) : (new Date().getDate())) + " " + that.data.beginTime, productionBatch: that.data.productionBatch, pureness: parseInt(that.data.purenessIndex) + 1, companyAreaId: that.data.areaValues[that.data.areaIndex], cylinderIdList: that.data.cylinderIdList, remark: that.data.remark, creator: wx.getStorageSync('pj_employee_name') },
         success: res => {
-          console.log(res);
+          if(res.data.code == 200) {
+            wx.showToast({
+              title: "添加成功",
+              icon: 'none',
+              duration: 3000
+            });
+            wx.navigateTo({
+              url: '/pages/filling/filling'
+            })
+          } else {
+            wx.showToast({
+              title: "添加失败，请检查网络或信息",
+              icon: 'none',
+              duration: 3000
+            });
+          }
         }
       });
     }

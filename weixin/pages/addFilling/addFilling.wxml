@@ -42,7 +42,7 @@
           <view class="weui-label">生产批次</view>
         </view>
         <view class="weui-cell__bd">
-          <input class="weui-input" placeholder="输入生产批次编号" type="digit" />
+          <input class="weui-input" placeholder="输入生产批次编号" bindblur="onChangeProductionBatch" type="digit" />
         </view>
       </view>
       <view class="weui-cell  weui-cell_select">
@@ -66,7 +66,7 @@
         </view>
       </view>
       <view class="weui-cell weui-cell_textarea">
-        <textarea class="weui-textarea" placeholder="填写备注" data-label="wallThickness" type="digit" />
+        <textarea class="weui-textarea" placeholder="填写备注" bindblur="onChangeRemark" data-label="wallThickness" type="digit" />
       </view>
     </view>
   </view>
