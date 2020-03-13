@@ -5,14 +5,41 @@ Page({
    * 页面的初始数据
    */
   data: {
-    scanLogs: [{ "beginDate": "2020-04-02", "name": "氢气(普)", "quantity": 3, "number": "2324324", "status": "重装中" }, { "beginDate": "2020-04-01", "name": "氮气(2N)", "quantity": 5, "number": "2324378", "status": "已完成" }, { "beginDate": "2020-04-06", "name": "氯气(3N)", "quantity": 4, "number": "2324329", "status": "重装中" },],
+    scanLogs: [],
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-
+    var that = this;
+    
+    wx.request({
+      url: 'http://localhost:18090/api/getDetectionMissionVoListByEmployeeId',
+      method: "POST",
+      header: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "qcmappversion": "1.0.5"
+      },
+      data: { "employeeId": wx.getStorageSync('pj_employee_id'), "beginDate": new Date().getFullYear() + "-" + ((new Date().getMonth() + 1) < 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)) + "-" + ((new Date().getDate() < 10) ? ("0" + new Date().getDate()) : (new Date().getDate()))},
+      success: res => {
+        let returnData =res.data.data;
+        console.log(returnData)
+        let scanLogs = [];
+        for (var j = 0; j < returnData.length; j++) {
+          scanLogs.push({ "id": returnData[j].id, "beginDate": returnData[j].beginDate, "name": returnData[j].mediemName, "quantity": returnData[j].yqDetectionVoList.length, "number": returnData[j].productionBatch, "status": returnData[j].status == 1 ?"充气中":"已完成" });
+        }
+        that.setData({ "scanLogs": scanLogs });
+      },
+      fail: function (res) {
+        // fail调用接口失败
+        reject({ error: '网络错误', code: 0 });
+      },
+      complete: function (res) {
+        // complete
+      }
+    });
+   
   },
 
   /**

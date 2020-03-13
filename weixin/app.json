@@ -1,12 +1,13 @@
 {
   "pages": [
-    "pages/addFilling/addFilling",
     "pages/filling/filling",
+    "pages/addFilling/addFilling",
     "pages/index/index",
     "pages/bind/bind",
     "pages/code/code",
     "pages/scan/scan",
-    "pages/detail/detail"
+    "pages/detail/detail",
+    "pages/editFilling/editFilling"
   ],
   "window": {
     "backgroundTextStyle": "light",
