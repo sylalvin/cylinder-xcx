@@ -16,8 +16,10 @@ Page({
     productionBatch: "",
     purenessItems: ["普", "2N", "3N", "4N", "5N", "6N"],
     purenessIndex: 0,
-    areaItems: ["满瓶仓", "维修仓"],
-    areaValues: [2, 3],
+    //areaItems: ["满瓶仓", "维修区"],
+    //areaValues: [2, 3],
+    areaItems: [],
+    areaValues: [],
     areaIndex: 0,
     remark: "",
     saomao: 0,
@@ -34,6 +36,60 @@ Page({
    */
   onLoad: function (options) {
     var that = this;
+    var promise = new Promise((resolve, reject) => {
+      wx.request({
+        url: 'http://localhost:18090/api/getCompanyProjectByCompanyId',
+        method: "POST",
+        header: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "qcmappversion": "1.0.5"
+        },
+        data: {unitId: 1},
+        success: res => {
+          console.log(res);
+          resolve(res.data.data);
+        },
+        fail: function (res) {
+          // fail调用接口失败
+          reject({ error: '网络错误', code: 0 });
+        },
+        complete: function (res) {
+          // complete
+        }
+      });
+    });
+    promise.then(res => {
+      if(res.length>0){
+        for(var i=0;i<res.length;i++){
+          if (res[i].projectName=="充装"){
+            console.log(res[i]);
+            wx.request({
+              url: 'http://localhost:18090/api/getCompanyProjectAreaByCompanyProjectId',
+              method: "POST",
+              header: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "qcmappversion": "1.0.5"
+              },
+              data: { unitId: 1, companyProjectId: res[i].id, projectId: res[i].projectId },
+              success: res2 => {
+                var returnData = res2.data.data;
+                let areaItems =[];
+                let areaValues = [];
+                if (returnData.length>0){
+                  for (var j = 0; j < returnData.length;j++){
+                    areaItems.push(returnData[j].companyAreaName);
+                    areaValues.push(returnData[j].companyAreaId);
+                  }
+                  console.log(areaItems);
+                  console.log(areaValues);
+                  that.setData({ "areaItems": areaItems }, { "areaValues": areaValues});
+                }
+              }
+            });
+          }
+        }
+      }
+    });
   },
 
   /**
