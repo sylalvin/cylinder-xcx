@@ -7,9 +7,6 @@ Page({
    */
   data: {
     scanLogs: [],
-    generateLogs: [],
-    tabs: ["添加气瓶", "创建任务"],
-    activeIndex: 1,
     gasMediumName: "",
     sliderOffset: 0,
     sliderLeft: 0,
@@ -22,13 +19,19 @@ Page({
     areaValues: [],
     areaIndex: 0,
     remark: "",
-    saomao: 0,
     sanping: 0,
     jige: 0,
     zongqiping: 0,
+    beginDate:"",
     beginTime: "",
+    endTime:"",
     list: [],
-    cylinderIdList: []
+    cylinderIdList: [],
+    missionId: 0,
+    hideBottom: false,
+    productionBatch:"",
+    remark: "",
+    cylinderCheckList:[]
   },
 
   /**
@@ -38,6 +41,7 @@ Page({
     var that = this;
     //获取充装任务ID
     let missionId = options.id;
+    that.setData({ "missionId": missionId});
     
     var promise = new Promise((resolve, reject) => {
       wx.request({
@@ -45,11 +49,10 @@ Page({
         method: "POST",
         header: {
           "Content-Type": "application/x-www-form-urlencoded",
-          "qcmappversion": "1.0.5"
+          "qcmappversion": "1.0.7"
         },
         data: { unitId: 1 },
         success: res => {
-          console.log(res);
           resolve(res.data.data);
         },
         fail: function (res) {
@@ -61,34 +64,79 @@ Page({
         }
       });
     });
+    var areaItems = [];
+    var areaValues = [];
     promise.then(res => {
       if (res.length > 0) {
         for (var i = 0; i < res.length; i++) {
           if (res[i].projectName == "充装") {
-            console.log(res[i]);
             wx.request({
               url: 'http://localhost:18090/api/getCompanyProjectAreaByCompanyProjectId',
               method: "POST",
               header: {
                 "Content-Type": "application/x-www-form-urlencoded",
-                "qcmappversion": "1.0.5"
+                "qcmappversion": "1.0.7"
               },
               data: { unitId: 1, companyProjectId: res[i].id, projectId: res[i].projectId },
               success: res2 => {
                 var returnData = res2.data.data;
-                let areaItems = [];
-                let areaValues = [];
+
                 if (returnData.length > 0) {
                   for (var j = 0; j < returnData.length; j++) {
                     areaItems.push(returnData[j].companyAreaName);
                     areaValues.push(returnData[j].companyAreaId);
                   }
-                  console.log(areaItems);
-                  console.log(areaValues);
-                  that.setData({ "areaItems": areaItems }, { "areaValues": areaValues });
+                  that.setData({ "areaItems": areaItems });
+                  that.setData({ "areaValues": areaValues });
                 }
               }
             });
+            setTimeout(function () {
+              //获取充装任务并填充内容
+              wx.request({
+                url: 'http://localhost:18090/api/getDetectionMissionVoById',
+                method: "POST",
+                header: {
+                  "Content-Type": "application/x-www-form-urlencoded",
+                  "qcmappversion": "1.0.7"
+                },
+                data: { detectionMissionId: missionId },
+                success: res2 => {
+                  console.log(res2)
+                  if (res2.data.data.status == 1) {
+                    that.setData({ "hideBottom": false });
+                  } else if (res2.data.data.status == 2) {
+                    that.setData({ "hideBottom": true });
+                  }
+                  //设置气瓶数量
+                  that.setData({"cylinderCheckList":res2.data.data.yqDetectionVoList});
+                  that.setData({ "zongqiping": res2.data.data.yqDetectionVoList.length });
+                  //设置充装介质
+                  that.setData({ "gasMediumName": res2.data.data.mediemName });
+                  //设置开始时间
+                  var timeStr = res2.data.data.beginDate;
+                  var timeArr = String(timeStr).split(' ');
+                  if (timeArr.length == 2) {
+                    that.setData({ "beginTime": timeArr[1] });
+                  }
+                  var timeStr2 = res2.data.data.endDate;
+                  var timeArr2 = String(timeStr2).split(' ');
+                  if (timeArr2.length == 2) {
+                    that.setData({ "endTime": timeArr2[1] });
+                  }
+                  //设置纯度
+                  that.setData({ "purenessIndex": res2.data.data.pureness - 1 });
+                  //设置生产批次
+                  that.setData({ "productionBatch": res2.data.data.productionBatch });
+                  //设置备注
+                  that.setData({ "remark": res2.data.data.remark });
+                  //设置充后流向
+                  var areaIndex = areaValues.indexOf(res2.data.data.yqDetectionVoList[0].companyAreaId);
+                  
+                  that.setData({ "areaIndex": areaIndex });
+                }
+              });
+            }, 800) //延迟时间 这里是1秒
           }
         }
       }
@@ -106,7 +154,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-
+    
   },
 
   /**
@@ -145,6 +193,14 @@ Page({
   },
 
   setBeginTime: function (e) {
+    wx.showToast({
+      title: "任务已开始，无法修改开始时间",
+      icon: 'none',
+      duration: 3600
+    });
+  },
+
+  setEndTime: function (e) {
     let day = new Date();
     var now_hour, now_minute, now_second;
     if (day.getHours() < 9) {
@@ -162,19 +218,7 @@ Page({
     } else {
       now_second = day.getSeconds();
     }
-    this.setData({ "beginTime": now_hour + ":" + now_minute + ":" + now_second });
-  },
-
-  setEndTime: function (e) {
-    wx.showToast({
-      title: "请先创建任务再设定结束时间",
-      icon: 'none',
-      duration: 3600
-    });
-  },
-
-  onChangeProductionBatch: function (e) {
-    this.setData({ "productionBatch": e.detail.value });
+    this.setData({ "endTime": now_hour + ":" + now_minute + ":" + now_second });
   },
 
   onChangePureness: function (e) {
@@ -191,152 +235,49 @@ Page({
     this.setData({ "remark": e.detail.value });
   },
 
-  onAddCylinder: function (e) {
-    var that = this
-    wx.scanCode({
-      success: (res) => {
-        console.log(res);
-        let msg = '';
-        if (res.scanType === 'WX_CODE' && res.result === '') {
-          msg = '宝宝心里苦，但宝宝不说...'
-          wx.showToast({
-            title: msg,
-            icon: 'none',
-            duration: 2000
-          });
-        } else {
-          //先处理短码，然后处理长码
-          var url = res.result;
-          var shortArr = url.split("/");
-          var code;
-          console.log(shortArr.length);
-          if (shortArr.length == 4) {
-            code = shortArr[3]
-          } else {
-            var longArr = url.split("=")
-            if (longArr.length > 0) {
-              code = longArr[1]
-            }
-          }
-          if (code.length != 11) {
-            wx.showToast({
-              title: "该气瓶编码有问题",
-              icon: 'none',
-              duration: 2000
-            });
-          } else {
-            console.log(this.data.list.indexOf(code));
-            if (this.data.list.indexOf(code) < 0) {
-              wx.request({
-                url: 'http://localhost:18090/api/getCylinderByNumber',
-                method: "POST",
-                header: {
-                  "Content-Type": "application/x-www-form-urlencoded",
-                  "qcmappversion": "1.0.5"
-                },
-                data: { cylinderNumber: code },
-                success: res => {
-                  if (res.data.code == 200) {
-                    if (this.data.gasMediumName == "") {
-                      that.setData({ "gasMediumName": res.data.data.gasMediumName });
-                    }
-
-                    //增加对气瓶的判断
-                    if (this.data.gasMediumName != "" && this.data.gasMediumName != res.data.data.gasMediumName) {
-                      wx.showToast({
-                        title: "您扫码气瓶所属介质是" + res.data.data.gasMediumName + ",不是" + this.data.gasMediumName,
-                        icon: 'none',
-                        duration: 5000
-                      });
-                      return false;
-                    }
-                    //增加气瓶ID Begin
-                    if (this.data.cylinderIdList.indexOf(res.data.data.id) < 0) {
-                      that.setData({
-                        "cylinderIdList": this.data.cylinderIdList.concat(res.data.data.id)
-                      });
-                    }
-                    //增加气瓶ID End
-                    if (res.data.data.setId > 0) {
-                      that.setData({ "saomao": that.data.saomao + 1, "jige": that.data.jige + 1, "zongqiping": that.data.zongqiping + 1 })
-                    } else {
-                      that.setData({ "saomao": that.data.saomao + 1, "sanping": that.data.sanping + 1, "zongqiping": that.data.zongqiping + 1 })
-                    }
-                  } else {
-                    wx.showToast({
-                      title: "没有此二维码的相关数据",
-                      icon: 'none',
-                      duration: 3600
-                    });
-                  }
-                }
-              });
-              that.setData({
-                "list": this.data.list.concat(code)
-              });
-              //that.setData({ cylinderNumber: code })
-
-            } else {
-              wx.showToast({
-                title: "重复扫码",
-                icon: 'none',
-                duration: 3600
-              });
-            }
-
-          }
-
-        }
-      }
-    })
-  },
-
   onSubmitMission: function (e) {
     var that = this
-    if (this.data.beginTime == "") {
+    if (this.data.endTime == "") {
       wx.showToast({
-        title: "请添加开始时间",
-        icon: 'none',
-        duration: 3000
-      });
-      return;
-    }
-    if (this.data.cylinderIdList.length == 0) {
-      wx.showToast({
-        title: "请添加气瓶",
+        title: "请添加结束时间",
         icon: 'none',
         duration: 3000
       });
       return false;
-    } else {
-      wx.request({
-        url: 'http://localhost:18090/api/addDetection',
-        method: "POST",
-        header: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "qcmappversion": "1.0.5"
-        },
-        data: { unitId: 1, employeeId: wx.getStorageSync('pj_employee_id'), beginDate: new Date().getFullYear() + "-" + ((new Date().getMonth() + 1) < 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)) + "-" + ((new Date().getDate() < 10) ? ("0" + new Date().getDate()) : (new Date().getDate())) + " " + that.data.beginTime, productionBatch: that.data.productionBatch, pureness: parseInt(that.data.purenessIndex) + 1, companyAreaId: that.data.areaValues[that.data.areaIndex], cylinderIdList: that.data.cylinderIdList, remark: that.data.remark, creator: wx.getStorageSync('pj_employee_name') },
-        success: res => {
-          if (res.data.code == 200) {
-            wx.showToast({
-              title: "添加成功",
-              icon: 'none',
-              duration: 3000
-            });
-            wx.navigateTo({
-              url: '/pages/filling/filling'
-            })
-          } else {
-            wx.showToast({
-              title: "添加失败，请检查网络或信息",
-              icon: 'none',
-              duration: 3000
-            });
-          }
-        }
-      });
     }
+    var cylinderList = [];
+    for (var i = 0; i < that.data.cylinderCheckList.length;i++) {
+      cylinderList.push({ "cylinderId": that.data.cylinderCheckList[i].cylinderId, "companyAreaId": that.data.areaValues[that.data.areaIndex]});
+    }
+    wx.request({
+      url: 'http://localhost:18090/api/v2/updateDetection',
+      method: "POST",
+      header: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "qcmappversion": "1.0.7"
+      },
+      data: { detectionMissionId: this.data.missionId, endDate: new Date().getFullYear() + "-" + ((new Date().getMonth() + 1) < 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)) + "-" + ((new Date().getDate() < 10) ? ("0" + new Date().getDate()) : (new Date().getDate())) + " " + that.data.endTime, productionBatch: that.data.productionBatch, companyAreaId: that.data.areaValues[that.data.areaIndex], remark: that.data.remark, "cylinderCheckList": JSON.stringify(cylinderList) },
+      success: res => {
+        console.log(res);
+        if (res.data.code == 200) {
+          wx.showToast({
+            title: "修改成功",
+            icon: 'none',
+            duration: 3000
+          });
+          wx.navigateTo({
+            url: '/pages/filling/filling'
+          })
+        } else {
+          wx.showToast({
+            title: "添加失败，请检查网络或信息",
+            icon: 'none',
+            duration: 3000
+          });
+        }
+      }
+    });
+
   },
 
 

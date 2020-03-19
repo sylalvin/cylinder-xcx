@@ -12,7 +12,7 @@
           <view class="weui-label">充装介质</view>
         </view>
         <view class="weui-cell__bd">
-          <input class="weui-input" placeholder="充装介质" type="text" value="{{gasMediumName}}" bindblur="onPressureChange" />
+          <input class="weui-input" placeholder="充装介质" type="text" value="{{gasMediumName}}" disabled ="disabled" />
         </view>
       </view>
       <view class="weui-cell weui-cell_input">
@@ -31,7 +31,7 @@
           <view class="weui-label">结束时间</view>
         </view>
         <view class="input__bd">
-          <input class="self-input" placeholder="结束时间" type="text" />
+          <input class="self-input" placeholder="结束时间" value="{{endTime}}" type="text" />
         </view>
         <view class="weui-cell__bd">
           <button class="setTime" bindtap="setEndTime">结束</button>
@@ -42,7 +42,7 @@
           <view class="weui-label">生产批次</view>
         </view>
         <view class="weui-cell__bd">
-          <input class="weui-input" placeholder="输入生产批次编号" bindblur="onChangeProductionBatch" type="digit" />
+          <input class="weui-input" placeholder="输入生产批次编号" type="digit" value="{{productionBatch}}" disabled ="disabled" />
         </view>
       </view>
       <view class="weui-cell  weui-cell_select">
@@ -66,17 +66,13 @@
         </view>
       </view>
       <view class="weui-cell weui-cell_textarea">
-        <textarea class="weui-textarea" placeholder="填写备注" bindblur="onChangeRemark" data-label="wallThickness" type="digit" />
+        <textarea class="weui-textarea" placeholder="填写备注" bindinput="onChangeRemark" data-label="wallThickness" value="{{remark}}" type="digit" />
       </view>
     </view>
   </view>
-  <view class="weui-navbar">
-      <view class="weui-navbar__item">
-        <view class="weui-navbar__title" bindtap="onAddCylinder">添加气瓶</view>
-      </view>
+  <view wx:if="{{!hideBottom}}" class="weui-navbar">
       <view class="weui-navbar__item weui-bar__item_on">
-        <view class="weui-navbar__title" bindtap="onSubmitMission">创建任务</view>
+        <view class="weui-navbar__title" bindtap="onSubmitMission">任务完成</view>
       </view>
-    <view class="weui-navbar__slider" style="left: {{sliderLeft}}px; transform: translateX({{sliderOffset}}px); -webkit-transform: translateX({{sliderOffset}}px);"></view>
   </view>
 </view>  

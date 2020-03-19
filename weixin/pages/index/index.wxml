@@ -30,8 +30,10 @@
               <text>回车验空</text>
             </view>
             <view class="item">
-              <view class="icon"><image src="../../images/func_2.png" class="icon"></image></view>
-              <text>充装</text>
+              <navigator url="/pages/filling/filling">
+                <view class="icon"><image src="../../images/func_2.png" class="icon"></image></view>
+                <text>充装</text>
+              </navigator>
             </view>
             <view class="item">
               <view class="icon"><image src="../../images/func_3.png" class="icon"></image></view>

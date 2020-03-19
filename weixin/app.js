@@ -38,7 +38,16 @@ App({
         myMonth = '0' + (myMonth + 1);  //补齐
       }
       return myDate.getFullYear() + '-' + myMonth + '-' + myDay;
-      
-    }
+    },
+    saomiao: [],
+    sanping: [],
+    jige: [],
+    zongqiping: [],
+    "gasMediumName": "",
+    "beginTime": "",
+    "productionBatch":"",
+    "purenessIndex":0,
+    "areaIndex": 0,
+    "remark": ""
   }
 })

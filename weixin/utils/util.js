@@ -19,7 +19,14 @@ function json2Form(json) {
   }
   return str.join("&");
 } 
+function getObjectKeys(object) {
+  var keys = [];
+  for (var property in object)
+    keys.push(property);
+  return keys;
+}
 module.exports = {
   formatTime: formatTime,
-  json2Form: json2Form
+  json2Form: json2Form,
+  getObjectKeys: getObjectKeys
 }

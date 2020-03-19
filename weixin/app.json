@@ -1,8 +1,9 @@
 {
   "pages": [
+    "pages/index/index",
     "pages/filling/filling",
     "pages/addFilling/addFilling",
-    "pages/index/index",
+    "pages/cylinderList/cylinderList",
     "pages/bind/bind",
     "pages/code/code",
     "pages/scan/scan",

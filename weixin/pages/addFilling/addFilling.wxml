@@ -1,9 +1,9 @@
 <view>
-  <view class="weui-cells weui-cells_after-title result_title">
-    <text class="result_title_w">扫码:{{saomao}}</text>
-    <text class="result_title_w">散瓶:{{sanping}}</text>
-    <text class="result_title_w">集格:{{jige}}</text>
-    <text class="result_title_w">总气瓶数:{{zongqiping}}</text>
+  <view class="weui-cells weui-cells_after-title result_title" bindtap="viewCylinder">
+    <text class="result_title_w">扫码:{{saomiaoValue}}</text>
+    <text class="result_title_w">散瓶:{{sanpingValue}}</text>
+    <text class="result_title_w">集格:{{jigeValue}}</text>
+    <text class="result_title_w">总气瓶数:{{zongqipingValue}}</text>
   </view>
   <view class="weui-tab">
     <view class="weui-cells weui-cells_after-title">
@@ -66,7 +66,7 @@
         </view>
       </view>
       <view class="weui-cell weui-cell_textarea">
-        <textarea class="weui-textarea" placeholder="填写备注" bindblur="onChangeRemark" data-label="wallThickness" type="digit" />
+        <textarea class="weui-textarea" placeholder="填写备注" bindinput="onChangeRemark" data-label="wallThickness" type="digit" />
       </view>
     </view>
   </view>
