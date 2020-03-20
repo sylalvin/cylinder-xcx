@@ -1,6 +1,6 @@
-// pages/filling/filling.js
-Page({
+var app = getApp();
 
+Page({
   /**
    * 页面的初始数据
    */
@@ -13,13 +13,13 @@ Page({
    */
   onLoad: function (options) {
     var that = this;
-    
+        
     wx.request({
-      url: 'http://localhost:18090/api/getDetectionMissionVoListByEmployeeId',
+      url: app.globalData.apiUrl + '/getDetectionMissionVoListByEmployeeId',
       method: "POST",
       header: {
         "Content-Type": "application/x-www-form-urlencoded",
-        "qcmappversion": "1.0.7"
+        "qcmappversion": app.globalData.qcmappversion
       },
       data: { "employeeId": wx.getStorageSync('pj_employee_id'), "beginDate": new Date().getFullYear() + "-" + ((new Date().getMonth() + 1) < 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)) + "-" + ((new Date().getDate() < 10) ? ("0" + new Date().getDate()) : (new Date().getDate()))},
       success: res => {

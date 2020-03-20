@@ -113,7 +113,9 @@
       </view>
     </view>
   </view>
-  <view class="weui-btn-area">
-    <button class="weui-btn" type="primary" catchtap="onSubmit">确定</button>
+  <view class="weui-navbar">
+    <view class="weui-navbar__item">
+      <view class="weui-navbar__title" catchtap="onSubmit" style="opacity :{{opacity}};" disabled="{{disabled}}">新建充装任务</view>
+    </view>
   </view>
 </view>
