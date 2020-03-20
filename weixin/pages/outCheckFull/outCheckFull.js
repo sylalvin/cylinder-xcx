@@ -647,10 +647,17 @@ Page({
           opacity: 0.3
         })
         // 提交成功后，清除回空全局变量
+        that.setData({
+          cylinderList: [],
+          setList: [],
+          setCylinderList: [],
+          allCylinderList: [],
+        })
         app.globalData.outCylinderList = [];
         app.globalData.outSetCylinderList = [];
         app.globalData.outSetList = [];
         app.globalData.outAllCylinderList = [];
+        that.countData();
         wx.showToast({
           title: '提交成功',
           icon: 'none',
