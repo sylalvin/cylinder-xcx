@@ -8,7 +8,11 @@
     "pages/code/code",
     "pages/scan/scan",
     "pages/detail/detail",
-    "pages/editFilling/editFilling"
+    "pages/editFilling/editFilling",
+    "pages/outCheckFull/outCheckFull",
+    "pages/outDelete/outDelete",
+    "pages/backCheckEmpty/backCheckEmpty",
+    "pages/backDelete/backDelete"
   ],
   "window": {
     "backgroundTextStyle": "light",
