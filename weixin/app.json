@@ -1,10 +1,10 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/bind/bind",
     "pages/filling/filling",
     "pages/addFilling/addFilling",
     "pages/cylinderList/cylinderList",
-    "pages/bind/bind",
     "pages/code/code",
     "pages/scan/scan",
     "pages/detail/detail",

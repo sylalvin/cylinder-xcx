@@ -25,8 +25,21 @@ function getObjectKeys(object) {
     keys.push(property);
   return keys;
 }
+//将指定的元素放到第一位
+function putElementToFirst(arr, key) {
+  for (var i = 0; i < arr.length; i++) {
+    if (arr[i] === key) {
+      arr.splice(i, 1);
+      break;
+    }
+  }
+  arr.unshift(key);
+  return arr;
+}
+
 module.exports = {
   formatTime: formatTime,
   json2Form: json2Form,
-  getObjectKeys: getObjectKeys
+  getObjectKeys: getObjectKeys,
+  putElementToFirst: putElementToFirst
 }
