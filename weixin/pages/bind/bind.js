@@ -1,5 +1,5 @@
 var util = require("../../utils/util.js")
-
+var app = getApp();
 Page({
   onShareAppMessage() {
     return {
@@ -39,10 +39,13 @@ Page({
     bindSource: [], //绑定到页面的数据，根据用户输入动态变化
     hideScroll: true,
     arrayHeight: 0,
+    disabled: false,
+    opacity: 0.9
   },
 
   onLoad: function (options) {
     var that = this;
+    that.setData({ "disabled": false })
     var cylinderTypeItems = [];
     var cylinderTypeArray =[];
     var gasItemsArray = [];
@@ -52,11 +55,11 @@ Page({
     let adapterSource = [];
     //获取所有气瓶类型
     wx.request({
-      url: 'http://localhost:18090/api/getCompanyCylinderTypeVoListByUnitId',
+      url: app.globalData.apiUrl+'/getCompanyCylinderTypeVoListByUnitId',
       method: "POST",
       header: {
         "Content-Type": "application/x-www-form-urlencoded",
-        "qcmappversion": "1.0.7"
+        "qcmappversion": app.globalData.qcmappversion
       },
       data: { unitId: 1 },
       success: res => {
@@ -87,11 +90,11 @@ Page({
 
     //获取气瓶制造单位信息
     wx.request({
-      url: 'http://localhost:18090/api/getCylinderManufacturer',
+      url: app.globalData.apiUrl +'/getCylinderManufacturer',
       method: "POST",
       header: {
         "Content-Type": "application/x-www-form-urlencoded",
-        "qcmappversion": "1.0.7"
+        "qcmappversion": app.globalData.qcmappversion
       },
       data: { unitId: 1 },
       success: res => {
@@ -110,11 +113,11 @@ Page({
 
     //获取集格信息
     wx.request({
-      url: 'http://localhost:18090/api/getSetInfoByUnitId',
+      url: app.globalData.apiUrl +'/getSetInfoByUnitId',
       method: "POST",
       header: {
         "Content-Type": "application/x-www-form-urlencoded",
-        "qcmappversion": "1.0.7"
+        "qcmappversion": app.globalData.qcmappversion
       },
       data: { unitId: 1 },
       success: res => {
@@ -184,11 +187,11 @@ Page({
 
     that.setData({codeIndex:e.detail.value});
     wx.request({
-      url: 'http://localhost:18090/api/getCylinderManufacturer',
+      url: app.globalData.apiUrl +'/getCylinderManufacturer',
       method: "POST",
       header: {
         "Content-Type": "application/x-www-form-urlencoded",
-        "qcmappversion": "1.0.7"
+        "qcmappversion": app.globalData.qcmappversion
       },
       data: { unitId: 1, code: code },
       success: res => {
@@ -296,17 +299,39 @@ Page({
 
 
   onSubmit: function () {
+    if (this.data.cylinderNumber == "") {
+      wx.showToast({
+        title: "数据不全",
+        icon: 'none',
+        duration: 2000
+      });
+      return false;
+    }
+    if (this.data.disabled == true) {
+      wx.showToast({
+        title: "禁止重复提交",
+        icon: 'none',
+        duration: 2000
+      });
+      return false;
+    }
+    //不让重复提交
+    this.setData({
+      disabled: true,
+      opacity: 0.3
+    });
+    console.log({ unitId: 1, cylinderCode: this.data.cylinderCode, cylinderTypeId: this.data.cylinderTypeId, gasMediumId: this.data.gasMediumId, manufacturingDate: this.data.manufacturingDate, cylinderTypeName: this.data.cylinderTypeName, gasMediumName: this.data.gasMediumName, regularInspectionDate: this.data.regularInspectionDate, setId: this.data.setId, setNumber: this.data.setNumber, nominalTestPressure: this.data.nominalTestPressure, weight: this.data.weight, volume: this.data.volume, wallThickness: this.data.wallThickness, cylinderNumber: this.data.cylinderNumber, "cylinderManufacturerName": this.data.cylinderManufacturerName, "cylinderManufacturerId": this.data.cylinderManufacturerId, "employeeId": wx.getStorageSync('pj_employee_id'), "employeeName": wx.getStorageSync('pj_employee_name') });
     wx.request({
-      url: 'http://localhost:18090/api/addCylinder',
+      url: app.globalData.apiUrl +'/addCylinder',
       method: "POST",
       header: {
         "Content-Type": "application/x-www-form-urlencoded",
-        "qcmappversion":"1.0.7"
+        "qcmappversion": app.globalData.qcmappversion
       },
       data: { unitId: 1, cylinderCode: this.data.cylinderCode, cylinderTypeId: this.data.cylinderTypeId, gasMediumId: this.data.gasMediumId, manufacturingDate: this.data.manufacturingDate, cylinderTypeName: this.data.cylinderTypeName, gasMediumName: this.data.gasMediumName, regularInspectionDate: this.data.regularInspectionDate, setId: this.data.setId, setNumber: this.data.setNumber, nominalTestPressure: this.data.nominalTestPressure, weight: this.data.weight, volume: this.data.volume, wallThickness: this.data.wallThickness, cylinderNumber: this.data.cylinderNumber, "cylinderManufacturerName": this.data.cylinderManufacturerName, "cylinderManufacturerId": this.data.cylinderManufacturerId, "employeeId": wx.getStorageSync('pj_employee_id'), "employeeName": wx.getStorageSync('pj_employee_name') },
       success: res => {
         console.log(res);
-        if(res.data.msg = "成功") {
+        if (res.data.msg == "成功" && res.data.code == 200) {
           var redirectStatus = 0;
           wx.showModal({
             title: '提示',
@@ -393,11 +418,11 @@ Page({
     if (setNumber.length > 0) {
       //获取集格信息进行比较，拿到setId
       wx.request({
-        url: 'http://localhost:18090/api/getSetInfoByUnitId',
+        url: app.globalData.apiUrl + '/getSetInfoByUnitId',
         method: "POST",
         header: {
           "Content-Type": "application/x-www-form-urlencoded",
-          "qcmappversion": "1.0.7"
+          "qcmappversion": app.globalData.qcmappversion
         },
         data: { unitId: 1, setNumber: setNumber },
         success: res => {

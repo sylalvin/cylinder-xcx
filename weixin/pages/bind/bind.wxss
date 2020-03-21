@@ -1,6 +1,22 @@
 page {
   padding-top: 30rpx;
 }
+.weui-cells {
+  padding-bottom: 150rpx;
+}
 .search_item{
   padding-left: 276rpx;
+}
+.weui-navbar {
+  position: fixed;
+  top: 90%;
+  bottom: 0 !important;
+  border: 0 !important;
+}
+.weui-navbar__item {
+  border-top: 1px #9A9A9A solid !important;
+  background-color: #4F77AB;
+}
+.weui-navbar__title {
+  color: #FFFFFF;
 }

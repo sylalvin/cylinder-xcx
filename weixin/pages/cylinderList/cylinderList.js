@@ -1,6 +1,6 @@
 var util = require("../../utils/util.js")
 const sliderWidth = 96;
-
+var app = getApp();
 Page({
 
   /**
@@ -27,11 +27,11 @@ Page({
     var app = getApp();
     
     wx.request({
-      url: 'http://localhost:18090/api/getCylinderByIds',
+      url: app.globalData.apiUrl +'/getCylinderByIds',
       method: "POST",
       header: {
         "Content-Type": "application/x-www-form-urlencoded",
-        "qcmappversion": "1.0.7"
+        "qcmappversion": app.globalData.qcmappversion
       },
       data: { "ids": ids },
       success: res => {
@@ -107,8 +107,8 @@ Page({
       "list": this.data.list,
       "reLoadPage": true
     }, function () {
-      wx.navigateBack();
       prevPage.onLoad();
+      //wx.navigateBack();
     });
     /*wx.navigateTo({
       url: '/pages/filling/filling'

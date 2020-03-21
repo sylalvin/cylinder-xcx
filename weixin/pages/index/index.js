@@ -13,6 +13,17 @@ Page({
   },
 
   onLoad: function () {
+    //检查并设置版本号为全局变量
+    wx.request({
+      url: app.globalData.apiUrl + '/version',
+      method: 'POST',
+      success: (res) => {
+        if ((res.data.data != "") && (res.data.data != null)) {
+            app.globalData.qcmappversion = res.data.data
+        }
+      }
+    });
+
     var that = this;
     var openid = "";
     try {

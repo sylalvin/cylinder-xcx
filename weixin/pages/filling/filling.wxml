@@ -30,10 +30,12 @@
               <view class="weui-loadmore__tips weui-loadmore__tips_in-line">暂无数据</view>
             </view>
           </view>
-        <view class="weui-btn-area">
-          <button class="weui-btn" type="primary" catchtap="onSubmit">新建充装任务</button>
         </view>
-        </view>
+      </view>
+  </view>
+  <view class="weui-navbar">
+      <view class="weui-navbar__item">
+        <view class="weui-navbar__title" catchtap="onSubmit">新建充装任务</view>
       </view>
   </view>
 </view>

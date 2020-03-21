@@ -1,5 +1,5 @@
 const sliderWidth = 96;
-
+var app = getApp();
 Page({
 
   /**
@@ -45,11 +45,11 @@ Page({
     
     var promise = new Promise((resolve, reject) => {
       wx.request({
-        url: 'http://localhost:18090/api/getCompanyProjectByCompanyId',
+        url: app.globalData.apiUrl + '/getCompanyProjectByCompanyId',
         method: "POST",
         header: {
           "Content-Type": "application/x-www-form-urlencoded",
-          "qcmappversion": "1.0.7"
+          "qcmappversion": app.globalData.qcmappversion
         },
         data: { unitId: 1 },
         success: res => {
@@ -71,11 +71,11 @@ Page({
         for (var i = 0; i < res.length; i++) {
           if (res[i].projectName == "充装") {
             wx.request({
-              url: 'http://localhost:18090/api/getCompanyProjectAreaByCompanyProjectId',
+              url: app.globalData.apiUrl + '/getCompanyProjectAreaByCompanyProjectId',
               method: "POST",
               header: {
                 "Content-Type": "application/x-www-form-urlencoded",
-                "qcmappversion": "1.0.7"
+                "qcmappversion": app.globalData.qcmappversion
               },
               data: { unitId: 1, companyProjectId: res[i].id, projectId: res[i].projectId },
               success: res2 => {
@@ -94,11 +94,11 @@ Page({
             setTimeout(function () {
               //获取充装任务并填充内容
               wx.request({
-                url: 'http://localhost:18090/api/getDetectionMissionVoById',
+                url: app.globalData.apiUrl + '/getDetectionMissionVoById',
                 method: "POST",
                 header: {
                   "Content-Type": "application/x-www-form-urlencoded",
-                  "qcmappversion": "1.0.7"
+                  "qcmappversion": app.globalData.qcmappversion
                 },
                 data: { detectionMissionId: missionId },
                 success: res2 => {
@@ -250,11 +250,11 @@ Page({
       cylinderList.push({ "cylinderId": that.data.cylinderCheckList[i].cylinderId, "companyAreaId": that.data.areaValues[that.data.areaIndex]});
     }
     wx.request({
-      url: 'http://localhost:18090/api/v2/updateDetection',
+      url: app.globalData.apiUrl + '/v2/updateDetection',
       method: "POST",
       header: {
         "Content-Type": "application/x-www-form-urlencoded",
-        "qcmappversion": "1.0.7"
+        "qcmappversion": app.globalData.qcmappversion
       },
       data: { detectionMissionId: this.data.missionId, endDate: new Date().getFullYear() + "-" + ((new Date().getMonth() + 1) < 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)) + "-" + ((new Date().getDate() < 10) ? ("0" + new Date().getDate()) : (new Date().getDate())) + " " + that.data.endTime, productionBatch: that.data.productionBatch, companyAreaId: that.data.areaValues[that.data.areaIndex], remark: that.data.remark, "cylinderCheckList": JSON.stringify(cylinderList) },
       success: res => {

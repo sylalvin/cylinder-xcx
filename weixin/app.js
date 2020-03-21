@@ -49,10 +49,10 @@ App({
     "purenessIndex":0,
     "areaIndex": 0,
     "remark": "",
-
-    // apiUrl: "http://47.101.208.226:18090/api" // 生产
-    apiUrl: "http://47.101.47.89:18090/api", // 测试
-
+    //apiUrl: "http://47.101.208.226:18090/api", // 生产
+    // apiUrl: "http://47.101.47.89:18090/api", // 测试
+    apiUrl: "http://localhost:18090/api", // 测试
+    qcmappversion: '1.0.7',
     // 回厂验空全局配置数据
     backCylinderList: [],
     backSetList: [],
