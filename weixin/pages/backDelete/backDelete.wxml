@@ -11,10 +11,14 @@
         <view class="weui-cells"  wx:for="{{allCylinderList}}" wx:key="cylinderNumber">
             <view class="weui-cell flex">
                 <text class="f4">
-                    <text class="w100">所属集格：{{item.setId}}\n</text>
-                    <text class="w100">气瓶二维码编号：{{item.cylinderNumber}}</text>
+                    <text class="w100">标签码：{{item.cylinderNumber}}\n</text>
+                    <text class="w100">自有编码/钢瓶号：{{item.cylinderCode}}\n</text>
+                    <text class="w100">充装介质：{{item.gasMediumName}}\n</text>
+                    <text class="w100">气瓶类型：{{item.cylinderTypeName}}\n</text>
+                    <text class="w100">下检日期：{{item.regularInspectionDate}}\n</text>
+                    <text class="w100">有效期（报废期）：{{item.cylinderScrapDate}}</text>
                 </text>
-                <button class="f1" type="default" bindtap="deleteCylinder" data-set-id="{{item.setId}}" data-cylinder-number="{{item.cylinderNumber}}">删 除</button>
+                <button class="f1 deleteBtn" type="default" bindtap="deleteCylinder" data-set-id="{{item.setId}}" data-cylinder-number="{{item.cylinderNumber}}">删 除</button>
             </view>
         </view>
 

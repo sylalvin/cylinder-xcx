@@ -34,3 +34,10 @@
 .w100{
   width: 100%;
 }
+
+.deleteBtn{
+  padding: auto 0;
+  margin: auto 10px;
+  line-height: 2;
+  color: red !important;
+}

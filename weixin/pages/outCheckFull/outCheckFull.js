@@ -356,7 +356,7 @@ Page({
           })
           that.countData();
           wx.showToast({
-            title: "该集格编号为：" + setId,
+            title: "集格编号：" + setId + " 绑定气瓶数量：" + res.data.data.length,
             icon: 'none',
             duration: 2000
           })
@@ -411,15 +411,20 @@ Page({
           if ((res.data.data != "") && (res.data.data != null)) {
             let cylinderId = res.data.data.id;
             let unitId = res.data.data.unitId;
+            let cylinderCode = res.data.data.cylinderCode; // 气瓶码
+            let cylinderTypeName = res.data.data.cylinderTypeName; // 气瓶类型名称
+            let gasMediumName = res.data.data.gasMediumName; // 气瓶介质名称
+            let regularInspectionDate = res.data.data.regularInspectionDate.substring(0, 7); // 气瓶下检日期
+            let cylinderScrapDate = res.data.data.cylinderScrapDate.substring(0, 7); // 气瓶过期日期
             cylinderList.push(cylinderNumber);
-            allCylinderList.push({ setId, cylinderNumber, cylinderId, unitId });
+            allCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate });
             that.setData({
               cylinderList: cylinderList,
               allCylinderList: allCylinderList
             })
             that.countData();
             wx.showToast({
-              title: "该气瓶二维码编号为：" + cylinderNumber,
+              title: "二维码：" + cylinderNumber + " 介质：" + gasMediumName + " 过期日期：" + cylinderScrapDate,
               icon: 'none',
               duration: 2000
             })
@@ -456,15 +461,20 @@ Page({
           if ((res.data.data != "") && (res.data.data != null)) {
             let cylinderId = res.data.data.id;
             let unitId = res.data.data.unitId;
-            setCylinderList.push({ setId, cylinderNumber, cylinderId, unitId });
-            allCylinderList.push({ setId, cylinderNumber, cylinderId, unitId });
+            let cylinderCode = res.data.data.cylinderCode; // 气瓶码
+            let cylinderTypeName = res.data.data.cylinderTypeName; // 气瓶类型名称
+            let gasMediumName = res.data.data.gasMediumName; // 气瓶介质名称
+            let regularInspectionDate = res.data.data.regularInspectionDate.substring(0, 7); // 气瓶下检日期
+            let cylinderScrapDate = res.data.data.cylinderScrapDate.substring(0, 7); // 气瓶过期日期
+            setCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate });
+            allCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate });
             that.setData({
               setCylinderList: setCylinderList,
               allCylinderList: allCylinderList
             })
             that.countData();
             wx.showToast({
-              title: "该气瓶二维码编号为：" + cylinderNumber,
+              title: "二维码：" + cylinderNumber + " 介质：" + gasMediumName + " 过期日期：" + cylinderScrapDate,
               icon: 'none',
               duration: 2000
             })
