@@ -104,8 +104,8 @@ Page({
               if (res.data.data) {
                 var area = [];
                 for (let i = 0; i < res.data.data.length; i++) {
-                  // if (res.data.data[i].projectName == "充后验满") {
-                  if (res.data.data[i].projectName == "充后检测") {
+                  if (res.data.data[i].projectName == "充后验满") {
+                  // if (res.data.data[i].projectName == "充后检测") {
                     // 流转区域开始
                     wx.request({
                       url: app.globalData.apiUrl + '/getCompanyProjectAreaByCompanyProjectId',

@@ -127,7 +127,7 @@ Page({
               })
             }
             // setCylinderList
-            for (let i = 0; i < setCylinderList.length; i++) {
+            for (let i = setCylinderList.length - 1; i >= 0; i--) {
               if (setCylinderList[i].setId == setId) {
                 let index4 = setCylinderList.indexOf(setCylinderList[i]);
                 if (index4 > -1) {
@@ -139,7 +139,7 @@ Page({
               setCylinderList: setCylinderList
             })
             // allCylinderList
-            for (let i = 0; i < allCylinderList.length; i++) {
+            for (let i = allCylinderList.length - 1; i >= 0; i--) {
               if (allCylinderList[i].setId == setId) {
                 let index5 = allCylinderList.indexOf(allCylinderList[i]);
                 if (index5 > -1) {
