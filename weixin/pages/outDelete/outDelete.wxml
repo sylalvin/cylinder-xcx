@@ -8,7 +8,7 @@
             </view>
         </view>
 
-        <view class="weui-cells"  wx:for="{{allCylinderList}}" wx:key="cylinderNumber">
+        <view class="weui-cells" wx:for="{{allCylinderList}}" wx:key="cylinderNumber">
             <view class="weui-cell flex">
                 <text class="f4">
                     <text class="w100">标签码：{{item.cylinderNumber}}\n</text>
@@ -20,6 +20,10 @@
                 </text>
                 <button class="f1 deleteBtn" type="default" bindtap="deleteCylinder" data-set-id="{{item.setId}}" data-cylinder-number="{{item.cylinderNumber}}">删 除</button>
             </view>
+        </view>
+
+        <view wx:if="{{ allCylinderList.length == 0 }}" class="weui-loadmore weui-loadmore_line">
+            <view class="weui-loadmore__tips weui-loadmore__tips_in-line">暂无数据</view>
         </view>
 
     </view>
