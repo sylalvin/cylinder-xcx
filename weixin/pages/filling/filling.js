@@ -23,11 +23,14 @@ Page({
       },
       data: { "employeeId": wx.getStorageSync('pj_employee_id'), "beginDate": new Date().getFullYear() + "-" + ((new Date().getMonth() + 1) < 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)) + "-" + ((new Date().getDate() < 10) ? ("0" + new Date().getDate()) : (new Date().getDate()))},
       success: res => {
+        console.log("id: " + wx.getStorageSync('pj_employee_id'));
         let returnData =res.data.data;
         console.log(res);
         let scanLogs = [];
-        for (var j = 0; j < returnData.length; j++) {
-          scanLogs.push({ "id": returnData[j].id, "beginDate": returnData[j].beginDate, "name": returnData[j].mediemName, "quantity": returnData[j].yqDetectionVoList.length, "number": returnData[j].productionBatch, "status": returnData[j].status == 1 ?"充气中":"已完成" });
+        if (returnData != null) {
+          for (var j = 0; j < returnData.length; j++) {
+            scanLogs.push({ "id": returnData[j].id, "beginDate": returnData[j].beginDate, "name": returnData[j].mediemName, "quantity": returnData[j].yqDetectionVoList.length, "number": returnData[j].productionBatch, "status": returnData[j].status == 1 ? "充气中" : "已完成" });
+          }
         }
         that.setData({ "scanLogs": scanLogs });
       },

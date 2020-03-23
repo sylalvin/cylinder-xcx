@@ -12,7 +12,7 @@
           <view class="weui-label">充装介质</view>
         </view>
         <view class="weui-cell__bd">
-          <input class="weui-input" placeholder="充装介质" type="text" value="{{gasMediumName}}" bindblur="onPressureChange" />
+          <input class="weui-input" placeholder="充装介质" type="text" value="{{gasMediumName}}" />
         </view>
       </view>
       <view class="weui-cell weui-cell_input">

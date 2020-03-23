@@ -12,7 +12,8 @@
     "pages/outCheckFull/outCheckFull",
     "pages/outDelete/outDelete",
     "pages/backCheckEmpty/backCheckEmpty",
-    "pages/backDelete/backDelete"
+    "pages/backDelete/backDelete",
+    "pages/setting/setting"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -30,16 +31,10 @@
         "selectedIconPath": "images/history_selected.png"
       },
       {
-        "pagePath": "pages/scan/scan",
-        "text": "扫描",
-        "iconPath": "images/scan.png",
-        "selectedIconPath": "images/scan_selected.png"
-      },
-      {
-        "pagePath": "pages/code/code",
-        "text": "生成",
-        "iconPath": "images/code.png",
-        "selectedIconPath": "images/code_selected.png"
+        "pagePath": "pages/setting/setting",
+        "text": "设置",
+        "iconPath": "images/setting.png",
+        "selectedIconPath": "images/setting_selected.png"
       }
     ]
   },
