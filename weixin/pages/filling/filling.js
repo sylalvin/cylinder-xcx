@@ -33,7 +33,9 @@ Page({
       },
       fail: function (res) {
         // fail调用接口失败
-        reject({ error: '网络错误', code: 0 });
+        wx.showToast({
+          title: '网络错误'
+        })
       },
       complete: function (res) {
         // complete
