@@ -171,10 +171,12 @@ Page({
     var gasArray = this.data.gasArray;
     var gasItemsArray = this.data.gasItemsArray;
     var gasMediumName = gasItemsArray[that.data.typeId][e.detail.value]
+    that.setData({ gasIndex: e.detail.value });
     var gasMediumId;
     for(var i=0;i<gasArray.length;i++) {
       if (gasMediumName == gasArray[i].name) {
         gasMediumId = gasArray[i].id;
+        
       }
     };
     this.setData({ gasMediumId: gasMediumId });
