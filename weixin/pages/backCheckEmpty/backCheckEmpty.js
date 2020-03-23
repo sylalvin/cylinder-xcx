@@ -100,8 +100,8 @@ Page({
               if (res.data.data) {
                 var area = [];
                 for (let i = 0; i < res.data.data.length; i++) {
-                  // if (res.data.data[i].projectName == "回厂验空") {
-                  if (res.data.data[i].projectName == "充前检测") {
+                  if (res.data.data[i].projectName == "回厂验空") {
+                  // if (res.data.data[i].projectName == "充前检测") {
                     // 流转区域开始
                     wx.request({
                       url: app.globalData.apiUrl + '/getCompanyProjectAreaByCompanyProjectId',
