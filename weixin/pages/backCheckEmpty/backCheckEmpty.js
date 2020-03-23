@@ -192,7 +192,7 @@ Page({
     var that = this;
 
     wx.getStorage({
-      key: 'pj_cylinder_name',
+      key: 'pj_employee_name',
       success: (res) => {
         that.setData({
           'commonInfo.creator': res.data
