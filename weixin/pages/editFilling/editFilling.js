@@ -136,7 +136,7 @@ Page({
                   that.setData({ "areaIndex": areaIndex });
                 }
               });
-            }, 800) //延迟时间 这里是1秒
+            }, 100) //延迟时间 这里是1秒
           }
         }
       }
