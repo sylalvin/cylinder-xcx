@@ -22,7 +22,7 @@
     <view class="page__bd">
       <view class="page__bd">
           <view class="current_user">
-              <text>当前使用者：测试司机1</text>
+              <text>{{name}}</text>
           </view>
           <view class="sort_box">
             <view class="item">

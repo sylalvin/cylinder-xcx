@@ -9,11 +9,13 @@ Page({
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
     hasAuthority: false,
     isBinding:false,
-    openid:""
+    openid:"",
+    name: ""
   },
 
-  onLoad: function () {
+  onLoad: function (options) {
     //检查并设置版本号为全局变量
+    var that = this;
     wx.request({
       url: app.globalData.apiUrl + '/version',
       method: 'POST',
@@ -24,7 +26,6 @@ Page({
       }
     });
 
-    var that = this;
     var openid = "";
     try {
       openid = wx.getStorageSync('pj_cylinder_openid')
@@ -70,6 +71,19 @@ Page({
         }
       });
     }
+  },
+
+  onShow: function() {
+    var that = this;
+    wx.getStorage({
+      key: 'pj_employee_name',
+      success: function (res) {
+        console.log(res.data);
+        that.setData({
+          'name': "当前使用者：" + res.data
+        })
+      },
+    });
   },
 
   loginBtnClick: function(e) {
@@ -121,9 +135,9 @@ Page({
                             key: "pj_employee_id",
                             data: res3.data.data.id
                           });
-                          console.log(res3.data.data.name);
-                          console.log(res3.data.data.mobile);
-                          console.log(res3.data.data.position);
+                          // console.log(res3.data.data.name);
+                          // console.log(res3.data.data.mobile);
+                          // console.log(res3.data.data.position);
                           /** 职位 1司机，2押运员，3收发，4生产，5检测 **/
                           wx.showToast({
                             title: "绑定成功",
@@ -132,7 +146,8 @@ Page({
                           });
                           that.setData({
                             hasAuthority: true,
-                            isBinding: true
+                            isBinding: true,
+                            name: "当前使用者：" + wx.getStorageSync("pj_employee_name")
                           });
                         } else {
                           wx.showToast({
