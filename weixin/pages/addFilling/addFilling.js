@@ -294,45 +294,57 @@ Page({
                   var cylinderReturnList = res.data.data;
                   var jigeArr = [];
                   if (cylinderReturnList.length > 0) {
-                    for (var j = 0; j < cylinderReturnList.length; j++) {
-                      if (this.data.gasMediumName == "") {
-                        that.setData({ "gasMediumName": cylinderReturnList[j].gasMediumName });
-                        app.globalData.gasMediumName = cylinderReturnList[j].gasMediumName;
-                      }
-                      //增加对气瓶的判断
-                      if (this.data.gasMediumName != "" && this.data.gasMediumName != cylinderReturnList[j].gasMediumName) {
-                        wx.showToast({
-                          title: "您扫码气瓶所属介质是" + cylinderReturnList[j].gasMediumName + ",不是" + this.data.gasMediumName,
-                          icon: 'none',
-                          mask: true,
-                          duration: 5000
-                        });
-                      } else {
-                        wx.showToast({
-                          title: "该气瓶二维码编号为：" + cylinderReturnList[j].cylinderNumber,
-                          icon: 'none',
-                          duration: 1000
-                        });
-                        jigeArr = jigeArr.concat(cylinderReturnList[j].id);
-                        app.globalData.zongqiping = app.globalData.zongqiping.concat(cylinderReturnList[j].id);
-                        if (this.data.cylinderIdList.indexOf(cylinderReturnList[j].id) < 0) {
-                          that.setData({
-                            "cylinderIdList": this.data.cylinderIdList.concat(cylinderReturnList[j].id)
+                    var lastFillTime = res.data.data[0].lastFillTime;
+                    var difftimes = 4 * 60 * 60 * 1000;
+                    if ((lastFillTime == null) || ((lastFillTime != null) && (util.diff(lastFillTime, new Date()) > difftimes))) {
+                      for (var j = 0; j < cylinderReturnList.length; j++) {
+                        if (this.data.gasMediumName == "") {
+                          that.setData({ "gasMediumName": cylinderReturnList[j].gasMediumName });
+                          app.globalData.gasMediumName = cylinderReturnList[j].gasMediumName;
+                        }
+                        //增加对气瓶的判断
+                        if (this.data.gasMediumName != "" && this.data.gasMediumName != cylinderReturnList[j].gasMediumName) {
+                          wx.showToast({
+                            title: "您扫码气瓶所属介质是" + cylinderReturnList[j].gasMediumName + ",不是" + this.data.gasMediumName,
+                            icon: 'none',
+                            mask: true,
+                            duration: 5000
                           });
+                        } else {
+                          wx.showToast({
+                            title: "该气瓶二维码编号为：" + cylinderReturnList[j].cylinderNumber,
+                            icon: 'none',
+                            duration: 1000
+                          });
+                          jigeArr = jigeArr.concat(cylinderReturnList[j].id);
+                          app.globalData.zongqiping = app.globalData.zongqiping.concat(cylinderReturnList[j].id);
+                          if (this.data.cylinderIdList.indexOf(cylinderReturnList[j].id) < 0) {
+                            that.setData({
+                              "cylinderIdList": this.data.cylinderIdList.concat(cylinderReturnList[j].id)
+                            });
+                          }
                         }
                       }
+                      that.setData({ "zongqipingValue": app.globalData.zongqiping.length });
+                      var jigeName = "J" + jigeCode;
+                      that.setData({ "gasMediumName": cylinderReturnList[0].gasMediumName });
+                      var newJige = app.globalData.jige;
+                      newJige[jigeName] = jigeArr;
+                      app.globalData.jige = newJige;
+                      var newJigeKeys = util.getObjectKeys(newJige);
+                      that.setData({ "jigeValue": newJigeKeys.length });
+                      app.globalData.saomiao = app.globalData.saomiao.concat(jigeName);
+                      that.setData({ "saomiaoValue": app.globalData.saomiao.length });
+                      that.setData({ "list": that.data.list.concat(jigeName) });
+                    } else {
+                      // 4小时内充装过该集格
+                      wx.showToast({
+                        title: 'ID为 ' + jigeCode + ' 的集格4小时内已充装',
+                        icon: 'none',
+                        mask: true,
+                        duration: 2500
+                      })
                     }
-                    that.setData({ "zongqipingValue": app.globalData.zongqiping.length });
-                    var jigeName = "J" + jigeCode;
-                    that.setData({ "gasMediumName": cylinderReturnList[0].gasMediumName });
-                    var newJige = app.globalData.jige;
-                    newJige[jigeName] = jigeArr;
-                    app.globalData.jige = newJige;
-                    var newJigeKeys = util.getObjectKeys(newJige);
-                    that.setData({ "jigeValue": newJigeKeys.length });
-                    app.globalData.saomiao = app.globalData.saomiao.concat(jigeName);
-                    that.setData({ "saomiaoValue": app.globalData.saomiao.length });
-                    that.setData({ "list": that.data.list.concat(jigeName) });
                   }
                 }
               });
@@ -373,40 +385,52 @@ Page({
                   data: { cylinderNumber: code },
                   success: res => {
                     if (res.data.code == 200) {
-                      if (this.data.gasMediumName == "") {
-                        that.setData({ "gasMediumName": res.data.data.gasMediumName });
-                        app.globalData.gasMediumName = res.data.data.gasMediumName;
+                      var lastFillTime = res.data.data.lastFillTime;
+                      var difftimes = 4 * 60 * 60 * 1000;
+                      if ((lastFillTime == null) || ((lastFillTime != null) && (util.diff(lastFillTime, new Date()) > difftimes))) {
+                        if (this.data.gasMediumName == "") {
+                          that.setData({ "gasMediumName": res.data.data.gasMediumName });
+                          app.globalData.gasMediumName = res.data.data.gasMediumName;
 
-                      }
+                        }
 
-                      //增加对气瓶的判断
-                      if (this.data.gasMediumName != "" && this.data.gasMediumName != res.data.data.gasMediumName) {
-                        wx.showToast({
-                          title: "您扫码气瓶所属介质是" + res.data.data.gasMediumName + ",不是" + this.data.gasMediumName,
-                          icon: 'none',
-                          mask: true,
-                          duration: 5000
-                        });
-                      } else {
-                        //增加气瓶ID Begin
-                        if (this.data.cylinderIdList.indexOf(res.data.data.id) < 0) {
-                          that.setData({
-                            "cylinderIdList": this.data.cylinderIdList.concat(res.data.data.id)
+                        //增加对气瓶的判断
+                        if (this.data.gasMediumName != "" && this.data.gasMediumName != res.data.data.gasMediumName) {
+                          wx.showToast({
+                            title: "您扫码气瓶所属介质是" + res.data.data.gasMediumName + ",不是" + this.data.gasMediumName,
+                            icon: 'none',
+                            mask: true,
+                            duration: 5000
+                          });
+                        } else {
+                          //增加气瓶ID Begin
+                          if (this.data.cylinderIdList.indexOf(res.data.data.id) < 0) {
+                            that.setData({
+                              "cylinderIdList": this.data.cylinderIdList.concat(res.data.data.id)
+                            });
+                          }
+                          //增加气瓶ID End
+                          app.globalData.saomiao = app.globalData.saomiao.concat(res.data.data.id);
+                          that.setData({ "saomiaoValue": app.globalData.saomiao.length });
+                          app.globalData.sanping = app.globalData.sanping.concat(res.data.data.id);
+                          that.setData({ "sanpingValue": app.globalData.sanping.length });
+                          app.globalData.zongqiping = app.globalData.zongqiping.concat(res.data.data.id);
+                          that.setData({ "zongqipingValue": app.globalData.zongqiping.length });
+                          wx.showToast({
+                            title: "该气瓶二维码编号为：" + res.data.data.cylinderNumber,
+                            icon: 'none',
+                            mask: true,
+                            duration: 2000
                           });
                         }
-                        //增加气瓶ID End
-                        app.globalData.saomiao = app.globalData.saomiao.concat(res.data.data.id);
-                        that.setData({ "saomiaoValue": app.globalData.saomiao.length });
-                        app.globalData.sanping = app.globalData.sanping.concat(res.data.data.id);
-                        that.setData({ "sanpingValue": app.globalData.sanping.length });
-                        app.globalData.zongqiping = app.globalData.zongqiping.concat(res.data.data.id);
-                        that.setData({ "zongqipingValue": app.globalData.zongqiping.length });
+                      } else {
+                        // 4小时内充装过该气瓶
                         wx.showToast({
-                          title: "该气瓶二维码编号为：" + res.data.data.cylinderNumber,
+                          title: 'ID为 ' + code + ' 的气瓶4小时内已充装',
                           icon: 'none',
                           mask: true,
-                          duration: 2000
-                        });
+                          duration: 2500
+                        })
                       }
                     } else {
                       wx.showToast({
