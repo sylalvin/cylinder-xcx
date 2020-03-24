@@ -36,10 +36,18 @@ function putElementToFirst(arr, key) {
   arr.unshift(key);
   return arr;
 }
+//计算两个时间差,返回相差的毫秒数
+function diff(begin, end = new Date()) {
+  var bTime = new Date(begin.replace(/-/g, "/")).getTime();
+  var eTime = new Date(end).getTime();
+  var times = eTime - bTime;
+  return times;
+}
 
 module.exports = {
   formatTime: formatTime,
   json2Form: json2Form,
   getObjectKeys: getObjectKeys,
-  putElementToFirst: putElementToFirst
+  putElementToFirst: putElementToFirst,
+  diff: diff
 }

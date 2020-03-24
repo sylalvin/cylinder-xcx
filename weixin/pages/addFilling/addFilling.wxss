@@ -20,7 +20,7 @@
 
 .weui-navbar {
   position: absolute;
-  top: 90%;
+  top: 93%;
   bottom: 0 !important;
   border: 0 !important;
 }
