@@ -306,6 +306,11 @@ Page({
                           duration: 5000
                         });
                       } else {
+                        wx.showToast({
+                          title: "该气瓶二维码编号为：" + cylinderReturnList[j].cylinderNumber,
+                          icon: 'none',
+                          duration: 1000
+                        });
                         jigeArr = jigeArr.concat(cylinderReturnList[j].id);
                         app.globalData.zongqiping = app.globalData.zongqiping.concat(cylinderReturnList[j].id);
                         if (this.data.cylinderIdList.indexOf(cylinderReturnList[j].id) < 0) {
@@ -394,7 +399,7 @@ Page({
                         wx.showToast({
                           title: "该气瓶二维码编号为：" + res.data.data.cylinderNumber,
                           icon: 'none',
-                          duration: 2000
+                          duration: 1200
                         });
                       }
                     } else {
