@@ -28,7 +28,7 @@
             <view class="item">
               <navigator url="/pages/backCheckEmpty/backCheckEmpty">
                 <view class="icon"><image src="../../images/func_1.png" class="icon"></image></view>
-                <text>回车验空</text>
+                <text>回厂验空</text>
               </navigator>
             </view>
             <view class="item">
