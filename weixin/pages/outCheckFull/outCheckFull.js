@@ -285,7 +285,8 @@ Page({
             wx.showToast({
               title: '该集格已扫描',
               icon: 'none',
-              duration: 2000
+              mask: true,
+              duration: 2500
             })
           } else {
             that.queryCylinderBySetId(setCode);
@@ -300,14 +301,16 @@ Page({
             wx.showToast({
               title: '该气瓶码长度不正确',
               icon: 'none',
-              duration: 2000
+              mask: true,
+              duration: 2500
             })
           } else {
             if (cylinderList.includes(cylinderNumber)) {
               wx.showToast({
                 title: '该气瓶已扫描',
                 icon: 'none',
-                duration: 2000
+                mask: true,
+                duration: 2500
               })
             } else {
               // 查询气瓶信息
@@ -318,7 +321,8 @@ Page({
           wx.showToast({
             title: '该码不符合规范',
             icon: 'none',
-            duration: 2000
+            mask: true,
+            duration: 2500
           })
         }
         if (that.data.scanFlag) {
@@ -358,7 +362,8 @@ Page({
           wx.showToast({
             title: "集格编号：" + setId + " 绑定气瓶数量：" + res.data.data.length,
             icon: 'none',
-            duration: 2000
+            mask: true,
+            duration: 2500
           })
           if (res.data.data.length > 0) {
             for (let i = 0; i < res.data.data.length; i++) {
@@ -369,7 +374,8 @@ Page({
             wx.showToast({
               title: 'ID为 ' + setid + ' 的集格未绑定气瓶',
               icon: 'none',
-              duration: 2000
+              mask: true,
+              duration: 2500
             })
 
           }
@@ -377,7 +383,8 @@ Page({
           wx.showToast({
             title: 'ID为 ' + setid + ' 的集格信息缺失',
             icon: 'none',
-            duration: 2000
+            mask: true,
+            duration: 2500
           })
         }
       },
@@ -385,7 +392,8 @@ Page({
         wx.showToast({
           title: '查询集格接口访问失败',
           icon: 'none',
-          duration: 2000
+          mask: true,
+          duration: 2500
         })
       }
     })
@@ -426,14 +434,16 @@ Page({
             wx.showToast({
               title: "二维码：" + cylinderNumber + " 介质：" + gasMediumName + " 过期日期：" + cylinderScrapDate,
               icon: 'none',
-              duration: 2000
+              mask: true,
+              duration: 2500
             })
           } else {
             // 未查询到气瓶信息
             wx.showToast({
               title: 'ID为 ' + cylinderNumber + ' 的气瓶信息缺失',
               icon: 'none',
-              duration: 2000
+              mask: true,
+              duration: 2500
             })
           }
         },
@@ -441,7 +451,8 @@ Page({
           wx.showToast({
             title: '查询气瓶接口访问失败',
             icon: 'none',
-            duration: 2000
+            mask: true,
+            duration: 2500
           })
         }
       })
@@ -627,7 +638,8 @@ Page({
             wx.showToast({
               title: '添加接口访问失败,5秒后再次请求',
               icon: 'none',
-              duration: 2000
+              mask: true,
+              duration: 2500
             })
             setTimeout(function () {
               that.checkData();
