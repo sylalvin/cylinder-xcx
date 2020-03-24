@@ -6,6 +6,12 @@ Page({
    */
   data: {
     qcmappversion: '1.0.0',
+    showProgress: false,
+    progress: {
+      sum: 0,
+      percent: 0,
+      content: ""
+    },
     disabled: false,
     opacity: 0.9,
     scanFlag: true,
@@ -281,7 +287,8 @@ Page({
             wx.showToast({
               title: '该集格已扫描',
               icon: 'none',
-              duration: 2000
+              mask: true,
+              duration: 2500
             })
           } else {
             that.queryCylinderBySetId(setCode);
@@ -296,14 +303,16 @@ Page({
             wx.showToast({
               title: '该气瓶码长度不正确',
               icon: 'none',
-              duration: 2000
+              mask: true,
+              duration: 2500
             })
           }else{
             if (cylinderList.includes(cylinderNumber)) {
               wx.showToast({
                 title: '该气瓶已扫描',
                 icon: 'none',
-                duration: 2000
+                mask: true,
+                duration: 2500
               })
             } else {
               // 查询气瓶信息
@@ -314,7 +323,8 @@ Page({
           wx.showToast({
             title: '该码不符合规范',
             icon: 'none',
-            duration: 2000
+            mask: true,
+            duration: 2500
           })
         }
         if (that.data.scanFlag) {
@@ -354,7 +364,8 @@ Page({
           wx.showToast({
             title: "集格编号：" + setId + " 绑定气瓶数量：" + res.data.data.length,
             icon: 'none',
-            duration: 2000
+            mask: true,
+            duration: 2500
           })
           if (res.data.data.length > 0) {
             for (let i = 0; i < res.data.data.length; i++) {
@@ -365,7 +376,8 @@ Page({
             wx.showToast({
               title: 'ID为 ' + setid + ' 的集格未绑定气瓶',
               icon: 'none',
-              duration: 2000
+              mask: true,
+              duration: 2500
             })
 
           }
@@ -373,7 +385,8 @@ Page({
           wx.showToast({
             title: 'ID为 ' + setid + ' 的集格信息缺失',
             icon: 'none',
-            duration: 2000
+            mask: true,
+            duration: 2500
           })
         }
       },
@@ -381,7 +394,8 @@ Page({
         wx.showToast({
           title: '查询集格接口访问失败',
           icon: 'none',
-          duration: 2000
+          mask: true,
+          duration: 2500
         })
       }
     })
@@ -422,14 +436,16 @@ Page({
             wx.showToast({
               title: "二维码：" + cylinderNumber + " 介质：" + gasMediumName + " 过期日期：" + cylinderScrapDate,
               icon: 'none',
-              duration: 2000
+              mask: true,
+              duration: 2500
             })
           } else {
             // 未查询到气瓶信息
             wx.showToast({
               title: 'ID为 ' + cylinderNumber + ' 的气瓶信息缺失',
               icon: 'none',
-              duration: 2000
+              mask: true,
+              duration: 2500
             })
           }
         },
@@ -437,7 +453,8 @@ Page({
           wx.showToast({
             title: '查询气瓶接口访问失败',
             icon: 'none',
-            duration: 2000
+            mask: true,
+            duration: 2500
           })
         }
       })
@@ -469,11 +486,11 @@ Page({
               allCylinderList: allCylinderList
             })
             that.countData();
-            wx.showToast({
-              title: "二维码：" + cylinderNumber + " 介质：" + gasMediumName + " 过期日期：" + cylinderScrapDate,
-              icon: 'none',
-              duration: 2000
-            })
+            // wx.showToast({
+            //   title: "二维码：" + cylinderNumber + " 介质：" + gasMediumName + " 过期日期：" + cylinderScrapDate,
+            //   icon: 'none',
+            //   duration: 2000
+            // })
           } else {
             // 未查询到气瓶信息
             wx.showToast({
@@ -520,6 +537,16 @@ Page({
       scan_set: that.data.setList.length,
       scan_sum: that.data.allCylinderList.length
     })
+
+    // progress
+    // if (that.data.progress.sum != 0) {
+    //   var percent = ((that.data.progress.sum - that.data.scan_sum) / that.data.progress.sum) * 100;
+    //   var content = (that.data.progress.sum - that.data.scan_sum) + ' / ' + that.data.progress.sum;
+    //   that.setData({
+    //     "progress.percent": percent,
+    //     "progress.content": content
+    //   })
+    // }
   },
 
   // 设置全局变量
@@ -540,7 +567,11 @@ Page({
     let setCylinderList = that.data.setCylinderList;
     let allCylinderList = that.data.allCylinderList;
     if (allCylinderList.length > 0) {
-      
+      // progress
+      // that.setData({
+      //   showProgress: true,
+      //   "progress.sum": that.data.allCylinderList.length
+      // })
       for (let i = allCylinderList.length-1; i >= 0; i--) {
         let temp = allCylinderList[i];
         // 拼接气瓶信息
@@ -622,7 +653,8 @@ Page({
             wx.showToast({
               title: '添加接口访问失败,5秒后再次请求',
               icon: 'none',
-              duration: 2000
+              mask: true,
+              duration: 2500
             })
             setTimeout(function () {
               that.checkData();

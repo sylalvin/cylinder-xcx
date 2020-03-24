@@ -43,21 +43,21 @@
                 <text>充后验满</text>
               </navigator>
             </view>
-            <view class="item">
+            <!-- <view class="item">
               <view class="icon"><image src="../../images/func_4.png" class="icon"></image></view>
               <text>发瓶卸货</text>
             </view>
             <view class="item">
               <view class="icon"><image src="../../images/func_5.png" class="icon"></image></view>
               <text>客户回瓶</text>
-            </view>
+            </view> -->
             <view class="item">
               <navigator url="/pages/bind/bind">
                 <view class="icon"><image src="../../images/func_6.png" class="icon"></image></view>
                 <text>气瓶绑码</text>
               </navigator>
             </view>
-            <view class="item">
+            <!-- <view class="item">
               <view class="icon"><image src="../../images/func_7.png" class="icon"></image></view>
               <text>厂外流转</text>
             </view>
@@ -80,7 +80,7 @@
             <view class="empty_item">
               <view class="icon"></view>
               <text></text>
-            </view>
+            </view> -->
           </view>
       </view>
     </view>

@@ -7,7 +7,15 @@
           </view>
         </view>
       </navigator>
-
+          <!-- <view class="weui-cells"  wx:if="{{showProgress}}">
+            <view class="weui-cell pa">
+              <view class="weui-cell w80"><progress percent="{{progress.percent}}" active="true" active-mode="backwards" bindactiveend="bindactiveend">
+            </progress></view>
+            <view class="weui-cell w20">
+              <text>{{progress.content}}</text>
+            </view>
+            </view>
+          </view> -->
 
           <view class="weui-cells">
             <view class="weui-cell webox">
