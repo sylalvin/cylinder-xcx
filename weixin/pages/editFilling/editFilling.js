@@ -247,7 +247,7 @@ Page({
     }
     var cylinderList = [];
     for (var i = 0; i < that.data.cylinderCheckList.length;i++) {
-      cylinderList.push({ "cylinderId": that.data.cylinderCheckList[i].cylinderId, "companyAreaId": that.data.areaValues[that.data.areaIndex]});
+      cylinderList.push({ "cylinderId": that.data.cylinderCheckList[i].cylinderId, "companyAreaId": that.data.areaValues[that.data.areaIndex], "checkLeak": 1, "beforeColor": 1, "beforeAppearance": 1, "beforeSafety": 1, "beforeRegularInspectionDate": 1, "beforeResidualPressure": 1, "fillingIfNormal": 1, "afterPressure": 1, "afterCheckLeak": 1, "afterAppearance": 1, "afterTemperature": 1, "ifNormal": 1, "ifPass": 1});
     }
     wx.request({
       url: app.globalData.apiUrl + '/v2/updateDetection',
