@@ -6,6 +6,12 @@ Page({
    */
   data: {
     qcmappversion: '1.0.0',
+    showProgress: false,
+    progress: {
+      sum: 0,
+      percent: 0,
+      content: ""
+    },
     disabled: false,
     opacity: 0.9,
     scanFlag: true,
@@ -531,6 +537,16 @@ Page({
       scan_set: that.data.setList.length,
       scan_sum: that.data.allCylinderList.length
     })
+
+    // progress
+    // if (that.data.progress.sum != 0) {
+    //   var percent = ((that.data.progress.sum - that.data.scan_sum) / that.data.progress.sum) * 100;
+    //   var content = (that.data.progress.sum - that.data.scan_sum) + ' / ' + that.data.progress.sum;
+    //   that.setData({
+    //     "progress.percent": percent,
+    //     "progress.content": content
+    //   })
+    // }
   },
 
   // 设置全局变量
@@ -551,7 +567,11 @@ Page({
     let setCylinderList = that.data.setCylinderList;
     let allCylinderList = that.data.allCylinderList;
     if (allCylinderList.length > 0) {
-      
+      // progress
+      // that.setData({
+      //   showProgress: true,
+      //   "progress.sum": that.data.allCylinderList.length
+      // })
       for (let i = allCylinderList.length-1; i >= 0; i--) {
         let temp = allCylinderList[i];
         // 拼接气瓶信息

@@ -278,6 +278,7 @@ Page({
               wx.showToast({
                 title: "该集格已扫描",
                 icon: 'none',
+                mask: true,
                 duration: 3600
               });
             } else {
@@ -303,6 +304,7 @@ Page({
                         wx.showToast({
                           title: "您扫码气瓶所属介质是" + cylinderReturnList[j].gasMediumName + ",不是" + this.data.gasMediumName,
                           icon: 'none',
+                          mask: true,
                           duration: 5000
                         });
                       } else {
@@ -344,6 +346,7 @@ Page({
               wx.showToast({
                 title: "该气瓶编码有问题",
                 icon: 'none',
+                mask: true,
                 duration: 2000
               });
             } else {
@@ -351,6 +354,7 @@ Page({
                 wx.showToast({
                   title: "重复扫码",
                   icon: 'none',
+                  mask: true,
                   duration: 3600
                 });
               } else {
@@ -375,6 +379,7 @@ Page({
                         wx.showToast({
                           title: "您扫码气瓶所属介质是" + res.data.data.gasMediumName + ",不是" + this.data.gasMediumName,
                           icon: 'none',
+                          mask: true,
                           duration: 5000
                         });
                       } else {
@@ -394,6 +399,7 @@ Page({
                         wx.showToast({
                           title: "该气瓶二维码编号为：" + res.data.data.cylinderNumber,
                           icon: 'none',
+                          mask: true,
                           duration: 2000
                         });
                       }
@@ -401,6 +407,7 @@ Page({
                       wx.showToast({
                         title: "没有此二维码的相关数据",
                         icon: 'none',
+                        mask: true,
                         duration: 3600
                       });
                     }
