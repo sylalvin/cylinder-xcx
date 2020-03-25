@@ -62,6 +62,9 @@
     margin: 50rpx 50rpx;
     font-size: 35rpx;
 }
+.pary{
+  color: #999;
+}
 .mcontainer {
   height: 100%;
   display: flex;
