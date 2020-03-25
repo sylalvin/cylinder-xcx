@@ -1,7 +1,6 @@
 //index.js
 //获取应用实例
-const app = getApp()
-var Util = require('../../utils/util');
+const app = getApp();
 
 Page({
   data: {
@@ -9,6 +8,9 @@ Page({
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
     hasAuthority: false,
     isBinding:false,
+    isLogin: false,
+    userName: "",
+    password: "",
     openid:"",
     name: ""
   },
@@ -26,50 +28,14 @@ Page({
       }
     });
 
-    var openid = "";
-    try {
-      openid = wx.getStorageSync('pj_cylinder_openid')
-    } catch (e) {
-      wx.showToast({
-        title: '请检查您的网络',
-        icon: 'none',    //如果要纯文本，不要icon，将值设为'none'
-        duration: 2000
-      })
-    };
+    var openid = wx.getStorageSync('pj_cylinder_openid');
     if (openid != "") {
       that.setData({
+        isLogin: true,
         hasAuthority: true,
         isBinding: true
       });
       console.log("openid:"+openid);
-    } else {
-      // 查看是否授权
-      wx.getSetting({
-        success: function (res1) {
-          console.log("开始查询是否授权");
-          if (res1.authSetting['scope.userInfo']) {
-            wx.getUserInfo({
-              success: function (res) {
-                //判断授权是否成功
-                if(res) {
-                  console.log(res);
-                } else {
-                  that.setData({
-                    hasAuthority: false,
-                    isBinding: false
-                  });
-                }
-              }
-            });
-          } else {
-            //  console.log("not");
-            that.setData({
-              hasAuthority: false,
-              isBinding: false
-            });
-          }
-        }
-      });
     }
   },
 
@@ -90,35 +56,41 @@ Page({
     var that = this;
     console.log(e.detail.value.login_username);
     console.log(e.detail.value.login_pwd);
+    that.setData({
+      isLogin: true,
+      userName: e.detail.value.login_username,
+      password: e.detail.value.login_pwd
+    })
+  },
+
+  check: function() {
+    var that = this;
     wx.getUserInfo({
       success: function (res) {
         //判断授权是否成功
         if (res) {
           wx.login({
             success: res => {
-              console.log("js_code: "+res.code);
               wx.request({
                 url: 'https://wx.feifanqishi.net/getOpenid.php?code=' + res.code,
                 method: "GET",
                 success: res2 => {
                   if (res2.errMsg == "request:ok") {
-                    console.log("openid:"+res2.data.openid);
                     wx.setStorage({
                       key: "pj_cylinder_openid",
                       data: res2.data.openid
                     });
+                    var userName = that.data.userName;
+                    var password = that.data.password;
                     wx.request({
                       url: 'https://wx.feifanqishi.net/bindOpenid.php',
                       method: "POST",
                       header: {
                         "Content-Type": "application/x-www-form-urlencoded"
                       },
-                      data: { openid: res2.data.openid, userName: e.detail.value.login_username, password: e.detail.value.login_pwd},
+                      data: { openid: res2.data.openid, userName: userName, password: password },
                       success: res3 => {
-                        console.log(res3)
-                        if(res3.data.code == 200) {
-                          console.log(res3.data.data.name);
-                          console.log(res3.data.data.id);
+                        if (res3.data.code == 200) {
                           wx.setStorage({
                             key: "pj_employee_name",
                             data: res3.data.data.name
@@ -150,6 +122,11 @@ Page({
                             name: "当前使用者：" + wx.getStorageSync("pj_employee_name")
                           });
                         } else {
+                          that.setData({
+                            isLogin: false,
+                            hasAuthority: false,
+                            isBinding: false
+                          })
                           wx.showToast({
                             title: res3.data.msg,
                             icon: 'none',
@@ -165,6 +142,7 @@ Page({
           });
         } else {
           that.setData({
+            isLogin: false,
             hasAuthority: false,
             isBinding: false
           });
@@ -172,6 +150,7 @@ Page({
       }
     });
   },
+
   bindGetUserInfo: function (e) {
     if (e.detail.userInfo) {
       //用户按了允许授权按钮
@@ -183,20 +162,16 @@ Page({
       that.setData({
         hasAuthority: true
       });
-    } else {
-      //用户按了拒绝按钮
-      wx.showModal({
-        title: '警告',
-        content: '您点击了拒绝授权，将无法进入小程序，请授权之后再进入!!!',
-        showCancel: false,
-        confirmText: '返回授权',
-        success: function (res) {
-          // 用户没有授权成功，不需要改变 isHide 的值
-          if (res.confirm) {
-            console.log('用户点击了“返回授权”');
-          }
-        }
-      });
+      that.check();
     }
+  },
+
+  cancel: function(e) {
+    var that = this;
+    that.setData({
+      isLogin: false,
+      hasAuthority: false,
+      isBinding: false
+    })
   }
 })

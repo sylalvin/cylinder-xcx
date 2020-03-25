@@ -1,5 +1,28 @@
-<!-- 未绑定且未得授权 -->
-<view wx:if="{{!hasAuthority && !isBinding}}">
+<!-- 未触发登录 -->
+<view wx:if="{{!isLogin}}">
+  <view class="mcontainer">
+      <view class="item">
+          <image src="../../images/func_1.png" class="image" />
+      </view>
+
+      <view class="item">
+       <form bindsubmit="loginBtnClick">
+        <view class="login-item">
+              <input id="login_username" name="login_username" placeholder='请输入用户名'></input>
+        </view>
+        <view class="login-item">
+              <input id="login_pwd" type="password" name="login_pwd" placeholder='请输入密码'></input>
+        </view>
+        <view class="login-item bottom">
+              <button type='primary' style='background:#3574FA' class="login-btn" form-type='submit'>绑定</button>
+        </view>
+       </form>
+      </view>
+  </view>
+</view>
+
+<!-- 未授权 -->
+<view wx:elif="{{isLogin && !hasAuthority}}">
     <view wx:if="{{canIUse}}" >
         <view class='header'>
             <image src='../../images/weixin.png'></image>
@@ -13,9 +36,14 @@
         <button class='bottom' type='primary' open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="bindGetUserInfo">
             授权登录
         </button>
+
+        <button class='bottom' type='default' bindtap="cancel">
+            暂不授权
+        </button>
     </view>
     <view wx:else>请升级微信版本</view>
 </view>
+
 <!-- 绑定且得授权 -->
 <view wx:elif="{{isBinding && hasAuthority}}">
   <view class="page">
@@ -84,28 +112,5 @@
           </view>
       </view>
     </view>
-  </view>
-</view>
-
-<!-- 未绑定但获得授权 -->
-<view wx:elif="{{!isBinding && hasAuthority}}">
-  <view class="mcontainer">
-      <view class="item">
-          <image src="../../images/func_1.png" class="image" />
-      </view>
-
-      <view class="item">
-       <form bindsubmit="loginBtnClick">
-        <view class="login-item">
-              <input id="login_username" name="login_username" placeholder='请输入用户名'></input>
-        </view>
-        <view class="login-item">
-              <input id="login_pwd" type="password" name="login_pwd" placeholder='请输入密码'></input>
-        </view>
-        <view class="login-item bottom">
-              <button type='primary' style='background:#3574FA' class="login-btn" form-type='submit'>绑定</button>
-        </view>
-       </form>
-      </view>
   </view>
 </view>
