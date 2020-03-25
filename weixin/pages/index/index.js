@@ -41,10 +41,17 @@ Page({
 
   onShow: function() {
     var that = this;
+    var openid = wx.getStorageSync('pj_cylinder_openid');
+    if(openid == "") {
+      that.setData({
+        isLogin: false,
+        hasAuthority: false,
+        isBinding: false
+      })
+    }
     wx.getStorage({
       key: 'pj_employee_name',
       success: function (res) {
-        console.log(res.data);
         that.setData({
           'name': "当前使用者：" + res.data
         })

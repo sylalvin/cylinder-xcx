@@ -13,7 +13,7 @@
         <view class="login-item">
               <input id="login_pwd" type="password" name="login_pwd" placeholder='请输入密码'></input>
         </view>
-        <view class="login-item bottom">
+        <view class="login-item bottom1">
               <button type='primary' style='background:#3574FA' class="login-btn" form-type='submit'>绑定</button>
         </view>
        </form>
