@@ -135,10 +135,10 @@ Page({
     })
   },
 
-  bindInputChange2: function(e) {
-    var that = this;
-    console.log("库区名称：" + e.detail.value);
-  },
+  // bindInputChange2: function(e) {
+  //   var that = this;
+  //   console.log("库区名称：" + e.detail.value);
+  // },
 
   bindInputChange: function (e) {
     var that = this;

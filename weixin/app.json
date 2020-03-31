@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/warehouse/warehouse",
     "pages/index/index",
+    "pages/warehouse/warehouse",
     "pages/cusreBottle/cusreBottle",
     "pages/sendUnload/sendUnload",
     "pages/bind/bind",
