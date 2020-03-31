@@ -74,44 +74,58 @@
                 <text>充后验满</text>
               </navigator>
             </view>
-            <!-- <view class="item">
-              <view class="icon"><image src="../../images/func_4.png" class="icon"></image></view>
-              <text>发瓶卸货</text>
+            <view class="item">
+              <navigator url="/pages/sendUnload/sendUnload">
+                <view class="icon"><image src="../../images/func_4.png" class="icon"></image></view>
+                <text>发瓶卸货</text>
+              </navigator>
             </view>
             <view class="item">
-              <view class="icon"><image src="../../images/func_5.png" class="icon"></image></view>
-              <text>客户回瓶</text>
-            </view> -->
+              <navigator url="/pages/cusreBottle/cusreBottle">
+                <view class="icon"><image src="../../images/func_5.png" class="icon"></image></view>
+                <text>客户回瓶</text>
+              </navigator>
+            </view>
             <view class="item">
               <navigator url="/pages/bind/bind">
                 <view class="icon"><image src="../../images/func_6.png" class="icon"></image></view>
                 <text>气瓶绑码</text>
               </navigator>
             </view>
-            <!-- <view class="item">
-              <view class="icon"><image src="../../images/func_7.png" class="icon"></image></view>
-              <text>厂外流转</text>
+            <view class="item">
+              <navigator url="/pages/warehouse/warehouse">
+                <view class="icon"><image src="../../images/func_7.png" class="icon"></image></view>
+                <text>厂外流转</text>
+              </navigator>
             </view>
             <view class="item">
-              <view class="icon"><image src="../../images/func_8.png" class="icon"></image></view>
-              <text>定期检验</text>
+              <navigator url="/pages/inspection/inspection">
+                <view class="icon"><image src="../../images/func_8.png" class="icon"></image></view>
+                <text>定期检测</text>
+              </navigator>
             </view>
             <view class="item">
-              <view class="icon"><image src="../../images/func_9.png" class="icon"></image></view>
-              <text>维修</text>
+              <navigator url="/pages/repair/repair">
+                <view class="icon"><image src="../../images/func_9.png" class="icon"></image></view>
+                <text>维修</text>
+              </navigator>
             </view>
             <view class="item">
-              <view class="icon"><image src="../../images/func_10.png" class="icon"></image></view>
-              <text>气瓶维护</text>
+              <navigator url="/pages/maintain/maintain">
+                <view class="icon"><image src="../../images/func_10.png" class="icon"></image></view>
+                <text>气瓶维护</text>
+              </navigator>
             </view>
             <view class="item">
-              <view class="icon"><image src="../../images/func_11.png" class="icon"></image></view>
-              <text>报废</text>
+              <navigator url="/pages/scrap/scrap">
+                <view class="icon"><image src="../../images/func_11.png" class="icon"></image></view>
+                <text>报废</text>
+              </navigator>
             </view>
             <view class="empty_item">
               <view class="icon"></view>
               <text></text>
-            </view> -->
+            </view>
           </view>
       </view>
     </view>

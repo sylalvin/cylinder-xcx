@@ -5,7 +5,7 @@
         <view class="weui-label">钢瓶号</view>
       </view>
       <view class="weui-cell__bd">
-        <input class="weui-input" placeholder="输入钢瓶号/自编码" bindblur="onChangeCode" data-label="cylinderCode" type="number"/>
+        <input class="weui-input" placeholder="输入钢瓶号/自编码" bindblur="onChangeCode" bindinput="getCylinderInfo" data-label="cylinderCode" type="number"/>
       </view>
       <send-code id="send-btn" bindtap="onSend"></send-code>
     </view>
@@ -25,7 +25,7 @@
       </view>
       <view class="weui-cell__bd">
         <picker bindchange="onGasChange" value="{{gasIndex}}" range="{{gasItems}}">
-          <view class="weui-select weui-select_in-select-after">{{gasItems[gasIndex]}}</view>
+          <view class="weui-select weui-select_in-select-after" value="{{gasMediumName}}">{{gasItems[gasIndex]}}</view>
         </picker>
       </view>
     </view>
@@ -77,7 +77,7 @@
         <view class="weui-label">公称压力</view>
       </view>
       <view class="weui-cell__bd">
-        <input class="weui-input" placeholder="输入公称压力(Mpa)" data-label="nominalTestPressure" type="digit" bindblur="onPressureChange" />
+        <input class="weui-input" placeholder="输入公称压力(Mpa)" data-label="nominalTestPressure" type="digit" bindblur="onPressureChange" value="{{nominalTestPressure}}" />
       </view>
     </view>
         <view class="weui-cell weui-cell_input">
@@ -85,7 +85,7 @@
         <view class="weui-label">钢瓶重量</view>
       </view>
       <view class="weui-cell__bd">
-        <input class="weui-input" placeholder="输入钢瓶重量(Kg)" data-label="weight" type="digit" bindblur="onWeightChange" />
+        <input class="weui-input" placeholder="输入钢瓶重量(Kg)" data-label="weight" type="digit" bindblur="onWeightChange" value="{{weight}}" />
       </view>
     </view>
         <view class="weui-cell weui-cell_input">
@@ -93,7 +93,7 @@
         <view class="weui-label">钢瓶容积</view>
       </view>
       <view class="weui-cell__bd">
-        <input class="weui-input" placeholder="输入钢瓶容积(L)" data-label="volume" type="digit" bindblur="onVolumeChange" />
+        <input class="weui-input" placeholder="输入钢瓶容积(L)" data-label="volume" type="digit" bindblur="onVolumeChange" value="{{volume}}" />
       </view>
     </view>
         <view class="weui-cell weui-cell_input">
@@ -101,7 +101,7 @@
         <view class="weui-label">钢瓶壁厚</view>
       </view>
       <view class="weui-cell__bd">
-        <input class="weui-input" placeholder="输入钢瓶壁厚(mm)" data-label="wallThickness" type="digit" bindblur="onNessChange" />
+        <input class="weui-input" placeholder="输入钢瓶壁厚(mm)" data-label="wallThickness" type="digit" bindblur="onNessChange" value="{{wallThickness}}" />
       </view>
     </view>
         <view class="weui-cell weui-cell_input">

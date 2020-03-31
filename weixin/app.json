@@ -1,6 +1,9 @@
 {
   "pages": [
+    "pages/warehouse/warehouse",
     "pages/index/index",
+    "pages/cusreBottle/cusreBottle",
+    "pages/sendUnload/sendUnload",
     "pages/bind/bind",
     "pages/filling/filling",
     "pages/addFilling/addFilling",
@@ -13,7 +16,14 @@
     "pages/outDelete/outDelete",
     "pages/backCheckEmpty/backCheckEmpty",
     "pages/backDelete/backDelete",
-    "pages/setting/setting"
+    "pages/setting/setting",
+    "pages/maintain/maintain",
+    "pages/repair/repair",
+    "pages/scrap/scrap",
+    "pages/inspection/inspection",
+    "pages/sendDelete/sendDelete",
+    "pages/cusreDelete/cusreDelete",
+    "pages/wareDelete/wareDelete"
   ],
   "window": {
     "backgroundTextStyle": "light",

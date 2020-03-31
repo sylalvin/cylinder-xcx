@@ -25,10 +25,10 @@ Page({
   onShow: function () {
     var that = this;
     // 执行删除后的初始化气瓶数据
-    var setList = app.globalData.backSetList;
-    var cylinderList = app.globalData.backCylinderList;
-    var setCylinderList = app.globalData.backSetCylinderList;
-    var allCylinderList = app.globalData.backAllCylinderList;
+    var setList = app.globalData.sendSetList;
+    var cylinderList = app.globalData.sendCylinderList;
+    var setCylinderList = app.globalData.sendSetCylinderList;
+    var allCylinderList = app.globalData.sendAllCylinderList;
     that.setData({
       setList: setList,
       cylinderList: cylinderList,
@@ -41,10 +41,10 @@ Page({
   onHide: function () {
     var that = this;
     // 设置回厂验空全局变量
-    app.globalData.backCylinderList = that.data.cylinderList;
-    app.globalData.backSetCylinderList = that.data.setCylinderList;
-    app.globalData.backSetList = that.data.setList;
-    app.globalData.backAllCylinderList = that.data.allCylinderList;
+    app.globalData.sendCylinderList = that.data.cylinderList;
+    app.globalData.sendSetCylinderList = that.data.setCylinderList;
+    app.globalData.sendSetList = that.data.setList;
+    app.globalData.sendAllCylinderList = that.data.allCylinderList;
   },
 
   // 计算扫码次数、气瓶、集格、总数数量
@@ -56,15 +56,10 @@ Page({
       scan_set: that.data.setList.length,
       scan_sum: that.data.allCylinderList.length
     })
-
-    // app.globalData.backCylinderList = that.data.cylinderList;
-    // app.globalData.backSetCylinderList = that.data.setCylinderList;
-    // app.globalData.backSetList = that.data.setList;
-    // app.globalData.backAllCylinderList = that.data.allCylinderList;
   },
 
   // 删除逻辑
-  deleteCylinder: function(e) {
+  deleteCylinder: function (e) {
     var that = this;
     var setList = that.data.setList;
     var cylinderList = that.data.cylinderList;
@@ -76,7 +71,7 @@ Page({
 
     var modalContent = "";
 
-    if(setId == null) { // 散瓶删除逻辑
+    if (setId == null) { // 散瓶删除逻辑
       modalContent = "确定删除编号为：" + cylinderNumber + "的气瓶？"
       wx.showModal({
         title: '删除',

@@ -277,11 +277,11 @@ Page({
     wx.scanCode({
       success: (res) => {
         // 此处判断散瓶、集格
-        if (res.result.indexOf("set") != -1) {
+        if (res.result.indexOf("/set/code/") != -1) {
           // 集格
-          var setCode = res.result;
+          var setCode = res.result.indexOf("/set/code/");
           var setList = that.data.setList;
-          setCode = setCode.substring(35);
+          setCode = res.result.substring(setCode + 10);
           if (setList.includes(setCode)) {
             wx.showToast({
               title: '该集格已扫描',
@@ -354,7 +354,8 @@ Page({
         'qcmappversion': qcmappversion
       },
       success: (res) => {
-        if (res.data.data != null) { // 集格下有绑定气瓶，集格计数
+        console.log("nullllll: " + JSON.stringify(res));
+        if ((res.data.data != null) || (res.data.data != [])) { // 集格下有绑定气瓶，集格计数
           var lastFillTime = res.data.data[0].lastFillTime;
           var difftimes = 4 * 60 * 60 * 1000;
           if ((lastFillTime == null) || ((lastFillTime != null) && (Util.diff(lastFillTime, new Date()) > difftimes))) {
@@ -393,7 +394,7 @@ Page({
           }
         } else {
           wx.showToast({
-            title: 'ID为 ' + setId + ' 的集格信息缺失',
+            title: 'ID为 ' + setId + ' 的集格未绑定气瓶',
             icon: 'none',
             mask: true,
             duration: 2500
@@ -723,7 +724,14 @@ Page({
         duration: 2000
       })
     }
-  }
+  },
   // 页面主要逻辑部分--结束
+
+  /**
+   * 用户点击右上角分享
+   */
+  onShareAppMessage: function () {
+
+  }
 
 })

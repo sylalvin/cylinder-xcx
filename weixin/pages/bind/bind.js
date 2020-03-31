@@ -1,12 +1,6 @@
 var util = require("../../utils/util.js")
 var app = getApp();
 Page({
-  onShareAppMessage() {
-    return {
-      title: 'scroll-view',
-      path: 'page/component/pages/scroll-view/scroll-view'
-    }
-  },
   data: {
     cylinderTypeArray:[],
     gasItemsArray:[],
@@ -445,4 +439,67 @@ Page({
     }
   },
 
+  // 根据钢印号精确查询气瓶信息
+  getCylinderInfo: function (e) {
+    var that = this;
+    var cylinderCodeInput = e.detail.value;
+    var data = {
+      unitId: 1,
+      cylinderCode: cylinderCodeInput
+    }
+    wx.request({
+      url: app.globalData.apiUrl + '/getCylinderByCode',
+      method: "POST",
+      header: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "qcmappversion": app.globalData.qcmappversion
+      },
+      data: data,
+      success: res => {
+        // var cylinderTypeIndex = res.data.data.cylinderTypeId - 1;
+        var manufacturingDate = new Date().getFullYear() + "-" + ((new Date().getMonth() + 1) < 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)) + "-" + ((new Date().getDate() < 10) ? ("0" + new Date().getDate()) : (new Date().getDate()));
+        var regularInspectionDate = new Date().getFullYear() + "-" + ((new Date().getMonth() + 1) < 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)) + "-" + ((new Date().getDate() < 10) ? ("0" + new Date().getDate()) : (new Date().getDate()));
+        if (res.data.data != null) {
+          that.setData({
+            // cylinderTypeIndex: res.data.data.cylinderTypeId ? res.data.data.cylinderTypeId-1 : 0,
+            // gasIndex: res.data.data.gasMediumId ? res.data.data.gasMediumId-1 : 0,
+            // gasMediumName: res.data.data.gasMediumName ? res.data.data.gasMediumName : "",
+            // codeIndex: res.data.data.cylinderManufacturerId ? res.data.data.cylinderManufacturerId-1 : 0,
+            manufacturingDate: res.data.data.cylinderManufacturingDate ? res.data.data.cylinderManufacturingDate : manufacturingDate,
+            regularInspectionDate: res.data.data.regularInspectionDate ? res.data.data.regularInspectionDate : regularInspectionDate,
+            inputValue: res.data.data.setNumber ? res.data.data.setNumber : "",
+            nominalTestPressure: res.data.data.nominalTestPressure ? res.data.data.nominalTestPressure : 0,
+            weight: res.data.data.weight ? res.data.data.weight : 0,
+            volume: res.data.data.volume ? res.data.data.volume : 0,
+            wallThickness: res.data.data.wallThickness ? res.data.data.wallThickness : 0,
+            cylinderNumber: res.data.data.cylinderNumber ? res.data.data.cylinderNumber : ""
+          })
+          if (res.data.data.cylinderNumber != null) {
+            wx.showToast({
+              title: '该气瓶已绑定二维码',
+              icon: "none",
+              duration: 2000
+            })
+          }
+        } else {
+          that.setData({
+            cylinderTypeIndex: 0,
+            gasIndex: 0,
+            codeIndex: 0,
+            manufacturingDate: manufacturingDate,
+            regularInspectionDate: regularInspectionDate,
+            inputValue: "",
+            nominalTestPressure: 0,
+            weight: 0,
+            volume: 0,
+            wallThickness: 0,
+            cylinderNumber: ""
+          })
+        }
+      },
+      error: function (e) {
+        alert("查询气瓶失败");
+      }
+    })
+  }
 })

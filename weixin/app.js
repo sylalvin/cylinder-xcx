@@ -64,6 +64,24 @@ App({
     outCylinderList: [],
     outSetList: [],
     outSetCylinderList: [],
-    outAllCylinderList: []
+    outAllCylinderList: [],
+
+    // 发瓶卸货全局配置数据
+    sendCylinderList: [],
+    sendSetList: [],
+    sendSetCylinderList: [],
+    sendAllCylinderList: [],
+
+    // 客户回瓶全局配置数据
+    cusreCylinderList: [],
+    cusreSetList: [],
+    cusreSetCylinderList: [],
+    cusreAllCylinderList: [],
+
+    // 厂外库区流转全局配置数据
+    wareCylinderList: [],
+    wareSetList: [],
+    wareSetCylinderList: [],
+    wareAllCylinderList: []
   }
 })
