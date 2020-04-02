@@ -1,9 +1,9 @@
 <view>
   <view class="weui-cells weui-cells_after-title result_title">
-    <text class="result_title_w">扫码:0</text>
+    <!-- <text class="result_title_w">扫码:0</text>
     <text class="result_title_w">散瓶:{{sanping}}</text>
-    <text class="result_title_w">集格:{{jige}}</text>
-    <text class="result_title_w">总气瓶数:{{zongqiping}}</text>
+    <text class="result_title_w">集格:{{jige}}</text> -->
+    <text class="result_title_w">总气瓶数:{{scan_sum}}</text>
   </view>
   <view class="weui-tab">
     <view class="weui-cells weui-cells_after-title">
@@ -42,27 +42,23 @@
           <view class="weui-label">生产批次</view>
         </view>
         <view class="weui-cell__bd">
-          <input class="weui-input" placeholder="输入生产批次编号" type="digit" value="{{productionBatch}}" disabled ="disabled" />
+          <input class="weui-input" type="digit" value="{{productionBatch}}" disabled ="disabled" />
         </view>
       </view>
-      <view class="weui-cell  weui-cell_select">
-        <view class="weui-cell__hd  weui-cell__hd_in-select-after">
+      <view class="weui-cell weui-cell_input">
+        <view class="weui-cell__hd">
           <view class="weui-label">纯度</view>
         </view>
         <view class="weui-cell__bd">
-          <picker value="{{purenessIndex}}" range="{{purenessItems}}" bindchange="onChangePureness">
-            <view class="weui-select weui-select_in-select-after">{{purenessItems[purenessIndex]}}</view>
-          </picker>
+          <input class="weui-input" type="digit" value="{{pureness}}" disabled ="disabled" />
         </view>
       </view>
-      <view class="weui-cell  weui-cell_select">
-        <view class="weui-cell__hd  weui-cell__hd_in-select-after">
+      <view class="weui-cell weui-cell_input">
+        <view class="weui-cell__hd">
           <view class="weui-label">充后流向</view>
         </view>
         <view class="weui-cell__bd">
-          <picker value="{{areaIndex}}" range="{{areaItems}}" bindchange="onChangeArea">
-            <view class="weui-select weui-select_in-select-after">{{areaItems[areaIndex]}}</view>
-          </picker>
+          <input class="weui-input" type="digit" value="{{areaName}}" disabled ="disabled" />
         </view>
       </view>
       <view class="weui-cell weui-cell_textarea">
@@ -70,7 +66,7 @@
       </view>
     </view>
   </view>
-  <view wx:if="{{!hideBottom}}" class="weui-navbar">
+  <view wx:if="{{!ishideBottom}}" class="weui-navbar">
       <view class="weui-navbar__item weui-bar__item_on">
         <view class="weui-navbar__title" bindtap="onSubmitMission">任务完成</view>
       </view>

@@ -1,9 +1,9 @@
 <view>
   <view class="weui-cells weui-cells_after-title result_title" bindtap="viewCylinder">
-    <text class="result_title_w">扫码:{{saomiaoValue}}</text>
-    <text class="result_title_w">散瓶:{{sanpingValue}}</text>
-    <text class="result_title_w">集格:{{jigeValue}}</text>
-    <text class="result_title_w">总气瓶数:{{zongqipingValue}}</text>
+    <text class="result_title_w">扫码:{{scan_number}}</text>
+    <text class="result_title_w">散瓶:{{scan_bulk}}</text>
+    <text class="result_title_w">集格:{{scan_set}}</text>
+    <text class="result_title_w">总气瓶数:{{scan_sum}}</text>
   </view>
   <view class="weui-tab">
     <view class="weui-cells weui-cells_after-title">
@@ -20,7 +20,7 @@
           <view class="weui-label">开始时间</view>
         </view>
         <view class="input__bd">
-          <input class="self-input" value="{{beginTime}}" placeholder="开始时间" type="text" />
+          <input class="self-input" value="{{submitData.beginDate}}" placeholder="开始时间" type="text" />
         </view>
         <view class="weui-cell__bd">
           <button class="setTime" bindtap="setBeginTime">开始</button>

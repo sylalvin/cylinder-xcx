@@ -24,7 +24,7 @@
   padding-top: 0 !important;
 }
 .weui-navbar {
-  position: absolute;
+  position: fixed;
   top: 93%;
   bottom: 0 !important;
   border: 0 !important;

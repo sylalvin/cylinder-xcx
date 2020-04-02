@@ -1,11 +1,11 @@
 var app = getApp();
-
 Page({
   /**
    * 页面的初始数据
    */
   data: {
     scanLogs: [],
+    todayFillingTimes: 0
   },
 
   /**
@@ -13,7 +13,48 @@ Page({
    */
   onLoad: function (options) {
     var that = this;
-        
+    that.fillingTimes();
+  },
+
+  /**
+   * 生命周期函数--监听页面显示
+   */
+  onShow: function () {
+    var that = this;
+    that.fillingTimes();
+  },
+
+  /**
+   * 生命周期函数--监听页面隐藏
+   */
+  onHide: function () {
+
+  },
+
+  /**
+   * 页面相关事件处理函数--监听用户下拉动作
+   */
+  onPullDownRefresh: function () {
+    var that = this;
+    that.fillingTimes();
+    that.returnBeginDate();
+  },
+
+  /**
+   * 用户点击右上角分享
+   */
+  onShareAppMessage: function () {
+
+  },
+
+  // 今日充装次数及内容
+  fillingTimes: function() {
+    var that = this;
+    wx.showLoading({
+      title: '加载中',
+    })
+    var beginDate = that.returnBeginDate();
+
     wx.request({
       url: app.globalData.apiUrl + '/getDetectionMissionVoListByEmployeeId',
       method: "POST",
@@ -21,18 +62,31 @@ Page({
         "Content-Type": "application/x-www-form-urlencoded",
         "qcmappversion": app.globalData.qcmappversion
       },
-      data: { "employeeId": wx.getStorageSync('pj_employee_id'), "beginDate": new Date().getFullYear() + "-" + ((new Date().getMonth() + 1) < 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)) + "-" + ((new Date().getDate() < 10) ? ("0" + new Date().getDate()) : (new Date().getDate()))},
+      data: {
+        "employeeId": wx.getStorageSync('pj_employee_id'),
+        "begin": beginDate
+      },
       success: res => {
-        console.log("id: " + wx.getStorageSync('pj_employee_id'));
-        let returnData =res.data.data;
-        console.log(res);
-        let scanLogs = [];
-        if (returnData != null) {
-          for (var j = 0; j < returnData.length; j++) {
-            scanLogs.push({ "id": returnData[j].id, "beginDate": returnData[j].beginDate, "name": returnData[j].mediemName, "quantity": returnData[j].yqDetectionVoList.length, "number": returnData[j].productionBatch, "status": returnData[j].status == 1 ? "充气中" : "已完成" });
+        // 获取数据后，停止刷新动作
+        wx.hideLoading();
+        wx.stopPullDownRefresh();
+
+        let returnData = res.data.data;
+        if ((returnData != null) && (returnData != [])) {
+          if (returnData.length > 0) {
+            let scanLogs = [];
+            let todayFillingTimes = 0;
+            for (var j = 0; j < returnData.length; j++) {
+              scanLogs.push({ "id": returnData[j].id, "beginDate": returnData[j].beginDate, "name": returnData[j].mediemName, "quantity": returnData[j].yqDetectionVoList.length, "productionBatch": returnData[j].productionBatch, "status": returnData[j].status == 1 ? "充气中" : "已完成" });
+              todayFillingTimes += returnData[j].yqDetectionVoList.length;
+            }
+
+            that.setData({
+              "scanLogs": scanLogs,
+              todayFillingTimes: todayFillingTimes
+            })
           }
         }
-        that.setData({ "scanLogs": scanLogs });
       },
       fail: function (res) {
         // fail调用接口失败
@@ -44,56 +98,41 @@ Page({
         // complete
       }
     });
-   
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
+  // 计算查询的开始时间
+  returnBeginDate: function() {
+    var that = this;
+    var beginDate = "";
+    var todayDate = new Date();
+    var yesterdayDate = new Date();
 
+    // 现在时间（小时）
+    var nowHours = todayDate.getHours();
+    // 今天日期
+    todayDate = todayDate.getFullYear() + "-" + (that.checkRule(todayDate.getMonth() + 1)) + "-" + that.checkRule(todayDate.getDate());
+    // 昨天日期
+    yesterdayDate.setTime(yesterdayDate.getTime() - 24 * 60 * 60 * 1000);
+    yesterdayDate = yesterdayDate.getFullYear() + "-" + (that.checkRule(yesterdayDate.getMonth() + 1)) + "-" + that.checkRule(yesterdayDate.getDate());
+    
+    if (nowHours < 7) {
+      beginDate = yesterdayDate + ' ' + "15:00:00";
+      return beginDate;
+    } else if (nowHours < 19) {
+      beginDate = yesterdayDate + ' ' + "17:00:00";
+      return beginDate;
+    } else {
+      beginDate = todayDate + ' ' + "00:00:00";
+      return beginDate;
+    }
   },
 
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-
+  checkRule: function(x) {
+    if(x < 10) {
+      return '0' + x;
+    } else {
+      return x;
+    }
   },
 
   onSubmit: function() {

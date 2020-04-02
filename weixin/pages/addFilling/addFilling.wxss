@@ -6,12 +6,14 @@
 }
 .result_title{
   font-size: 33rpx;
-  height: 68rpx;
-  line-height: 68rpx;
-  padding: 0 36rpx;
+  /* height: 68rpx; */
+  /* line-height: 68rpx; */
+  padding: 10px 0;
+  text-align: center;
 }
 .result_title_w {
-  padding-right: 48rpx;
+  padding-right: 10rpx;
+  padding-left: 10rpx;
 }
 .weui-loadmore__tips_in-line {
   background-color: #F8F8F8;
@@ -19,7 +21,7 @@
 }
 
 .weui-navbar {
-  position: absolute;
+  position: fixed;
   top: 93%;
   bottom: 0 !important;
   border: 0 !important;
@@ -69,7 +71,7 @@
 }
 .weui-cell__bd {
   font-size: 32rpx;
-  margin-bottom: 10rpx;
+  /* margin-bottom: 10rpx; */
 }
 .weui-cell__left {
   padding-left: 32rpx;
@@ -85,4 +87,7 @@
 }
 .deleteButton {
   float:right; margin-right:120rpx; width:110rpx; font-size:36rpx; text-align:center; line-height:60rpx; height:60rpx; border-radius: 8rpx; padding: 0; margin-bottom: 20rpx;
+}
+.weui-select{
+  border: none;
 }

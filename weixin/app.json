@@ -1,13 +1,12 @@
 {
   "pages": [
+    "pages/filling/filling",
+    "pages/addFilling/addFilling",
     "pages/index/index",
     "pages/warehouse/warehouse",
     "pages/cusreBottle/cusreBottle",
     "pages/sendUnload/sendUnload",
     "pages/bind/bind",
-    "pages/filling/filling",
-    "pages/addFilling/addFilling",
-    "pages/cylinderList/cylinderList",
     "pages/code/code",
     "pages/scan/scan",
     "pages/detail/detail",
@@ -23,7 +22,8 @@
     "pages/inspection/inspection",
     "pages/sendDelete/sendDelete",
     "pages/cusreDelete/cusreDelete",
-    "pages/wareDelete/wareDelete"
+    "pages/wareDelete/wareDelete",
+    "pages/fillingDelete/fillingDelete"
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -6,12 +6,14 @@
 }
 .result_title{
   font-size: 33rpx;
-  height: 68rpx;
-  line-height: 68rpx;
-  padding: 0 36rpx;
+  /* height: 68rpx; */
+  /* line-height: 68rpx; */
+  padding: 10px 0;
+  text-align: center;
 }
 .result_title_w {
-  padding-right: 48rpx;
+  padding-right: 10rpx;
+  padding-left: 10rpx;
 }
 .weui-loadmore__tips_in-line {
   background-color: #F8F8F8;
@@ -20,7 +22,7 @@
 
 .weui-navbar {
   position: absolute;
-  top: 90%;
+  top: 93%;
   bottom: 0 !important;
   border: 0 !important;
 }
