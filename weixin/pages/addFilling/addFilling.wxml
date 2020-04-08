@@ -28,17 +28,6 @@
       </view>
       <view class="weui-cell weui-cell_input">
         <view class="weui-cell__hd">
-          <view class="weui-label">结束时间</view>
-        </view>
-        <view class="input__bd">
-          <input class="self-input" placeholder="结束时间" type="text" />
-        </view>
-        <view class="weui-cell__bd">
-          <button class="setTime" bindtap="setEndTime">结束</button>
-        </view>
-      </view>
-      <view class="weui-cell weui-cell_input">
-        <view class="weui-cell__hd">
           <view class="weui-label">生产批次</view>
         </view>
         <view class="weui-cell__bd">

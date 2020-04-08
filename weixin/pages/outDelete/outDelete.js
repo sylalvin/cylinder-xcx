@@ -2,7 +2,18 @@ var app = getApp();
 Page({
 
   /**
-   * 页面的初始数据
+   * 充后验满列表删除 js 逻辑；
+   * 数据对象
+   * { 
+   *    scan_number, --扫描总次数
+   *    scan_bulk, --散瓶扫描次数
+   *    scan_set, --集格扫描次数
+   *    scan_sum, --气瓶总数
+   *    cylinderList, --扫描为气瓶的气瓶列表集合
+   *    setList, --集格列表集合
+   *    setCylinderList, --扫描为集格的气瓶列表集合
+   *    allCylinderList, --所有气瓶列表集合
+   * }
    */
   data: {
     scan_number: 0,

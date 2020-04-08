@@ -4,6 +4,7 @@
             <view class="weui-loadmore__tips weui-loadmore__tips_in-line">暂无数据</view>
         </view>
 <block wx:if="{{ isShow }}">
+          <navigator url="/pages/cylinderDetail/cylinderDetail?moduleName=scrap&cylinderNumber={{cylinderInfo.cylinderNumber}}" hover-class="navigator-hover">
           <view class="weui-cells">
             <view class="weui-cell flex">
                 <text class="f4">
@@ -16,6 +17,7 @@
                 </text>
             </view>
         </view>
+    </navigator>
 
           <view class="weui-cells weui-cells_after-title">
               <view class="weui-cell">

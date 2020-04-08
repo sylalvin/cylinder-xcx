@@ -354,7 +354,6 @@ Page({
         'qcmappversion': qcmappversion
       },
       success: (res) => {
-        console.log("nullllll: " + JSON.stringify(res));
         if ((res.data.data != null) || (res.data.data != [])) { // 集格下有绑定气瓶，集格计数
           var lastFillTime = res.data.data[0].lastFillTime;
           var difftimes = 4 * 60 * 60 * 1000;
@@ -440,8 +439,15 @@ Page({
               let gasMediumName = res.data.data.gasMediumName; // 气瓶介质名称
               let regularInspectionDate = res.data.data.regularInspectionDate.substring(0, 7); // 气瓶下检日期
               let cylinderScrapDate = res.data.data.cylinderScrapDate.substring(0, 7); // 气瓶过期日期
+
+              let cylinderManufacturingDate = res.data.data.cylinderManufacturingDate.substring(0, 7); // 气瓶生产日期
+              let volume = res.data.data.volume; // 气瓶容积
+              let nominalTestPressure = res.data.data.nominalTestPressure; // 气瓶压力
+              let weight = res.data.data.weight; // 气瓶重量
+              let lastFillTime = res.data.data.lastFillTime; // 气瓶最后充装时间
+              let wallThickness = res.data.data.wallThickness; // 气瓶壁厚
               cylinderList.push(cylinderNumber);
-              allCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate });
+              allCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate, cylinderManufacturingDate, volume, nominalTestPressure, weight, lastFillTime, wallThickness });
               that.setData({
                 cylinderList: cylinderList,
                 allCylinderList: allCylinderList
@@ -502,18 +508,20 @@ Page({
             let gasMediumName = res.data.data.gasMediumName; // 气瓶介质名称
             let regularInspectionDate = res.data.data.regularInspectionDate.substring(0, 7); // 气瓶下检日期
             let cylinderScrapDate = res.data.data.cylinderScrapDate.substring(0, 7); // 气瓶过期日期
-            setCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate });
-            allCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate });
+
+            let cylinderManufacturingDate = res.data.data.cylinderManufacturingDate.substring(0, 7); // 气瓶生产日期
+            let volume = res.data.data.volume; // 气瓶容积
+            let nominalTestPressure = res.data.data.nominalTestPressure; // 气瓶压力
+            let weight = res.data.data.weight; // 气瓶重量
+            let lastFillTime = res.data.data.lastFillTime; // 气瓶最后充装时间
+            let wallThickness = res.data.data.wallThickness; // 气瓶壁厚
+            setCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate, cylinderManufacturingDate, volume, nominalTestPressure, weight, lastFillTime, wallThickness });
+            allCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate, cylinderManufacturingDate, volume, nominalTestPressure, weight, lastFillTime, wallThickness });
             that.setData({
               setCylinderList: setCylinderList,
               allCylinderList: allCylinderList
             })
             that.countData();
-            wx.showToast({
-              title: "二维码：" + cylinderNumber + " 介质：" + gasMediumName + " 过期日期：" + cylinderScrapDate,
-              icon: 'none',
-              duration: 2000
-            })
           } else {
             // 未查询到气瓶信息
             wx.showToast({

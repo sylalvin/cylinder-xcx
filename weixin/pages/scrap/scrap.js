@@ -149,6 +149,30 @@ Page({
           let gasMediumName = res.data.data.gasMediumName; // 气瓶介质名称
           let regularInspectionDate = res.data.data.regularInspectionDate.substring(0, 7); // 气瓶下检日期
           let cylinderScrapDate = res.data.data.cylinderScrapDate.substring(0, 7); // 气瓶过期日期
+
+          let cylinderManufacturingDate = res.data.data.cylinderManufacturingDate.substring(0, 7); // 气瓶生产日期
+          let volume = res.data.data.volume; // 气瓶容积
+          let nominalTestPressure = res.data.data.nominalTestPressure; // 气瓶压力
+          let weight = res.data.data.weight; // 气瓶重量
+          let lastFillTime = res.data.data.lastFillTime; // 气瓶最后充装时间
+          let wallThickness = res.data.data.wallThickness; // 气瓶壁厚
+          // 报废公共变量
+          app.globalData.scrapCylinderInfo = {
+            "cylinderId": cylinderId,
+            "unitId": unitId,
+            "cylinderNumber": cylinderNumber,
+            "cylinderCode": cylinderCode,
+            "cylinderTypeName": cylinderTypeName,
+            "gasMediumName": gasMediumName,
+            "regularInspectionDate": regularInspectionDate,
+            "cylinderScrapDate": cylinderScrapDate,
+            "cylinderManufacturingDate": cylinderManufacturingDate,
+            "volume": volume,
+            "nominalTestPressure": nominalTestPressure,
+            "weight": weight,
+            "lastFillTime": lastFillTime,
+            "wallThickness": wallThickness,
+          }
           that.setData({
             "cylinderInfo.cylinderId": cylinderId,
             "cylinderInfo.unitId": unitId,

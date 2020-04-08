@@ -441,8 +441,15 @@ Page({
               let gasMediumName = res.data.data.gasMediumName; // 气瓶介质名称
               let regularInspectionDate = res.data.data.regularInspectionDate.substring(0, 7); // 气瓶下检日期
               let cylinderScrapDate = res.data.data.cylinderScrapDate.substring(0, 7); // 气瓶过期日期
+
+              let cylinderManufacturingDate = res.data.data.cylinderManufacturingDate.substring(0, 7); // 气瓶生产日期
+              let volume = res.data.data.volume; // 气瓶容积
+              let nominalTestPressure = res.data.data.nominalTestPressure; // 气瓶压力
+              let weight = res.data.data.weight; // 气瓶重量
+              let lastFillTime = res.data.data.lastFillTime; // 气瓶最后充装时间
+              let wallThickness = res.data.data.wallThickness; // 气瓶壁厚
               cylinderList.push(cylinderNumber);
-              allCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate });
+              allCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate, cylinderManufacturingDate, volume, nominalTestPressure, weight, lastFillTime, wallThickness });
               that.setData({
                 cylinderList: cylinderList,
                 allCylinderList: allCylinderList
@@ -503,18 +510,20 @@ Page({
             let gasMediumName = res.data.data.gasMediumName; // 气瓶介质名称
             let regularInspectionDate = res.data.data.regularInspectionDate.substring(0, 7); // 气瓶下检日期
             let cylinderScrapDate = res.data.data.cylinderScrapDate.substring(0, 7); // 气瓶过期日期
-            setCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate });
-            allCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate });
+
+            let cylinderManufacturingDate = res.data.data.cylinderManufacturingDate.substring(0, 7); // 气瓶生产日期
+            let volume = res.data.data.volume; // 气瓶容积
+            let nominalTestPressure = res.data.data.nominalTestPressure; // 气瓶压力
+            let weight = res.data.data.weight; // 气瓶重量
+            let lastFillTime = res.data.data.lastFillTime; // 气瓶最后充装时间
+            let wallThickness = res.data.data.wallThickness; // 气瓶壁厚
+            setCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate, cylinderManufacturingDate, volume, nominalTestPressure, weight, lastFillTime, wallThickness });
+            allCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate, cylinderManufacturingDate, volume, nominalTestPressure, weight, lastFillTime, wallThickness });
             that.setData({
               setCylinderList: setCylinderList,
               allCylinderList: allCylinderList
             })
             that.countData();
-            // wx.showToast({
-            //   title: "二维码：" + cylinderNumber + " 介质：" + gasMediumName + " 过期日期：" + cylinderScrapDate,
-            //   icon: 'none',
-            //   duration: 2000
-            // })
           } else {
             // 未查询到气瓶信息
             wx.showToast({
@@ -561,16 +570,6 @@ Page({
       scan_set: that.data.setList.length,
       scan_sum: that.data.allCylinderList.length
     })
-
-    // progress
-    // if (that.data.progress.sum != 0) {
-    //   var percent = ((that.data.progress.sum - that.data.scan_sum) / that.data.progress.sum) * 100;
-    //   var content = (that.data.progress.sum - that.data.scan_sum) + ' / ' + that.data.progress.sum;
-    //   that.setData({
-    //     "progress.percent": percent,
-    //     "progress.content": content
-    //   })
-    // }
   },
 
   // 设置全局变量
@@ -591,11 +590,6 @@ Page({
     let setCylinderList = that.data.setCylinderList;
     let allCylinderList = that.data.allCylinderList;
     if (allCylinderList.length > 0) {
-      // progress
-      // that.setData({
-      //   showProgress: true,
-      //   "progress.sum": that.data.allCylinderList.length
-      // })
       for (let i = allCylinderList.length-1; i >= 0; i--) {
         let temp = allCylinderList[i];
         // 拼接气瓶信息
@@ -720,18 +714,6 @@ Page({
         disabled: true,
         opacity: 0.3
       })
-      // 提交成功后，清除回空全局变量
-      // that.setData({
-      //   cylinderList: [],
-      //   setList: [],
-      //   setCylinderList: [],
-      //   allCylinderList: [],
-      // })
-      // app.globalData.backCylinderList = [];
-      // app.globalData.backSetCylinderList = [];
-      // app.globalData.backSetList = [];
-      // app.globalData.backAllCylinderList = [];
-      // that.countData();
       wx.showToast({
         title: '提交成功',
         icon: 'none',

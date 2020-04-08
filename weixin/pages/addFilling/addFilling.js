@@ -120,10 +120,10 @@ Page({
   onShow: function () {
     var that = this;
     // 执行删除后的初始化气瓶数据
-    var setList = app.globalData.wareSetList;
-    var cylinderList = app.globalData.wareCylinderList;
-    var setCylinderList = app.globalData.wareSetCylinderList;
-    var allCylinderList = app.globalData.wareAllCylinderList;
+    var setList = app.globalData.fillSetList;
+    var cylinderList = app.globalData.fillCylinderList;
+    var setCylinderList = app.globalData.fillSetCylinderList;
+    var allCylinderList = app.globalData.fillAllCylinderList;
     that.setData({
       setList: setList,
       cylinderList: cylinderList,
@@ -177,14 +177,6 @@ Page({
     });
   },
 
-  setEndTime: function(e) {
-    wx.showToast({
-      title: "请先创建任务再设定结束时间",
-      icon: 'none',
-      duration: 2000
-    });
-  },
-
   onChangeProductionBatch: function(e) {
     this.setData({
       "submitData.productionBatch": e.detail.value
@@ -219,7 +211,6 @@ Page({
 
   onChangeArea: function (e) {
     var areaValues = this.data.areaValues;
-    console.log("流向：" + areaValues[e.detail.value]);
     
     this.setData({
       "areaIndex": e.detail.value,
@@ -388,6 +379,13 @@ Page({
             let gasMediumName = res.data.data.gasMediumName; // 气瓶介质名称
             let regularInspectionDate = res.data.data.regularInspectionDate.substring(0, 7); // 气瓶下检日期
             let cylinderScrapDate = res.data.data.cylinderScrapDate.substring(0, 7); // 气瓶过期日期
+
+            let cylinderManufacturingDate = res.data.data.cylinderManufacturingDate.substring(0, 7); // 气瓶生产日期
+            let volume = res.data.data.volume; // 气瓶容积
+            let nominalTestPressure = res.data.data.nominalTestPressure; // 气瓶压力
+            let weight = res.data.data.weight; // 气瓶重量
+            let lastFillTime = res.data.data.lastFillTime; // 气瓶最后充装时间
+            let wallThickness = res.data.data.wallThickness; // 气瓶壁厚
             // 判断是否是第一次扫描或者是不是同种介质
             if (that.data.gasMediumName == "") {
               that.setData({
@@ -396,7 +394,7 @@ Page({
             }
             if (gasMediumName == that.data.gasMediumName) {
               cylinderList.push(cylinderNumber);
-              allCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate });
+              allCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate, cylinderManufacturingDate, volume, nominalTestPressure, weight, lastFillTime, wallThickness });
               that.setData({
                 cylinderList: cylinderList,
                 allCylinderList: allCylinderList
@@ -457,6 +455,12 @@ Page({
             let gasMediumName = res.data.data.gasMediumName; // 气瓶介质名称
             let regularInspectionDate = res.data.data.regularInspectionDate.substring(0, 7); // 气瓶下检日期
             let cylinderScrapDate = res.data.data.cylinderScrapDate.substring(0, 7); // 气瓶过期日期
+            let cylinderManufacturingDate = res.data.data.cylinderManufacturingDate.substring(0, 7); // 气瓶生产日期
+            let volume = res.data.data.volume; // 气瓶容积
+            let nominalTestPressure = res.data.data.nominalTestPressure; // 气瓶压力
+            let weight = res.data.data.weight; // 气瓶重量
+            let lastFillTime = res.data.data.lastFillTime; // 气瓶最后充装时间
+            let wallThickness = res.data.data.wallThickness; // 气瓶壁厚
             // 判断是否是第一次扫描或者是不是同种介质
             if (that.data.gasMediumName == "") {
               that.setData({
@@ -464,8 +468,8 @@ Page({
               })
             }
             if(gasMediumName == that.data.gasMediumName) {
-              setCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate });
-              allCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate });
+              setCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate, cylinderManufacturingDate, volume, nominalTestPressure, weight, lastFillTime, wallThickness });
+              allCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate, cylinderManufacturingDate, volume, nominalTestPressure, weight, lastFillTime, wallThickness });
               that.setData({
                 setCylinderList: setCylinderList,
                 allCylinderList: allCylinderList
@@ -586,12 +590,11 @@ Page({
             var beginDate = new Date().getFullYear() + "-" + ((new Date().getMonth() + 1) < 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)) + "-" + ((new Date().getDate() < 10) ? ("0" + new Date().getDate()) : (new Date().getDate())) + " " + that.data.submitData.beginDate;
 
             that.setData({
-              'submitData.cylinderIdList': cylinderIdList,
-              'submitData.beginDate': beginDate
+              'submitData.cylinderIdList': cylinderIdList
             })
 
             var data = that.data.submitData;
-            console.log(JSON.stringify(data));
+            data.beginDate = beginDate;
             wx.request({
               url: app.globalData.apiUrl + '/addDetection',
               method: 'POST',

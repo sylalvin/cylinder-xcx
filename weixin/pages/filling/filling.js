@@ -5,15 +5,9 @@ Page({
    */
   data: {
     scanLogs: [],
-    todayFillingTimes: 0
-  },
-
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad: function (options) {
-    var that = this;
-    that.fillingTimes();
+    todayFillingTimes: 0,
+    fillList: [],
+    cylinderFillList: []
   },
 
   /**
@@ -21,14 +15,8 @@ Page({
    */
   onShow: function () {
     var that = this;
+    that.getGlobal();
     that.fillingTimes();
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
   },
 
   /**
@@ -76,15 +64,49 @@ Page({
           if (returnData.length > 0) {
             let scanLogs = [];
             let todayFillingTimes = 0;
-            for (var j = 0; j < returnData.length; j++) {
+            let fillList = that.data.fillList;
+            for (let j = 0; j < returnData.length; j++) {
+
+              let temp = [];
               scanLogs.push({ "id": returnData[j].id, "beginDate": returnData[j].beginDate, "name": returnData[j].mediemName, "quantity": returnData[j].yqDetectionVoList.length, "productionBatch": returnData[j].productionBatch, "status": returnData[j].status == 1 ? "充气中" : "已完成" });
               todayFillingTimes += returnData[j].yqDetectionVoList.length;
+              if (that.data.fillList[j] == undefined) {
+                for (let k = 0; k < returnData[j].yqDetectionVoList.length; k++) {
+                  returnData[j].yqDetectionVoList[k].beforeColor == null ? returnData[j].yqDetectionVoList[k].beforeColor = 1 : returnData[j].yqDetectionVoList[k].beforeColor;
+
+                  returnData[j].yqDetectionVoList[k].beforeAppearance == null ? returnData[j].yqDetectionVoList[k].beforeAppearance = 1 : returnData[j].yqDetectionVoList[k].beforeAppearance;
+
+                  returnData[j].yqDetectionVoList[k].beforeSafety == null ? returnData[j].yqDetectionVoList[k].beforeSafety = 1 : returnData[j].yqDetectionVoList[k].beforeSafety;
+
+                  returnData[j].yqDetectionVoList[k].beforeRegularInspectionDate == null ? returnData[j].yqDetectionVoList[k].beforeRegularInspectionDate = 1 : returnData[j].yqDetectionVoList[k].beforeRegularInspectionDate;
+
+                  returnData[j].yqDetectionVoList[k].beforeResidualPressure == null ? returnData[j].yqDetectionVoList[k].beforeResidualPressure = 1 : returnData[j].yqDetectionVoList[k].beforeResidualPressure;
+
+                  returnData[j].yqDetectionVoList[k].fillingIfNormal == null ? returnData[j].yqDetectionVoList[k].fillingIfNormal = 1 : returnData[j].yqDetectionVoList[k].fillingIfNormal;
+
+                  returnData[j].yqDetectionVoList[k].afterPressure == null ? returnData[j].yqDetectionVoList[k].afterPressure = 1 : returnData[j].yqDetectionVoList[k].afterPressure;
+
+                  returnData[j].yqDetectionVoList[k].afterCheckLeak == null ? returnData[j].yqDetectionVoList[k].afterCheckLeak = 1 : returnData[j].yqDetectionVoList[k].afterCheckLeak;
+
+                  returnData[j].yqDetectionVoList[k].afterAppearance == null ? returnData[j].yqDetectionVoList[k].afterAppearance = 1 : returnData[j].yqDetectionVoList[k].afterAppearance;
+
+                  returnData[j].yqDetectionVoList[k].afterTemperature == null ? returnData[j].yqDetectionVoList[k].ifPass = 1 : returnData[j].yqDetectionVoList[k].ifPass = 0;
+
+                  returnData[j].yqDetectionVoList[k].afterTemperature == null ? returnData[j].yqDetectionVoList[k].afterTemperature = 1 : returnData[j].yqDetectionVoList[k].afterTemperature;
+                }
+                temp.push(returnData[j].id);
+                temp.push(returnData[j].yqDetectionVoList);
+                fillList.push(temp);
+              }
             }
 
             that.setData({
-              "scanLogs": scanLogs,
-              todayFillingTimes: todayFillingTimes
+              scanLogs: scanLogs,
+              todayFillingTimes: todayFillingTimes,
+              fillList: fillList
             })
+
+            that.setGlobal();
           }
         }
       },
@@ -125,6 +147,24 @@ Page({
       beginDate = todayDate + ' ' + "00:00:00";
       return beginDate;
     }
+  },
+
+  // 获取全局变量
+  getGlobal: function () {
+    var that = this;
+    var fillList = app.globalData.fillList;
+    var cylinderFillList = app.globalData.cylinderFillList;
+    that.setData({
+      fillList: fillList,
+      cylinderFillList: cylinderFillList
+    })
+  },
+
+  // 设置全局变量
+  setGlobal: function () {
+    var that = this;
+    app.globalData.fillList = that.data.fillList;
+    app.globalData.cylinderFillList = that.data.cylinderFillList;
   },
 
   checkRule: function(x) {

@@ -1,22 +1,10 @@
 <view class="page">
   <view class="page__bd">
-    <!--<block wx:for="{{scanLogs}}">
-      <view class="weui-cells weui-cells_after-title">
-        <navigator url="/pages/detail/detail?id={{ index }}" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
-          <view class="weui-cell__bd">{{index + 1}}. {{ item.text }}</view>
-          <view class="weui-cell__ft weui-cell__ft_in-access">{{ item.date }}</view>
-        </navigator>
-      </view>
-    </block>
-
-    <view wx:if="{{ scanLogs.length == 0 }}" class="weui-loadmore weui-loadmore_line">
-      <view class="weui-loadmore__tips weui-loadmore__tips_in-line">暂无数据</view>
-    </view>-->
     <view class="page__bd">
         <view class="weui-tab__panel">
           <view class="weui-tab__content">
             <block wx:for="{{scanLogs}}" wx:key="index" wx:for-item='item'>
-              <navigator url="/pages/editFilling/editFilling?id={{ item.id }}" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
+              <navigator url="/pages/editFilling/editFilling?detectionMissionId={{ item.id }}" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
                 <view class="weui-cells weui-cells_after-title weui-cell__ft_in-access">
                     <view class="weui-cell__bd">{{index + 1}}. 开始时间: {{ item.beginDate }}</view>
                     <view class="weui-cell__bd weui-cell__left">充装介质: {{ item.name }}</view>

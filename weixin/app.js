@@ -47,6 +47,8 @@ App({
     qcmappversion: '1.0.7',
 
     // 充装全局数据配置
+    fillList: [], // 充装任务列表
+    cylinderFillList: [], // 某个充装任务下气瓶列表
     fillCylinderList: [],
     fillSetList: [],
     fillSetCylinderList: [],
@@ -80,6 +82,18 @@ App({
     wareCylinderList: [],
     wareSetList: [],
     wareSetCylinderList: [],
-    wareAllCylinderList: []
+    wareAllCylinderList: [],
+
+    // 定检
+    inspectionCylinderInfo: {},
+
+    // 维修
+    repairCylinderInfo: {},
+
+    // 报废
+    scrapCylinderInfo: {},
+
+    // 维护
+    maintainCylinderInfo: {}
   }
 })

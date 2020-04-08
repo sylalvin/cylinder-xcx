@@ -8,11 +8,11 @@ Page({
   data: {
     ishideBottom: true,
     detectionMissionId: 0,
+    status: 1,
     scan_sum: 0,
     gasMediumName: "",
     productionBatch: "",
     purenessItems: ["普", "2N", "3N", "4N", "5N", "6N"],
-    purenessIndex: 0,
     pureness: "暂无",
     areaName: "",
     companyAreaId: 0,
@@ -20,10 +20,8 @@ Page({
     beginDate:"",
     beginTime: "",
     endTime:"",
-    cylinderCheckList: [],
-    cylinderIdList: [],
-    productionBatch:"",
-    remark: ""
+    fillList: [],
+    cylinderFillList: []
   },
 
   /**
@@ -31,11 +29,27 @@ Page({
    */
   onLoad: function (options) {
     var that = this;
+    that.getGlobal();
     //获取充装任务ID
-    var detectionMissionId = options.id;
+    var detectionMissionId = options.detectionMissionId;
     that.setData({
       detectionMissionId: detectionMissionId
     })
+    let fillList = that.data.fillList;
+    if((fillList != []) && (fillList.length > 0)) {
+      for (let i = 0; i < fillList.length; i++) {
+        if(fillList[i][0] == detectionMissionId) {
+          let cylinderFillList = fillList[i][1];
+          that.setData({
+            cylinderFillList: cylinderFillList
+          })
+          break;
+        }
+      }
+      that.setGlobal();
+    }
+    
+    
 
     //获取充装任务并填充内容
     wx.request({
@@ -49,6 +63,9 @@ Page({
         detectionMissionId: detectionMissionId
       },
       success: res => {
+        that.setData({
+          status: res.data.data.status
+        })
         if (that.judge(res.data.data.yqDetectionVoList)) {
           var list = res.data.data.yqDetectionVoList;
           var timeStr = list[0].beginDate;
@@ -62,9 +79,7 @@ Page({
             that.setData({ "endTime": timeArr2[1] });
           }
           var pureness = that.data.purenessItems[(list[0].pureness - 1)];
-          console.log(JSON.stringify(list[0]));
-          console.log(list[0].pureness - 1);
-          console.log(pureness);
+          // 备注默认显示从服务器获取到的第一条数据的备注内容
           that.setData({
             "cylinderCheckList": list,
             "scan_sum": list.length,
@@ -84,7 +99,13 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    
+    var that = this;
+    that.getGlobal();
+  },
+
+  onHide: function () {
+    var that = this;
+    that.setGlobal();
   },
 
   /**
@@ -132,6 +153,24 @@ Page({
     });
   },
 
+  // 获取全局变量
+  getGlobal: function () {
+    var that = this;
+    var fillList = app.globalData.fillList;
+    var cylinderFillList = app.globalData.cylinderFillList;
+    that.setData({
+      fillList: fillList,
+      cylinderFillList: cylinderFillList
+    })
+  },
+
+  // 设置全局变量
+  setGlobal: function () {
+    var that = this;
+    app.globalData.fillList = that.data.fillList;
+    app.globalData.cylinderFillList = that.data.cylinderFillList;
+  },
+
   onSubmitMission: function (e) {
     var that = this;
     if (this.data.endTime == "") {
@@ -142,18 +181,9 @@ Page({
       });
       return false;
     }
-    var cylinderCheckList = [];
-    for (var i = 0; i < that.data.cylinderCheckList.length;i++) {
-      cylinderCheckList.push({ "cylinderId": that.data.cylinderCheckList[i].cylinderId, "companyAreaId": that.data.cylinderCheckList[i].companyAreaId, "checkLeak": 1, "beforeColor": 1, "beforeAppearance": 1, "beforeSafety": 1, "beforeRegularInspectionDate": 1, "beforeResidualPressure": 1, "fillingIfNormal": 1, "afterPressure": 1, "afterCheckLeak": 1, "afterAppearance": 1, "afterTemperature": 1, "ifNormal": 1, "ifPass": 1});
-    }
-    console.log({
-      detectionMissionId: that.data.detectionMissionId,
-      endDate: new Date().getFullYear() + "-" + ((new Date().getMonth() + 1) < 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)) + "-" + ((new Date().getDate() < 10) ? ("0" + new Date().getDate()) : (new Date().getDate())) + " " + that.data.endTime,
-      productionBatch: that.data.productionBatch,
-      companyAreaId: that.data.companyAreaId,
-      remark: that.data.remark,
-      "cylinderCheckList": JSON.stringify(cylinderCheckList)
-    });
+    // 
+    var cylinderCheckList = that.data.cylinderFillList;
+    console.log("submitData: ======" + JSON.stringify(cylinderCheckList));
     wx.request({
       url: app.globalData.apiUrl + '/v2/updateDetection',
       method: "POST",
@@ -165,7 +195,7 @@ Page({
         detectionMissionId: that.data.detectionMissionId,
         endDate: new Date().getFullYear() + "-" + ((new Date().getMonth() + 1) < 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)) + "-" + ((new Date().getDate() < 10) ? ("0" + new Date().getDate()) : (new Date().getDate())) + " " + that.data.endTime,
         remark: that.data.remark,
-        "cylinderCheckList": JSON.stringify(cylinderCheckList)
+        cylinderCheckList: JSON.stringify(cylinderCheckList)
       },
       success: res => {
         if (res.data.code == 200) {

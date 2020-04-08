@@ -1,10 +1,9 @@
 <view>
-  <view class="weui-cells weui-cells_after-title result_title">
-    <!-- <text class="result_title_w">扫码:0</text>
-    <text class="result_title_w">散瓶:{{sanping}}</text>
-    <text class="result_title_w">集格:{{jige}}</text> -->
+<navigator url="/pages/editCheckFilling/editCheckFilling?detectionMissionId={{ detectionMissionId }}&status={{ status }}" class="weui-cell weui-cell_access" hover-class="weui-cell_active" style="padding: 0 0;">
+  <view class="weui-cells weui-cells_after-title result_title" style="width: 100%;">
     <text class="result_title_w">总气瓶数:{{scan_sum}}</text>
   </view>
+</navigator>
   <view class="weui-tab">
     <view class="weui-cells weui-cells_after-title">
       <view class="weui-cell weui-cell_select">
@@ -20,20 +19,20 @@
           <view class="weui-label">开始时间</view>
         </view>
         <view class="input__bd">
-          <input class="self-input" value="{{beginTime}}" placeholder="开始时间" type="text" />
+          <input class="self-input" value="{{beginTime}}" placeholder="开始时间" type="text" disabled="disabled"/>
         </view>
-        <view class="weui-cell__bd">
+        <!-- <view class="weui-cell__bd">
           <button class="setTime" bindtap="setBeginTime">开始</button>
-        </view>
+        </view> -->
       </view>
       <view class="weui-cell weui-cell_input">
         <view class="weui-cell__hd">
           <view class="weui-label">结束时间</view>
         </view>
         <view class="input__bd">
-          <input class="self-input" placeholder="结束时间" value="{{endTime}}" type="text" />
+          <input class="self-input" placeholder="结束时间" value="{{endTime}}" type="text" disabled="disabled"/>
         </view>
-        <view class="weui-cell__bd">
+        <view wx:if="{{status == 1}}" class="weui-cell__bd">
           <button class="setTime" bindtap="setEndTime">结束</button>
         </view>
       </view>
@@ -62,13 +61,17 @@
         </view>
       </view>
       <view class="weui-cell weui-cell_textarea">
-        <textarea class="weui-textarea" placeholder="填写备注" bindinput="onChangeRemark" data-label="wallThickness" value="{{remark}}" type="digit" />
+        <textarea class="weui-textarea" placeholder="填写备注" bindinput="onChangeRemark" data-label="wallThickness" value="{{remark}}" type="digit" disabled="disabled"/>
       </view>
     </view>
   </view>
   <view wx:if="{{!ishideBottom}}" class="weui-navbar">
       <view class="weui-navbar__item weui-bar__item_on">
-        <view class="weui-navbar__title" bindtap="onSubmitMission">任务完成</view>
+        <view class="weui-navbar__title" bindtap="onSubmitMission">任 务 完 成</view>
       </view>
+  </view>
+
+  <view wx:if="{{status == 2}}" style="text-align: center;margin-top: 20px;">
+      <text style="color: red;font-weight: 600;">此次任务已结束</text>
   </view>
 </view>  
