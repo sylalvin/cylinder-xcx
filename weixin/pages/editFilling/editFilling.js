@@ -1,5 +1,6 @@
 const sliderWidth = 96;
 var app = getApp();
+var util = require('../../utils/util');
 Page({
 
   /**
@@ -29,6 +30,20 @@ Page({
    */
   onLoad: function (options) {
     var that = this;
+    if (!util.checkLogin()) {
+      wx.showToast({
+        title: '您还未登录,请先登录',
+        icon: 'none',
+        mask: true,
+        duration: 1000
+      })
+      setTimeout(function () {
+        wx.switchTab({
+          url: '/pages/index/index',
+        })
+      }, 1000)
+      return;
+    }
     that.getGlobal();
     //获取充装任务ID
     var detectionMissionId = options.detectionMissionId;
@@ -183,7 +198,6 @@ Page({
     }
     // 
     var cylinderCheckList = that.data.cylinderFillList;
-    console.log("submitData: ======" + JSON.stringify(cylinderCheckList));
     wx.request({
       url: app.globalData.apiUrl + '/v2/updateDetection',
       method: "POST",

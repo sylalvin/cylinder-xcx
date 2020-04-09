@@ -1,5 +1,5 @@
 var app = getApp();
-var Util = require('../../utils/util');
+var util = require('../../utils/util');
 Page({
 
   /**
@@ -74,6 +74,20 @@ Page({
    */
   onLoad: function (options) {
     var that = this;
+    if (!util.checkLogin()) {
+      wx.showToast({
+        title: '您还未登录,请先登录',
+        icon: 'none',
+        mask: true,
+        duration: 1000
+      })
+      setTimeout(function () {
+        wx.switchTab({
+          url: '/pages/index/index',
+        })
+      }, 1000)
+      return;
+    }
     that.initData();
     // 获取版本号
     wx.request({
@@ -507,7 +521,7 @@ Page({
           if ((res.data.data != "") && (res.data.data != null)) {
             var lastFillTime = res.data.data.lastFillTime;
             var difftimes = 4 * 60 * 60 * 1000;
-            if ((lastFillTime == null) || ((lastFillTime != null) && (Util.diff(lastFillTime, new Date()) > difftimes))) {
+            if ((lastFillTime == null) || ((lastFillTime != null) && (util.diff(lastFillTime, new Date()) > difftimes))) {
               let cylinderId = res.data.data.id;
               let unitId = res.data.data.unitId;
               let cylinderCode = res.data.data.cylinderCode; // 气瓶码

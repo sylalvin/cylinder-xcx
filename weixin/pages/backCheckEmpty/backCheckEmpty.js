@@ -1,5 +1,5 @@
 var app = getApp();
-var Util = require('../../utils/util');
+var util = require('../../utils/util');
 Page({
 
   /**
@@ -54,6 +54,20 @@ Page({
 
   onShow: function () {
     var that = this;
+    if (!util.checkLogin()) {
+      wx.showToast({
+        title: '您还未登录,请先登录',
+        icon: 'none',
+        mask: true,
+        duration: 1000
+      })
+      setTimeout(function () {
+        wx.switchTab({
+          url: '/pages/index/index',
+        })
+      }, 1000)
+      return;
+    }
     // 执行删除后的初始化气瓶数据
     var setList = app.globalData.backSetList;
     var cylinderList = app.globalData.backCylinderList;
@@ -359,7 +373,7 @@ Page({
         if ((res.data.data != null) || (res.data.data != [])) { // 集格下有绑定气瓶，集格计数
           var lastFillTime = res.data.data[0].lastFillTime;
           var difftimes = 4 * 60 * 60 * 1000;
-          if ((lastFillTime == null) || ((lastFillTime != null) && (Util.diff(lastFillTime, new Date()) > difftimes)) ) {
+          if ((lastFillTime == null) || ((lastFillTime != null) && (util.diff(lastFillTime, new Date()) > difftimes)) ) {
             setList.push(setId);
             that.setData({
               setList: setList
@@ -433,7 +447,7 @@ Page({
           if ((res.data.data != "") && (res.data.data != null)) {
             var lastFillTime = res.data.data.lastFillTime;
             var difftimes = 4 * 60 * 60 * 1000;
-            if ((lastFillTime == null) || ((lastFillTime != null) && (Util.diff(lastFillTime, new Date()) > difftimes))) {
+            if ((lastFillTime == null) || ((lastFillTime != null) && (util.diff(lastFillTime, new Date()) > difftimes))) {
               let cylinderId = res.data.data.id;
               let unitId = res.data.data.unitId;
               let cylinderCode = res.data.data.cylinderCode; // 气瓶码

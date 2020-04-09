@@ -1,4 +1,5 @@
 var app = getApp();
+var util = require('../../utils/util');
 Page({
   /**
    * 页面的初始数据
@@ -15,6 +16,20 @@ Page({
    */
   onShow: function () {
     var that = this;
+    if (!util.checkLogin()) {
+      wx.showToast({
+        title: '您还未登录,请先登录',
+        icon: 'none',
+        mask: true,
+        duration: 1000
+      })
+      setTimeout(function () {
+        wx.switchTab({
+          url: '/pages/index/index',
+        })
+      }, 1000)
+      return;
+    }
     that.getGlobal();
     that.fillingTimes();
   },
@@ -66,7 +81,7 @@ Page({
             let todayFillingTimes = 0;
             let fillList = that.data.fillList;
             for (let j = 0; j < returnData.length; j++) {
-
+              console.log(j);
               let temp = [];
               scanLogs.push({ "id": returnData[j].id, "beginDate": returnData[j].beginDate, "name": returnData[j].mediemName, "quantity": returnData[j].yqDetectionVoList.length, "productionBatch": returnData[j].productionBatch, "status": returnData[j].status == 1 ? "充气中" : "已完成" });
               todayFillingTimes += returnData[j].yqDetectionVoList.length;

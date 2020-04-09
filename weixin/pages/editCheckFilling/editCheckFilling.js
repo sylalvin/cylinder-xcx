@@ -1,4 +1,5 @@
 var app = getApp();
+var util = require('../../utils/util');
 Page({
 
   /**
@@ -24,6 +25,20 @@ Page({
    */
   onLoad: function (options) {
     var that = this;
+    if (!util.checkLogin()) {
+      wx.showToast({
+        title: '您还未登录,请先登录',
+        icon: 'none',
+        mask: true,
+        duration: 1000
+      })
+      setTimeout(function () {
+        wx.switchTab({
+          url: '/pages/index/index',
+        })
+      }, 1000)
+      return;
+    }
     var detectionMissionId = options.detectionMissionId;
     var status = options.status;
     that.setData({
@@ -36,28 +51,6 @@ Page({
     that.setData({
       scan_sum: that.data.cylinderFillList.length
     })
-
-    //获取充装任务并填充内容
-    // wx.request({
-    //   url: app.globalData.apiUrl + '/getDetectionMissionVoById',
-    //   method: "POST",
-    //   header: {
-    //     "Content-Type": "application/x-www-form-urlencoded",
-    //     "qcmappversion": app.globalData.qcmappversion
-    //   },
-    //   data: {
-    //     detectionMissionId: detectionMissionId
-    //   },
-    //   success: res => {
-    //     if (that.judge(res.data.data.yqDetectionVoList)) {
-    //       that.setData({
-    //         cylinderFillList: res.data.data.yqDetectionVoList,
-    //         scan_sum: res.data.data.yqDetectionVoList.length,
-    //         status: res.data.data.status
-    //       })
-    //     }
-    //   }
-    // })
   },
 
   onShow: function() {
@@ -86,14 +79,6 @@ Page({
     var that = this;
     app.globalData.fillList = that.data.fillList;
     app.globalData.cylinderFillList = that.data.cylinderFillList;
-  },
-
-  judge: function (x) {
-    if ((x == "") || (x == null)) {
-      return false;
-    } else {
-      return true;
-    }
   },
 
   /**

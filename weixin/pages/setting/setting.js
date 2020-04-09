@@ -1,4 +1,5 @@
 var app = getApp();
+var util = require('../../utils/util');
 Page({
 
   /**
@@ -13,6 +14,20 @@ Page({
   // onload
   onLoad: function (options) {
     var that = this;
+    if (!util.checkLogin()) {
+      wx.showToast({
+        title: '您还未登录,请先登录',
+        icon: 'none',
+        mask: true,
+        duration: 1000
+      })
+      setTimeout(function () {
+        wx.switchTab({
+          url: '/pages/index/index',
+        })
+      }, 1000)
+      return;
+    }
     wx.getStorage({
       key: 'pj_employee_name',
       success: function(res) {

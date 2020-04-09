@@ -44,10 +44,20 @@ function diff(begin, end = new Date()) {
   return times;
 }
 
+function checkLogin() {
+  var id = wx.getStorageSync("pj_employee_id");
+  if((id == "") || (id == null) || (id == undefined)) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
 module.exports = {
   formatTime: formatTime,
   json2Form: json2Form,
   getObjectKeys: getObjectKeys,
   putElementToFirst: putElementToFirst,
-  diff: diff
+  diff: diff,
+  checkLogin: checkLogin
 }

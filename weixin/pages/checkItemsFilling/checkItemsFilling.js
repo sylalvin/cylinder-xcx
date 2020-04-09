@@ -1,5 +1,5 @@
 var app = getApp();
-var Util = require('../../utils/util');
+var util = require('../../utils/util');
 Page({
 
   /**
@@ -184,6 +184,20 @@ Page({
 
   onShow: function () {
     // var that = this;
+    if (!util.checkLogin()) {
+      wx.showToast({
+        title: '您还未登录,请先登录',
+        icon: 'none',
+        mask: true,
+        duration: 1000
+      })
+      setTimeout(function () {
+        wx.switchTab({
+          url: '/pages/index/index',
+        })
+      }, 1000)
+      return;
+    }
   },
 
   onHide: function () {
@@ -362,7 +376,6 @@ Page({
     for (let x = 0; x < fillList.length; x++) {
       if (fillList[x][0] == detectionMissionId) {
         fillList[x][1] == cylinderFillList;
-        console.log(JSON.stringify(fillList));
       }
     }
     wx.showToast({
@@ -385,7 +398,6 @@ Page({
         'qcmappversion': qcmappversion
       },
       success: (res) => {
-        // console.log(JSON.stringify(res.data.data));
         if (that.judge(res.data.data)) { // 集格下有绑定气瓶，集格计数
           let cylinderNumberList = [];
           if (res.data.data.length > 0) {
@@ -425,7 +437,6 @@ Page({
         'qcmappversion': qcmappversion
       },
       success: (res) => {
-        // console.log(JSON.stringify(res.data.data.setId));
         if (that.judge(res.data.data)) {
           let setId = res.data.data.setId;
           let setNumber = res.data.data.setNumber;
