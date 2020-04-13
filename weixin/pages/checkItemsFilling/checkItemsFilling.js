@@ -336,7 +336,7 @@ Page({
     var fillList = that.data.fillList;
     var cylinderFillList = that.data.cylinderFillList;
     var cylinderInfo = that.data.cylinderInfo;
-    if (that.data.cylinderNumberList == []) { // 散瓶
+    if (that.data.cylinderNumberList.length == 0) { // 散瓶
       console.log("散瓶");
       for (let i = 0; i < cylinderFillList.length; i++) {
         if (cylinderFillList[i].cylinderNumber == cylinderInfo.cylinderNumber) {
