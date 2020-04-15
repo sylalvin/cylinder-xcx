@@ -39,7 +39,10 @@ Page({
     bottleType: [
       { name: '满瓶', value: '0', checked: 'true' },
       { name: '空瓶', value: '1' }
-    ]
+    ],
+    inputValue: "",
+    forTransNumberList: [],
+    animationData: {}
   },
 
   onShow: function () {
@@ -136,18 +139,89 @@ Page({
     })
   },
 
+  // 模糊查询运单号item
   bindInputChange: function (e) {
+    var that = this;
+    if (e.detail.value.length > 4) {
+      wx.request({
+        url: "http://47.101.208.226:18080/api/searchTransOrderNumber",
+        method: 'POST',
+        data: {
+          'number': e.detail.value
+        },
+        header: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        success: (res) => {
+          if (that.judge(res.data.data)) {
+            let forTransNumberList = [];
+            for (let k = 0; k < res.data.data.length; k++) { // 只取前五条运单号
+              forTransNumberList.push(res.data.data[k]);
+            }
+            that.setData({
+              forTransNumberList: forTransNumberList
+            })
+            that.showAnimation();
+          } else {
+            that.setData({
+              forTransNumberList: []
+            })
+          }
+        },
+        fail: (e) => {
+          wx.showToast({
+            title: '查询运单号列表接口访问失败',
+            icon: 'none',
+            mask: true,
+            duration: 2500
+          })
+        }
+      })
+    } else {
+      that.setData({
+        forTransNumberList: []
+      })
+    }
+  },
+
+  onSelectItem: function (e) {
+    var that = this;
+    let forTransNumberList = that.data.forTransNumberList;
+    let index = e.currentTarget.dataset.setIndex;
+    let transId = forTransNumberList[index];
+    that.queryTransInfo(transId);
+    that.setData({
+      forTransNumberList: []
+    })
+  },
+
+  // 动画
+  showAnimation: function () {
+    var that = this;
+    var animation = wx.createAnimation({
+      duration: 3000,
+      timingFunction: 'ease'
+    });
+    animation.opacity(1).step();
+    that.setData({
+      animationData: animation.export()
+    })
+  },
+
+  // 根据运单号查询erp中运单信息
+  queryTransInfo: function(transId) {
     var that = this;
     var qcmappversion = that.data.qcmappversion;
     that.setData({
-      'orderData.waybillNumber': e.detail.value
+      'orderData.waybillNumber': transId,
+      inputValue: transId
     })
-    if (e.detail.value != "") {
+    if (transId != "") {
       wx.request({
         url: "http://gas777.iask.in:89/ServiceControl/JavaService.ashx",
         method: 'GET',
         data: {
-          transId: e.detail.value
+          transId: transId
         },
         success: (res) => {
           if ((res.data.data != "") && (res.data.data != null)) {
@@ -298,12 +372,12 @@ Page({
             }
 
             // 押运员id
-            if (that.judge(res.data.data.updateBy)) {
+            if (that.judge(res.data.data.surpercargo)) {
               wx.request({
                 url: app.globalData.apiUrl + '/getEmployeeByName',
                 method: 'POST',
                 data: {
-                  'name': res.data.data.updateBy,
+                  'name': res.data.data.surpercargo,
                   'unitId': 1
                 },
                 header: {

@@ -38,8 +38,20 @@
           <view class="weui-cells__title">运单号（发货单号）：</view>
           <view class="weui-cells weui-cells_after-title">
             <view class="weui-cell weui-cell_input">
-              <input bindinput="bindInputChange" class="weui-input" placeholder="请输入发货单号"/>
+              <input bindinput="bindInputChange" class="weui-input" placeholder="请输入发货单号" value="{{inputValue}}"/>
             </view>
+          </view>
+
+          <!-- <view animation="{{animationData}}" style="opacity: 0;" class="item-text" wx:for="{{forTransNumberList}}" wx:key="index">
+            <text bindtap="onSelectItem" data-set-index="{{index}}" >{{item}}</text>
+          </view> -->
+
+          <view class="page-section-spacing" wx:if="{{forTransNumberList.length > 0}}">
+            <scroll-view scroll-y="true" style="height: 300rpx;">
+              <view animation="{{animationData}}" style="opacity: 0;" class="item-text" wx:for="{{forTransNumberList}}" wx:key="index">
+                <text bindtap="onSelectItem" data-set-index="{{index}}">{{item}}</text>
+              </view>
+            </scroll-view>
           </view>
 
         <view class="weui-btn-area">

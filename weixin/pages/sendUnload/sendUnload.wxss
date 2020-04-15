@@ -31,3 +31,8 @@
   width: 20%;
   float: right;
 }
+.item-text{
+  padding: 5px 20px;
+  font-size: 20px;
+  border-top: .5px solid #ccc;
+}
