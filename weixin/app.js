@@ -44,7 +44,7 @@ App({
     // apiUrl: "http://47.101.47.89:18090/api", // 测试
     // apiUrl: "http://localhost:18090/api", // 测试192.168.31.65
     apiUrl: "https://xch.feifanqishi.net/api",
-    qcmappversion: '1.0.7',
+    qcmappversion: '1.0.8',
 
     // 充装全局数据配置
     fillList: [], // 充装任务列表

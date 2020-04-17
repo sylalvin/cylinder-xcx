@@ -5,7 +5,7 @@
         <view class="weui-label">钢瓶号</view>
       </view>
       <view class="weui-cell__bd">
-        <input class="weui-input" placeholder="输入钢瓶号/自编码" bindblur="onChangeCode" bindinput="getCylinderInfo" data-label="cylinderCode" type="number"/>
+        <input class="weui-input" placeholder="输入钢瓶号/自编码" bindinput="getCylinderByCode"/>
       </view>
       <send-code id="send-btn" bindtap="onSend"></send-code>
     </view>
@@ -14,8 +14,8 @@
         <view class="weui-label">气瓶类型</view>
       </view>
       <view class="weui-cell__bd">
-        <picker bindchange="onTypeChange" value="{{cylinderTypeIndex}}" range="{{cylinderTypeItems}}">
-          <view class="weui-select weui-select_in-select-after">{{cylinderTypeItems[cylinderTypeIndex]}}</view>
+        <picker bindchange="onCylinderTypeChange" value="{{cylinderTypeIndex}}" range="{{cylinderTypeArray}}" range-key="{{'cylinderTypeName'}}">
+          <view class="weui-select weui-select_in-select-after">{{cylinderTypeArray[cylinderTypeIndex].cylinderTypeName}}</view>
         </picker>
       </view>
     </view>
@@ -24,8 +24,8 @@
         <view class="weui-label">充装介质</view>
       </view>
       <view class="weui-cell__bd">
-        <picker bindchange="onGasChange" value="{{gasIndex}}" range="{{gasItems}}">
-          <view class="weui-select weui-select_in-select-after" value="{{gasMediumName}}">{{gasItems[gasIndex]}}</view>
+        <picker bindchange="onGasMediumChange" value="{{gasMediumIndex}}" range="{{gasMediumArray}}"  range-key="{{'gasMediumName'}}">
+          <view class="weui-select weui-select_in-select-after">{{gasMediumArray[gasMediumIndex].gasMediumName}}</view>
         </picker>
       </view>
     </view>
@@ -34,8 +34,8 @@
         <view class="weui-label">制造代码</view>
       </view>
       <view class="weui-cell__bd">
-        <picker bindchange="onManuCodeChange" value="{{codeIndex}}" range="{{manuCodes}}">
-          <view class="weui-select weui-select_in-select-after">{{manuCodes[codeIndex]}}</view>
+        <picker bindchange="onManuCodeChange" value="{{codeIndex}}" range="{{manuCodes}}" range-key="{{'codename'}}">
+          <view class="weui-select weui-select_in-select-after">{{manuCodes[codeIndex].code}}</view>
         </picker>
       </view>
     </view>
@@ -64,20 +64,22 @@
         <view class="weui-label">集格编号</view>
       </view>
       <view class="weui-cell__bd">
-        <input class="weui-input" bindinput="bindinput" placeholder="输入集格编号" value="{{inputValue}}" data-label="setNumber" type="text" />
+        <input class="weui-input" bindinput="bindinput" placeholder="输入集格编号" value="{{setNumber==null ? '暂未绑定集格' : setNumber}}"/>
       </view>
     </view>
-      <scroll-view scroll-y="true" class="scrollview search_item" hidden="{{hideScroll}}" style="{{arrayHeight>500?'height:500rpx':''}}">
-        <view wx:for="{{bindSource}}" wx:key="key">
-          <view id="{{item}}" bindtap="itemtap" class="itemview">{{item}}</view>
-        </view>
-      </scroll-view>
+      <view class="page-section-spacing" wx:if="{{forSetList.length > 0}}">
+            <scroll-view scroll-y="true" style="height: 300rpx;">
+              <view animation="{{animationData}}" style="opacity: 0;" class="item-text" wx:for="{{forSetList}}" wx:key="index">
+                <text bindtap="onSelectItem" data-set-index="{{index}}">{{item.setNumber}}-{{item.name}}</text>
+              </view>
+            </scroll-view>
+          </view>
     <view class="weui-cell weui-cell_input">
       <view class="weui-cell__hd">
         <view class="weui-label">公称压力</view>
       </view>
       <view class="weui-cell__bd">
-        <input class="weui-input" placeholder="输入公称压力(Mpa)" data-label="nominalTestPressure" type="digit" bindblur="onPressureChange" value="{{nominalTestPressure}}" />
+        <input class="weui-input" placeholder="输入公称压力(Mpa)" type="digit" bindblur="onPressureChange" value="{{nominalTestPressure!=0 ? nominalTestPressure: ''}}" />
       </view>
     </view>
         <view class="weui-cell weui-cell_input">
@@ -85,7 +87,7 @@
         <view class="weui-label">钢瓶重量</view>
       </view>
       <view class="weui-cell__bd">
-        <input class="weui-input" placeholder="输入钢瓶重量(Kg)" data-label="weight" type="digit" bindblur="onWeightChange" value="{{weight}}" />
+        <input class="weui-input" placeholder="输入钢瓶重量(Kg)" type="digit" bindblur="onWeightChange" value="{{weight!=0 ? weight: ''}}" />
       </view>
     </view>
         <view class="weui-cell weui-cell_input">
@@ -93,7 +95,7 @@
         <view class="weui-label">钢瓶容积</view>
       </view>
       <view class="weui-cell__bd">
-        <input class="weui-input" placeholder="输入钢瓶容积(L)" data-label="volume" type="digit" bindblur="onVolumeChange" value="{{volume}}" />
+        <input class="weui-input" placeholder="输入钢瓶容积(L)" type="digit" bindblur="onVolumeChange" value="{{volume!=0 ? volume: ''}}" />
       </view>
     </view>
         <view class="weui-cell weui-cell_input">
@@ -101,15 +103,20 @@
         <view class="weui-label">钢瓶壁厚</view>
       </view>
       <view class="weui-cell__bd">
-        <input class="weui-input" placeholder="输入钢瓶壁厚(mm)" data-label="wallThickness" type="digit" bindblur="onNessChange" value="{{wallThickness}}" />
+        <input class="weui-input" placeholder="输入钢瓶壁厚(mm)" type="digit" bindblur="onNessChange" value="{{wallThickness!=0 ? wallThickness: ''}}" />
       </view>
     </view>
-        <view class="weui-cell weui-cell_input">
+    <view class="weui-cell weui-cell_input">
       <view class="weui-cell__hd">
         <view class="weui-label">标签码</view>
       </view>
       <view class="weui-cell__bd">
         <input class="weui-input" placeholder="点击扫码条码/二维码" value="{{cylinderNumber}}" data-label="cylinderNumber" type="text" bindtap="onScan" />
+      </view>
+    </view>
+    <view class="weui-cell weui-cell_input">
+      <view class="weui-cell__hd" style="padding: 10px;">
+        <text style="color: #999;font-size: 12px;">注意：集格编号为模糊查询，在输入五位数及以上会显示查询结果（如有）。</text>
       </view>
     </view>
   </view>
