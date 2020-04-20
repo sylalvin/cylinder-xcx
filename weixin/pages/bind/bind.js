@@ -2,39 +2,39 @@ var util = require("../../utils/util.js")
 var app = getApp();
 Page({
   data: {
-    cylinderTypeArray:[],
-    gasItemsArray:[],
-    gasArray:[],
-    cylinderTypeItems: [],
-    cylinderTypeIndex: 0,
-    gasItems: [],
-    gasIndex: 0,
-    typeId: 0,
-    setId: 0,
+    cylinderId: '',
+    cylinderCode: '',
+    cylinderTypeArray: [], // 气瓶类型种类
+    cylinderTypeIndex: 0, // 所选气瓶种类index
+    cylinderTypeId: 1, // 气瓶类型id
+    cylinderTypeName: "", // 气瓶类型名称
+    gasMediumArray: [], // 介质种类
+    gasMediumIndex: 0, // 所选介质index
+    gasMediumId: 1, // 介质种类id
+    gasMediumName: "", // 介质种类名称
+    setList: [], // 全部集格种类
+    setId: -1,
     setNumber:"",
-    cylinderTypeId: 1,
-    cylinderTypeName: "钢制无缝气瓶",
-    gasMediumName: "氢气",
-    gasMediumId: 3,
-    manuCodes: [],
-    codename: "sg",
+    setName: "",
+    forSetList: [],
+    manuCodes: [], // 气瓶制造商
+    cylinderManufacturerName: "",
+    cylinderManufacturerId: 0,
     codeIndex: 0,
-    manufacturingDate: new Date().getFullYear() + "-" + ((new Date().getMonth() + 1) < 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)) + "-" + ((new Date().getDate() < 10) ? ("0" + new Date().getDate()): (new Date().getDate())),
-    regularInspectionDate: new Date().getFullYear() + "-" + ((new Date().getMonth() + 1) < 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)) + "-" + ((new Date().getDate() < 10) ? ("0" + new Date().getDate()) : (new Date().getDate())),
-    phone: '',
-    vrcode: '',
+    manufacturingDate: "",
+    regularInspectionDate: "",
     cylinderNumber: '',
     nominalTestPressure: 0,
     weight: 0, 
     volume: 0, 
     wallThickness: 0,
-    inputValue: '', //点击结果项之后替换到文本框的值
-    adapterSource: [], //本地匹配源
-    bindSource: [], //绑定到页面的数据，根据用户输入动态变化
-    hideScroll: true,
-    arrayHeight: 0,
     disabled: false,
-    opacity: 0.9
+    opacity: 0.9,
+    animationData: {},
+    hasAdd: false, // 气瓶是否已添加标签
+    hasBind: false,
+    employeeId: wx.getStorageSync('pj_employee_id'),
+    employeeName: wx.getStorageSync('pj_employee_name')
   },
 
   onLoad: function (options) {
@@ -53,15 +53,21 @@ Page({
       }, 1000)
       return;
     }
-    that.setData({ "disabled": false })
-    var cylinderTypeItems = [];
-    var cylinderTypeArray =[];
-    var gasItemsArray = [];
-    var gasArray = [];
-    var gasItems = [];
+
+    wx.showLoading({
+      title: '正在初始化...',
+    })
+    let cylinderTypeArray = [];
     let manuCodes = [];
-    let adapterSource = [];
-    //获取所有气瓶类型
+    let setList = [];
+    let manufacturingDate = "";
+    let regularInspectionDate = "";
+    that.setData({
+      manufacturingDate: that.getTodayDate(),
+      regularInspectionDate: that.getTodayDate()
+    })
+    // 获取所有气瓶类型
+    
     wx.request({
       url: app.globalData.apiUrl+'/getCompanyCylinderTypeVoListByUnitId',
       method: "POST",
@@ -71,32 +77,27 @@ Page({
       },
       data: { unitId: 1 },
       success: res => {
-        var returnData = res.data.data;
+        let returnData = res.data.data;
         if(returnData.length > 0) {
-          for(let i =0; i<returnData.length; i++) {
-            cylinderTypeItems.push(returnData[i].cylinderTypeName);
-            cylinderTypeArray.push({ id: returnData[i].cylinderTypeId, name: returnData[i].cylinderTypeName});
-            var tmpArray = [];
-            for(var j =0; j<returnData[i].gasMediumList.length;j++) {
-              if (gasArray.indexOf(returnData[i].gasMediumList[j].gasMediumName)<0) {
-                gasArray.push({ "id": returnData[i].gasMediumList[j].gasMediumId,"name":returnData[i].gasMediumList[j].gasMediumName});
-              }
-              tmpArray.push(returnData[i].gasMediumList[j].gasMediumName);
-            }
-            gasItemsArray.push(tmpArray.reverse());
+          for(let i = 0; i < returnData.length; i++) {
+            cylinderTypeArray.push({ cylinderTypeId: returnData[i].cylinderTypeId, cylinderTypeName: returnData[i].cylinderTypeName, gasMediumList: returnData[i].gasMediumList });
           }
           that.setData({
-            "cylinderTypeItems": cylinderTypeItems,
-            "gasItems": util.putElementToFirst(gasItemsArray[0],'氢气'),
-            "gasArray": gasArray,
-            "cylinderTypeArray": cylinderTypeArray,
-            "gasItemsArray": gasItemsArray
+            cylinderTypeArray: cylinderTypeArray,
+            cylinderTypeIndex: 0,
+            cylinderTypeId: cylinderTypeArray[0].cylinderTypeId,
+            cylinderTypeName: cylinderTypeArray[0].cylinderTypeName,
+            gasMediumArray: cylinderTypeArray[0].gasMediumList,
+            gasMediumIndex: 0,
+            gasMediumId: cylinderTypeArray[0].gasMediumList[0].gasMediumId,
+            gasMediumName: cylinderTypeArray[0].gasMediumList[0].gasMediumName
           });
         }
+        that.initDone();
       }
     });
 
-    //获取气瓶制造单位信息
+    // 获取气瓶制造单位信息
     wx.request({
       url: app.globalData.apiUrl +'/getCylinderManufacturer',
       method: "POST",
@@ -107,19 +108,21 @@ Page({
       data: { unitId: 1 },
       success: res => {
         if(res.data.data.length > 0) {
-          for (var i = 0; i < res.data.data.length; i++) {
-            if(i == 0) {
-              that.setData({ cylinderManufacturerName: res.data.data[0].name });
-              that.setData({ cylinderManufacturerId: res.data.data[0].id });
-            }
-            manuCodes.push(res.data.data[i].code);
+          let returnData = res.data.data;
+          for (let i = 0; i < returnData.length; i++) {
+            manuCodes.push({ id: returnData[i].id, code: returnData[i].code, name: returnData[i].name, codename: returnData[i].code + '-' + returnData[i].name });
           }
-          that.setData({ manuCodes: manuCodes});
+          that.setData({
+            manuCodes: manuCodes,
+            cylinderManufacturerName: manuCodes[0].name,
+            cylinderManufacturerId: manuCodes[0].id
+          });
         }
+        that.initDone();
       }
     });
 
-    //获取集格信息
+    // 获取集格信息
     wx.request({
       url: app.globalData.apiUrl +'/getSetInfoByUnitId',
       method: "POST",
@@ -130,136 +133,276 @@ Page({
       data: { unitId: 1 },
       success: res => {
         if (res.data.data.length > 0) {
-          for (var i = 0; i < res.data.data.length; i++) {
-            adapterSource.push(res.data.data[i].setNumber + "-" + res.data.data[i].name);
+          let returnData = res.data.data;
+          for (var i = 0; i < returnData.length; i++) {
+            setList.push({ id: returnData[i].id, setNumber: returnData[i].setNumber, name: returnData[i].name });
           }
-          that.setData({ adapterSource: adapterSource });
+          that.setData({ setList: setList });
         }
+        that.initDone();
       }
     });
   },
 
-  onReady: function () {
+  onShow: function() {
+    // 初始化完成
   },
 
-  onTypeChange: function (e) {
-    var cylinderTypeArray = this.data.cylinderTypeArray;
-    let cylinderType = cylinderTypeArray[e.detail.value];
-
-    this.setData({ "cylinderTypeId": cylinderType.id, "cylinderTypeIndex": e.detail.value, "cylinderTypeName": cylinderType.name })
-    //气瓶类型是与气瓶介质关联的
-    var gasItemsArray = this.data.gasItemsArray
-    this.setData({ typeId: e.detail.value});
-    this.setData({ gasItems: gasItemsArray[e.detail.value]})
-    //如果不选充装介质的话，需要给一个充装介质一个默认值
-    if(e.detail.value == 5) {
-      this.setData({ gasMediumId: 2 })
-      this.setData({gasMediumName: "二氧化碳" })
-    } else if (e.detail.value == 4) {
-      this.setData({ gasMediumId: 20 })
-      this.setData({ gasMediumName: "液氮" })
-    } else if (e.detail.value == 3) {
-      this.setData({ gasMediumId: 19 })
-      this.setData({ gasMediumName: "液氧" })
-    } else if (e.detail.value == 2) {
-      this.setData({ gasMediumId: 27 })
-      this.setData({ gasMediumName: "标准气" })
-    } else if (e.detail.value == 1) {
-      this.setData({ gasMediumId: 12 })
-      this.setData({ gasMediumName: "氯气" })
-    } else if (e.detail.value == 0) {
-      this.setData({ gasMediumId: 3 })
-      this.setData({ gasMediumName: "氢气" })
+  initDone: function() {
+    var that = this;
+    if ((that.data.cylinderTypeArray.length > 0) && (that.data.gasMediumArray.length > 0) && (that.data.manuCodes.length > 0) && (that.data.setList.length > 0)) {
+      wx.showLoading({
+        title: '完成数据初始化',
+      })
+      setTimeout(function() {
+        wx.hideLoading();
+      }, 300);
     }
-    //默认值结束赋值
   },
 
-  onGasChange: function (e) {
+  // 集格模糊查询结果列表
+  bindinput: function (e) {
     var that = this;
-    var gasArray = this.data.gasArray;
-    var gasItemsArray = this.data.gasItemsArray;
-    var gasMediumName = gasItemsArray[that.data.typeId][e.detail.value]
-    that.setData({ gasIndex: e.detail.value });
-    var gasMediumId;
-    for(var i=0;i<gasArray.length;i++) {
-      if (gasMediumName == gasArray[i].name) {
-        gasMediumId = gasArray[i].id;
-        
-      }
+    if (e.detail.value.length < 5) {
+      that.setData({
+        forSetList: []
+      })
+      return;
     };
-    this.setData({ gasMediumId: gasMediumId });
-    this.setData({ gasMediumName: gasMediumName });
+    // "setNumber": "pj15001"
+    let setList = that.data.setList;
+    let forSetList = [];
+    for(let i = 0; i < setList.length; i++) {
+      if (setList[i].setNumber) {
+        if (setList[i].setNumber.indexOf(e.detail.value) > -1) {
+          forSetList.push(setList[i]);
+        }
+      }
+    }
+    that.setData({
+      forSetList: forSetList
+    })
+    that.showAnimation();
   },
 
-  onManuCodeChange: function(e) {
+  // 选取集格
+  onSelectItem: function (e) {
     var that = this;
-    let code = that.data.manuCodes[e.detail.value]
+    let forSetList = that.data.forSetList;
+    let index = e.currentTarget.dataset.setIndex;
+    let setId = forSetList[index].id;
+    let setNumber = forSetList[index].setNumber;
+    let setName = forSetList[index].name;
+    that.setData({
+      setId: setId,
+      setNumber: setNumber,
+      setName: setName,
+      forSetList: []
+    })
+  }, 
 
-    that.setData({codeIndex:e.detail.value});
+  // 获取当前时间
+  getTodayDate: function() {
+    var that = this;
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = that.addZero(date.getMonth() + 1);
+    var day = that.addZero(date.getDate());
+    var todayDate = year + '-' + month + '-' + day;
+    return todayDate;
+  },
+
+  // 日期补零
+  addZero: function(x) {
+    if(x < 10) {
+      return '0' + x;
+    } else {
+      return x;
+    }
+  },
+
+  // 根据钢印号精确查询气瓶信息
+  getCylinderByCode: function (e) {
+    var that = this;
+    var cylinderCode = e.detail.value;
+    that.setData({
+      cylinderCode: cylinderCode
+    })
+    var data = {
+      unitId: 1,
+      cylinderCode: cylinderCode
+    }
     wx.request({
-      url: app.globalData.apiUrl +'/getCylinderManufacturer',
+      url: app.globalData.apiUrl + '/getCylinderByCode',
       method: "POST",
       header: {
         "Content-Type": "application/x-www-form-urlencoded",
         "qcmappversion": app.globalData.qcmappversion
       },
-      data: { unitId: 1, code: code },
+      data: data,
       success: res => {
-        if (res.data.data.length > 0) {
-          that.setData({ cylinderManufacturerName: res.data.data[0].name });
-          that.setData({ cylinderManufacturerId: res.data.data[0].id });
-        } 
+        if (res.data.data != null) {
+          let cylinderTypeArray = that.data.cylinderTypeArray;
+          let gasMediumArray = that.data.gasMediumArray;
+          let manuCodes = that.data.manuCodes;
+          for(let i = 0; i < cylinderTypeArray.length; i++) {
+            if (cylinderTypeArray[i].cylinderTypeId == res.data.data.cylinderTypeId) {
+              let cylinderTypeIndex = i;
+              gasMediumArray = cylinderTypeArray[i].gasMediumList;
+              that.setData({
+                cylinderTypeIndex: cylinderTypeIndex,
+                gasMediumArray: gasMediumArray
+              })
+              for (let j = 0; j < gasMediumArray.length; j++) {
+                if (gasMediumArray[j].gasMediumId == res.data.data.gasMediumId) {
+                  let gasMediumIndex = j;
+                  that.setData({
+                    gasMediumIndex: gasMediumIndex
+                  })
+                }
+              }
+            }
+          }
+          for (let k = 0; k < manuCodes.length; k++) {
+            if (manuCodes[k].id == res.data.data.cylinderManufacturerId) {
+              let codeIndex = k;
+              that.setData({
+                codeIndex: codeIndex
+              })
+            }
+          }
+          that.setData({
+            cylinderId: res.data.data.id,
+            manufacturingDate: res.data.data.cylinderManufacturingDate ? res.data.data.cylinderManufacturingDate.substr(0, 10) : that.getTodayDate(),
+            regularInspectionDate: res.data.data.regularInspectionDate ? res.data.data.regularInspectionDate.substr(0, 10) : that.getTodayDate(),
+            setNumber: res.data.data.setNumber,
+            setId: res.data.data.setId,
+            nominalTestPressure: res.data.data.nominalTestPressure ? res.data.data.nominalTestPressure : 0,
+            weight: res.data.data.weight ? res.data.data.weight : 0,
+            volume: res.data.data.volume ? res.data.data.volume : 0,
+            wallThickness: res.data.data.wallThickness ? res.data.data.wallThickness : 0,
+            cylinderNumber: res.data.data.cylinderNumber ? res.data.data.cylinderNumber : "",
+            hasAdd: true
+          })
+          if (res.data.data.cylinderNumber != null) {
+            that.setData({
+              disabled: true,
+              opacity: 0.3,
+              hasBind: true
+            })
+            wx.showToast({
+              title: '该气瓶已绑定二维码',
+              icon: "none",
+              duration: 2000,
+              mask: true
+            })
+          }
+        } else {
+          that.setData({
+            disabled: false,
+            opacity: 0.9,
+            hasAdd: false,
+            hasBind: false
+          })
+          that.reset();
+        }
+      },
+      error: function (e) {
+        alert("钢瓶码查询气瓶接口访问失败");
       }
+    })
+  },
+
+  // 气瓶类型改变
+  onCylinderTypeChange: function (e) {
+    var that = this;
+    var cylinderTypeArray = this.data.cylinderTypeArray;
+    let cylinderTypeIndex = e.detail.value;
+    that.setData({
+      cylinderTypeIndex: cylinderTypeIndex,
+      cylinderTypeId: that.data.cylinderTypeArray[cylinderTypeIndex].cylinderTypeId,
+      cylinderTypeName: that.data.cylinderTypeArray[cylinderTypeIndex].cylinderTypeName,
+      gasMediumArray: that.data.cylinderTypeArray[cylinderTypeIndex].gasMediumList,
+      gasMediumIndex: 0,
+      gasMediumId: that.data.cylinderTypeArray[cylinderTypeIndex].gasMediumList[0].gasMediumId,
+      gasMediumName: that.data.cylinderTypeArray[cylinderTypeIndex].gasMediumList[0].gasMediumName,
+    })
+  },
+
+  // 介质改变
+  onGasMediumChange: function (e) {
+    var that = this;
+    var gasMediumArray = this.data.gasMediumArray;
+    let gasMediumIndex = e.detail.value;
+    that.setData({
+      gasMediumIndex: gasMediumIndex,
+      gasMediumId: gasMediumArray[gasMediumIndex].gasMediumId,
+      gasMediumName: gasMediumArray[gasMediumIndex].gasMediumName
     });
   },
 
+  // 气瓶制造商改变
+  onManuCodeChange: function(e) {
+    var that = this;
+    var manuCodes = this.data.manuCodes;
+    let codeIndex = e.detail.value;
+    that.setData({
+      codeIndex: codeIndex,
+      cylinderManufacturerName: that.data.manuCodes[codeIndex].name,
+      cylinderManufacturerId: that.data.manuCodes[codeIndex].id
+    });
+  },
+
+  // 生产日期改变
   bindManufacturingDateChange: function (e) {
     this.setData({
       manufacturingDate: e.detail.value
     })
   },
 
+  // 下检日期改变
   bindInspectionDateChange: function (e) {
     this.setData({
       regularInspectionDate: e.detail.value
     })
   },
 
+  // 压力改变
   onPressureChange: function(e) {
-    var that = this
     if (e.detail.value.length > 0) {
-      that.setData({ nominalTestPressure: e.detail.value });
+      this.setData({ nominalTestPressure: e.detail.value });
     }
   },
 
+  // 重量改变
   onWeightChange: function (e) {
-    var that = this
     if (e.detail.value.length > 0) {
-      that.setData({ weight: e.detail.value });
+      this.setData({ weight: e.detail.value });
     }
   },
 
+  // 容积改变
   onVolumeChange: function (e) {
-    var that = this
     if (e.detail.value.length > 0) {
-      that.setData({ volume: e.detail.value });
+      this.setData({ volume: e.detail.value });
     }
   },
 
+  // 壁厚改变
   onNessChange: function (e) {
-    var that = this
     if (e.detail.value.length > 0) {
-      that.setData({ wallThickness: e.detail.value });
+      this.setData({ wallThickness: e.detail.value });
     }
   },
 
+  // 扫码动作
   onScan() {
     var that = this;
     wx.scanCode({
       success: (res) => {
         let msg = '';
         if (res.scanType === 'WX_CODE' && res.result === '') {
-          msg = '宝宝心里苦，但宝宝不说...'
+          msg = 'Error!'
           wx.showToast({
             title: msg,
             icon: 'none',
@@ -280,170 +423,167 @@ Page({
           }
           if(code.length != 11) {
             wx.showToast({
-              title: "该气瓶编码有问题",
+              title: "该气瓶编码不符合规范",
               icon: 'none',
               duration: 2000
             });
           } else {
             that.setData({cylinderNumber:code})
+            wx.showToast({
+              title: "扫描成功"
+            });
           }
-
         }
       }
     })
   },
 
-  onChangeCode: function(e) {
-    var that = this
-    if(e.detail.value.length>0){
-      that.setData({cylinderCode: e.detail.value});
-    }
-  },
-
-  onInput: function (e) {
-  },
-
-  onSend: function () {
-
-  },
-
-
-  onSubmit: function () {
-    if (this.data.cylinderNumber == "") {
-      wx.showToast({
-        title: "数据不全",
-        icon: 'none',
-        duration: 2000
-      });
-      return false;
-    }
-    if (this.data.disabled == true) {
-      wx.showToast({
-        title: "禁止重复提交",
-        icon: 'none',
-        duration: 2000
-      });
-      return false;
-    }
-    //不让重复提交
-    this.setData({
-      disabled: true,
-      opacity: 0.3
-    });
-    console.log({ unitId: 1, cylinderCode: this.data.cylinderCode, cylinderTypeId: this.data.cylinderTypeId, gasMediumId: this.data.gasMediumId, manufacturingDate: this.data.manufacturingDate, cylinderTypeName: this.data.cylinderTypeName, gasMediumName: this.data.gasMediumName, regularInspectionDate: this.data.regularInspectionDate, setId: this.data.setId, setNumber: this.data.setNumber, nominalTestPressure: this.data.nominalTestPressure, weight: this.data.weight, volume: this.data.volume, wallThickness: this.data.wallThickness, cylinderNumber: this.data.cylinderNumber, "cylinderManufacturerName": this.data.cylinderManufacturerName, "cylinderManufacturerId": this.data.cylinderManufacturerId, "employeeId": wx.getStorageSync('pj_employee_id'), "employeeName": wx.getStorageSync('pj_employee_name') });
-    wx.request({
-      url: app.globalData.apiUrl +'/addCylinder',
-      method: "POST",
-      header: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "qcmappversion": app.globalData.qcmappversion
-      },
-      data: { unitId: 1, cylinderCode: this.data.cylinderCode, cylinderTypeId: this.data.cylinderTypeId, gasMediumId: this.data.gasMediumId, manufacturingDate: this.data.manufacturingDate, cylinderTypeName: this.data.cylinderTypeName, gasMediumName: this.data.gasMediumName, regularInspectionDate: this.data.regularInspectionDate, setId: this.data.setId, setNumber: this.data.setNumber, nominalTestPressure: this.data.nominalTestPressure, weight: this.data.weight, volume: this.data.volume, wallThickness: this.data.wallThickness, cylinderNumber: this.data.cylinderNumber, "cylinderManufacturerName": this.data.cylinderManufacturerName, "cylinderManufacturerId": this.data.cylinderManufacturerId, "employeeId": wx.getStorageSync('pj_employee_id'), "employeeName": wx.getStorageSync('pj_employee_name') },
-      success: res => {
-        console.log(res);
-        if (res.data.msg == "成功" && res.data.code == 200) {
-          var redirectStatus = 0;
-          wx.showModal({
-            title: '提示',
-            content: "添加气瓶成功,是否继续?",
-            success: function (res) {
-              if (res.confirm) {
-                redirectStatus = 1;
-              }
-              if(redirectStatus == 1) {
-                wx.redirectTo({
-                  url: '/pages/bind/bind'
-                });
-              } else {
-                wx.redirectTo({
-                  url: '/pages/index/index'
-                });
-                /*wx.navigateBack({
-                  delta: 1
-                });*/
-              }
-
-            }
-          });
-        } else {
-          wx.showToast({
-            title: "添加气瓶失败，请检查信息内容",
-            icon: 'none',
-            duration: 2000
-          });
-        }
-      }
-    });
-  },
-
-  //当键盘输入时，触发input事件
-  bindinput: function (e) {
-    if(e.detail.value.length<5)  return;
-    //用户实时输入值
-    var prefix = e.detail.value
-    //匹配的结果
-    var newSource = []
-    if (prefix != "") {
-      // 对于数组array进行遍历，功能函数中的参数 `e`就是遍历时的数组元素值。
-      this.data.adapterSource.forEach(function (e) {
-        var word = new String(e);
-        // 用户输入的字符串如果在数组中某个元素中出现，将该元素存到newSource中
-        if (word.search(prefix) != -1){
-          newSource.push(e)
-        } 
-      })
-    };
-
-    // 如果匹配结果存在，那么将其返回，相反则返回空数组
-    if (newSource.length != 0) {
-      this.setData({
-        // 匹配结果存在，显示自动联想词下拉列表
-        hideScroll: false,
-        bindSource: newSource,
-        arrayHeight: newSource.length * 71
-      })
-    } else {
-      this.setData({
-        // 匹配无结果，不现实下拉列表
-        hideScroll: true,
-        bindSource: []
-      })
-    }
-  },
-
-  // 用户点击选择某个联想字符串时，获取该联想词，并清空提醒联想词数组
-  itemtap: function (e) {
+  // 动画
+  showAnimation: function () {
     var that = this;
-    var originInputValue = e.target.id
-    var inputValueArrray = originInputValue.split("-")
-    this.setData({
-      inputValue: inputValueArrray[0],
-      // 当用户选择某个联想词，隐藏下拉列表
-      hideScroll: true,
-      bindSource: []
+    var animation = wx.createAnimation({
+      duration: 3000,
+      timingFunction: 'ease'
+    });
+    animation.opacity(1).step();
+    that.setData({
+      animationData: animation.export()
     })
-      
-    //var setNumber = e.detail.value
-    var setNumber = inputValueArrray[0]
-    if (setNumber.length > 0) {
-      //获取集格信息进行比较，拿到setId
+  },
+
+  // 重置data
+  reset: function() {
+    var that = this;
+    that.setData({
+      cylinderId: '',
+      cylinderTypeIndex: 0,
+      cylinderTypeId: that.data.cylinderTypeArray[0].cylinderTypeId,
+      cylinderTypeName: that.data.cylinderTypeArray[0].cylinderTypeName,
+      gasMediumArray: that.data.cylinderTypeArray[0].gasMediumList,
+      gasMediumIndex: 0,
+      gasMediumId: that.data.cylinderTypeArray[0].gasMediumList[0].gasMediumId,
+      gasMediumName: that.data.cylinderTypeArray[0].gasMediumList[0].gasMediumName,
+      setId: -1,
+      setNumber:"",
+      setName: "",
+      forSetList: [],
+      cylinderManufacturerName: that.data.manuCodes[0].name,
+      cylinderManufacturerId: that.data.manuCodes[0].id,
+      codeIndex: 0,
+      manufacturingDate: that.getTodayDate(),
+      regularInspectionDate: that.getTodayDate(),
+      cylinderNumber: '',
+      nominalTestPressure: 0,
+      weight: 0, 
+      volume: 0, 
+      wallThickness: 0,
+      disabled: false,
+      opacity: 0.9,
+      hasAdd: false,
+      hasBind: false
+    })
+  },
+
+  // 再次绑定重置data
+  againReset: function () {
+    var that = this;
+    that.setData({
+      cylinderId: '',
+      setId: -1,
+      setNumber: "",
+      setName: "",
+      forSetList: [],
+      cylinderManufacturerName: that.data.manuCodes[0].name,
+      cylinderManufacturerId: that.data.manuCodes[0].id,
+      codeIndex: 0,
+      manufacturingDate: that.getTodayDate(),
+      regularInspectionDate: that.getTodayDate(),
+      cylinderNumber: '',
+      nominalTestPressure: 0,
+      weight: 0,
+      volume: 0,
+      wallThickness: 0,
+      disabled: false,
+      opacity: 0.9,
+      hasAdd: false,
+      hasBind: false
+    })
+  },
+
+  // 提交动作
+  onSubmit: function () {
+    var that = this;
+    if(that.data.hasAdd && !that.data.hasBind) {
+      that.addNumber(that.data.cylinderId);
+    } else if (!that.data.hasAdd && !that.data.hasBind){
+      that.addCylinder();
+    } else {
+      wx.showToast({
+        title: '该气瓶已绑码',
+        icon: 'none'
+      })
+    }
+  },
+
+  addCylinder: function() {
+    var that = this;
+    var data = {
+      unitId: 1,
+      cylinderCode: that.data.cylinderCode,
+      cylinderTypeId: that.data.cylinderTypeId,
+      gasMediumId: that.data.gasMediumId,
+      manufacturingDate: that.data.manufacturingDate,
+      cylinderTypeName: that.data.cylinderTypeName,
+      gasMediumName: that.data.gasMediumName,
+      regularInspectionDate: that.data.regularInspectionDate,
+      nominalTestPressure: that.data.nominalTestPressure,
+      weight: that.data.weight,
+      volume: that.data.volume,
+      wallThickness: that.data.wallThickness,
+      cylinderNumber: that.data.cylinderNumber,
+      cylinderManufacturerName: that.data.cylinderManufacturerName,
+      cylinderManufacturerId: that.data.cylinderManufacturerId,
+      employeeId: that.data.employeeId,
+      employeeName: that.data.employeeName
+    };
+    if (that.data.setId != -1) {
+      data.setId = that.data.setId;
+      data.setNumber = that.data.setNumber;
+    }
+    if (that.checkNull(data.cylinderCode) && that.checkNull(data.cylinderTypeId) && that.checkNull(data.cylinderTypeName) && that.checkNull(data.gasMediumId) && that.checkNull(data.gasMediumName) && that.checkNull(data.cylinderManufacturerName) && that.checkNull(data.manufacturingDate) && that.checkNull(data.nominalTestPressure) && that.checkNull(data.weight) && that.checkNull(data.volume) && that.checkNull(data.wallThickness) && that.checkRule(data.cylinderNumber) && that.checkUserInfoNull(data.employeeId) && that.checkUserInfoNull(data.employeeName)) {
       wx.request({
-        url: app.globalData.apiUrl + '/getSetInfoByUnitId',
+        url: app.globalData.apiUrl + '/addCylinder',
         method: "POST",
         header: {
           "Content-Type": "application/x-www-form-urlencoded",
           "qcmappversion": app.globalData.qcmappversion
         },
-        data: { unitId: 1, setNumber: setNumber },
+        data: data,
         success: res => {
-          if (res.data.data.length > 0) {
-            that.setData({ setNumber: setNumber });
-            that.setData({ setId: res.data.data[0].id });
+          if (res.data.msg == "成功") {
+            that.setData({
+              cylinderId: res.data.data.id
+            })
+            wx.showModal({
+              title: '提示',
+              content: "成功绑定,是否继续?",
+              success: function (res) {
+                console.log(JSON.stringify(res.confirm));
+                if (res.confirm) {
+                  that.againReset();
+                  // wx.redirectTo({
+                  //   url: '/pages/bind/bind'
+                  // });
+                } else {
+                  wx.switchTab({
+                    url: '/pages/index/index',
+                  })
+                }
+              }
+            });
           } else {
-            that.setData({ setNumber: "" });
-            that.setData({ setId: 0 });
             wx.showToast({
-              title: "您输入的集格编号不存在",
+              title: res.data.msg,
               icon: 'none',
               duration: 2000
             });
@@ -453,67 +593,88 @@ Page({
     }
   },
 
-  // 根据钢印号精确查询气瓶信息
-  getCylinderInfo: function (e) {
+  addNumber: function (cylinderId = null) {
     var that = this;
-    var cylinderCodeInput = e.detail.value;
-    var data = {
-      unitId: 1,
-      cylinderCode: cylinderCodeInput
-    }
-    wx.request({
-      url: app.globalData.apiUrl + '/getCylinderByCode',
-      method: "POST",
-      header: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "qcmappversion": app.globalData.qcmappversion
-      },
-      data: data,
-      success: res => {
-        // var cylinderTypeIndex = res.data.data.cylinderTypeId - 1;
-        var manufacturingDate = new Date().getFullYear() + "-" + ((new Date().getMonth() + 1) < 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)) + "-" + ((new Date().getDate() < 10) ? ("0" + new Date().getDate()) : (new Date().getDate()));
-        var regularInspectionDate = new Date().getFullYear() + "-" + ((new Date().getMonth() + 1) < 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)) + "-" + ((new Date().getDate() < 10) ? ("0" + new Date().getDate()) : (new Date().getDate()));
-        if (res.data.data != null) {
-          that.setData({
-            // cylinderTypeIndex: res.data.data.cylinderTypeId ? res.data.data.cylinderTypeId-1 : 0,
-            // gasIndex: res.data.data.gasMediumId ? res.data.data.gasMediumId-1 : 0,
-            // gasMediumName: res.data.data.gasMediumName ? res.data.data.gasMediumName : "",
-            // codeIndex: res.data.data.cylinderManufacturerId ? res.data.data.cylinderManufacturerId-1 : 0,
-            manufacturingDate: res.data.data.cylinderManufacturingDate ? res.data.data.cylinderManufacturingDate : manufacturingDate,
-            regularInspectionDate: res.data.data.regularInspectionDate ? res.data.data.regularInspectionDate : regularInspectionDate,
-            inputValue: res.data.data.setNumber ? res.data.data.setNumber : "",
-            nominalTestPressure: res.data.data.nominalTestPressure ? res.data.data.nominalTestPressure : 0,
-            weight: res.data.data.weight ? res.data.data.weight : 0,
-            volume: res.data.data.volume ? res.data.data.volume : 0,
-            wallThickness: res.data.data.wallThickness ? res.data.data.wallThickness : 0,
-            cylinderNumber: res.data.data.cylinderNumber ? res.data.data.cylinderNumber : ""
-          })
-          if (res.data.data.cylinderNumber != null) {
+    if (that.checkNull(cylinderId) && that.checkRule(that.data.cylinderNumber) && that.checkUserInfoNull(that.data.employeeId) && that.checkUserInfoNull(that.data.employeeName)) {
+      wx.request({
+        url: app.globalData.apiUrl + '/addNumber',
+        method: "POST",
+        header: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "qcmappversion": app.globalData.qcmappversion
+        },
+        data: {
+          unitId: 1,
+          cylinderId: cylinderId,
+          cylinderNumber: that.data.cylinderNumber,
+          employeeId: that.data.employeeId,
+          employeeName: that.data.employeeName
+        },
+        success: res => {
+          if (res.data.msg == "成功") {
+            wx.showModal({
+              title: '提示',
+              content: "成功绑定,是否继续?",
+              success: function (res) {
+                console.log(JSON.stringify(res.confirm));
+                if (res.confirm) {
+                  that.againReset();
+                  // wx.redirectTo({
+                  //   url: '/pages/bind/bind'
+                  // });
+                } else {
+                  wx.switchTab({
+                    url: '/pages/index/index',
+                  })
+                }
+              }
+            });
+          } else {
             wx.showToast({
-              title: '该气瓶已绑定二维码',
-              icon: "none",
+              title: res.data.msg,
+              icon: 'none',
               duration: 2000
-            })
+            });
           }
-        } else {
-          that.setData({
-            cylinderTypeIndex: 0,
-            gasIndex: 0,
-            codeIndex: 0,
-            manufacturingDate: manufacturingDate,
-            regularInspectionDate: regularInspectionDate,
-            inputValue: "",
-            nominalTestPressure: 0,
-            weight: 0,
-            volume: 0,
-            wallThickness: 0,
-            cylinderNumber: ""
-          })
         }
-      },
-      error: function (e) {
-        alert("查询气瓶失败");
+      });
+    }
+  },
+
+  checkNull: function(p) {
+    if (p == "" || p == null) {
+      alert("请检查有无漏填项！");
+      return false;
+    } else {
+      return true;
+    }
+  },
+
+  checkUserInfoNull: function(x) {
+    if (x == "" || x == null) {
+      alert("登录者信息缺失！");
+      return false;
+    } else {
+      return true;
+    }
+  },
+
+  checkRule: function(q) {
+    if (q == "" || q == null) {
+      alert("请检查有无漏填项！");
+      return false;
+    } else {
+      if (q.length != 11) {
+        alert("请保证标签码长度为 11");
+        return false;
+      } else {
+        if (q.substr(0, 4) != "0001") {
+          alert("所填标签码不符合规范");
+          return false;
+        } else {
+          return true;
+        }
       }
-    })
+    }
   }
 })

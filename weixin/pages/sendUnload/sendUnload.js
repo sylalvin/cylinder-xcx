@@ -155,7 +155,7 @@ Page({
         success: (res) => {
           if (that.judge(res.data.data)) {
             let forTransNumberList = [];
-            for (let k = 0; k < res.data.data.length; k++) { // 只取前五条运单号
+            for (let k = 0; k < res.data.data.length; k++) {
               forTransNumberList.push(res.data.data[k]);
             }
             that.setData({
