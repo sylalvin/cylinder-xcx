@@ -25,10 +25,6 @@
             </view>
           </view>
 
-          <!-- <view animation="{{animationData}}" style="opacity: 0;" class="item-text" wx:for="{{forTransNumberList}}" wx:key="index">
-            <text bindtap="onSelectItem" data-set-index="{{index}}" >{{item}}</text>
-          </view> -->
-
           <view class="page-section-spacing" wx:if="{{forTransNumberList.length > 0}}">
             <scroll-view scroll-y="true" style="height: 300rpx;">
               <view animation="{{animationData}}" style="opacity: 0;" class="item-text" wx:for="{{forTransNumberList}}" wx:key="index">

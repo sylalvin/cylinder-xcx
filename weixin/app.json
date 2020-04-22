@@ -1,6 +1,8 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/conScan/conScan",
+    "pages/setting/setting",
     "pages/filling/filling",
     "pages/addFilling/addFilling",
     "pages/warehouse/warehouse",
@@ -12,7 +14,6 @@
     "pages/outDelete/outDelete",
     "pages/backCheckEmpty/backCheckEmpty",
     "pages/backDelete/backDelete",
-    "pages/setting/setting",
     "pages/maintain/maintain",
     "pages/repair/repair",
     "pages/scrap/scrap",

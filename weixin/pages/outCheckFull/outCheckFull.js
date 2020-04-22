@@ -369,37 +369,25 @@ Page({
       },
       success: (res) => {
         if ((res.data.data != null) || (res.data.data != [])) { // 集格下有绑定气瓶，集格计数
-          var lastFillTime = res.data.data[0].lastFillTime;
-          var difftimes = 4 * 60 * 60 * 1000;
-          if ((lastFillTime == null) || ((lastFillTime != null) && (util.diff(lastFillTime, new Date()) > difftimes))) {
-            setList.push(setId);
-            that.setData({
-              setList: setList
-            })
-            that.countData();
-            wx.showToast({
-              title: "集格编号：" + setId + " 绑定气瓶数量：" + res.data.data.length,
-              icon: 'none',
-              mask: true,
-              duration: 2500
-            })
-            if (res.data.data.length > 0) {
-              for (let i = 0; i < res.data.data.length; i++) {
-                let cylinderNumber = res.data.data[i].cylinderNumber;
-                that.queryCylinderInfoByNumber(setId, cylinderNumber);
-              }
-            } else {
-              wx.showToast({
-                title: 'ID为 ' + setId + ' 的集格未绑定气瓶',
-                icon: 'none',
-                mask: true,
-                duration: 2500
-              })
+          setList.push(setId);
+          that.setData({
+            setList: setList
+          })
+          that.countData();
+          wx.showToast({
+            title: "集格编号：" + setId + " 绑定气瓶数量：" + res.data.data.length,
+            icon: 'none',
+            mask: true,
+            duration: 2500
+          })
+          if (res.data.data.length > 0) {
+            for (let i = 0; i < res.data.data.length; i++) {
+              let cylinderNumber = res.data.data[i].cylinderNumber;
+              that.queryCylinderInfoByNumber(setId, cylinderNumber);
             }
           } else {
-            // 4小时内充装过该集格
             wx.showToast({
-              title: 'ID为 ' + setId + ' 的集格4小时内已充装',
+              title: 'ID为 ' + setId + ' 的集格未绑定气瓶',
               icon: 'none',
               mask: true,
               duration: 2500
@@ -443,9 +431,6 @@ Page({
         },
         success: (res) => {
           if ((res.data.data != "") && (res.data.data != null)) {
-            var lastFillTime = res.data.data.lastFillTime;
-            var difftimes = 4 * 60 * 60 * 1000;
-            if ((lastFillTime == null) || ((lastFillTime != null) && (Util.diff(lastFillTime, new Date()) > difftimes))) {
               let cylinderId = res.data.data.id;
               let unitId = res.data.data.unitId;
               let cylinderCode = res.data.data.cylinderCode; // 气瓶码
@@ -473,15 +458,6 @@ Page({
                 mask: true,
                 duration: 2500
               })
-            } else {
-              // 4小时内充装过该气瓶
-              wx.showToast({
-                title: 'ID为 ' + cylinderNumber + ' 的气瓶4小时内已充装',
-                icon: 'none',
-                mask: true,
-                duration: 2500
-              })
-            }
           } else {
             // 未查询到气瓶信息
             wx.showToast({

@@ -21,8 +21,10 @@ Page({
     cylinderManufacturerName: "",
     cylinderManufacturerId: 0,
     codeIndex: 0,
-    manufacturingDate: "",
-    regularInspectionDate: "",
+    mYear: "",
+    mMonth: "",
+    rYear: "",
+    rMonth: "",
     cylinderNumber: '',
     nominalTestPressure: 0,
     weight: 0, 
@@ -32,9 +34,21 @@ Page({
     opacity: 0.9,
     animationData: {},
     hasAdd: false, // 气瓶是否已添加标签
-    hasBind: false,
+    hasBind: false, // 气瓶是否已绑定标签
     employeeId: wx.getStorageSync('pj_employee_id'),
-    employeeName: wx.getStorageSync('pj_employee_name')
+    employeeName: wx.getStorageSync('pj_employee_name'),
+    codefocus: true, // 钢瓶码焦点
+    pfocus: false, // 压力焦点
+    wfocus: false, // 重量焦点
+    vfocus: false, // 容积焦点
+    nfocus: false, // 壁厚焦点
+    myfocus: false, // 生产年焦点
+    mmfocus: false, // 生产月焦点
+    ryfocus: false, // 下检年焦点
+    rmfocus: false, // 下检月焦点
+    snfocus: false, // 集格二维码焦点
+    cnfocus: false, // 气瓶二维码焦点
+    firstQuery: true
   },
 
   onLoad: function (options) {
@@ -60,12 +74,6 @@ Page({
     let cylinderTypeArray = [];
     let manuCodes = [];
     let setList = [];
-    let manufacturingDate = "";
-    let regularInspectionDate = "";
-    that.setData({
-      manufacturingDate: that.getTodayDate(),
-      regularInspectionDate: that.getTodayDate()
-    })
     // 获取所有气瓶类型
     
     wx.request({
@@ -110,7 +118,7 @@ Page({
         if(res.data.data.length > 0) {
           let returnData = res.data.data;
           for (let i = 0; i < returnData.length; i++) {
-            manuCodes.push({ id: returnData[i].id, code: returnData[i].code, name: returnData[i].name, codename: returnData[i].code + '-' + returnData[i].name });
+            manuCodes.push({ id: returnData[i].id, code: returnData[i].code, name: returnData[i].name, codename: returnData[i].code + '-' + returnData[i].licenseNo + '-' + returnData[i].name.substr(0, 10) });
           }
           that.setData({
             manuCodes: manuCodes,
@@ -207,8 +215,7 @@ Page({
     var date = new Date();
     var year = date.getFullYear();
     var month = that.addZero(date.getMonth() + 1);
-    var day = that.addZero(date.getDate());
-    var todayDate = year + '-' + month + '-' + day;
+    var todayDate = year + '-' + month;
     return todayDate;
   },
 
@@ -217,7 +224,7 @@ Page({
     if(x < 10) {
       return '0' + x;
     } else {
-      return x;
+      return '' + x;
     }
   },
 
@@ -273,8 +280,10 @@ Page({
           }
           that.setData({
             cylinderId: res.data.data.id,
-            manufacturingDate: res.data.data.cylinderManufacturingDate ? res.data.data.cylinderManufacturingDate.substr(0, 10) : that.getTodayDate(),
-            regularInspectionDate: res.data.data.regularInspectionDate ? res.data.data.regularInspectionDate.substr(0, 10) : that.getTodayDate(),
+            mYear: res.data.data.cylinderManufacturingDate ? res.data.data.cylinderManufacturingDate.substr(0, 4) : that.getTodayDate().substr(0, 4),
+            mMonth: res.data.data.cylinderManufacturingDate ? res.data.data.cylinderManufacturingDate.substr(5, 2) : that.getTodayDate().substr(5, 2),
+            rYear: res.data.data.regularInspectionDate ? res.data.data.regularInspectionDate.substr(0, 4) : that.getTodayDate().substr(0, 4),
+            rMonth: res.data.data.regularInspectionDate ? res.data.data.regularInspectionDate.substr(5, 2) : that.getTodayDate().substr(5, 2),
             setNumber: res.data.data.setNumber,
             setId: res.data.data.setId,
             nominalTestPressure: res.data.data.nominalTestPressure ? res.data.data.nominalTestPressure : 0,
@@ -304,11 +313,18 @@ Page({
             hasAdd: false,
             hasBind: false
           })
-          that.reset();
+          if(that.data.firstQuery) {
+            that.reset();
+          } else {
+            that.noFirstReset();
+          }
         }
       },
       error: function (e) {
-        alert("钢瓶码查询气瓶接口访问失败");
+        wx.showToast({
+          title: '钢瓶码查询气瓶接口访问失败',
+          icon: 'none'
+        })
       }
     })
   },
@@ -349,22 +365,9 @@ Page({
     that.setData({
       codeIndex: codeIndex,
       cylinderManufacturerName: that.data.manuCodes[codeIndex].name,
-      cylinderManufacturerId: that.data.manuCodes[codeIndex].id
+      cylinderManufacturerId: that.data.manuCodes[codeIndex].id,
+      myfocus: true
     });
-  },
-
-  // 生产日期改变
-  bindManufacturingDateChange: function (e) {
-    this.setData({
-      manufacturingDate: e.detail.value
-    })
-  },
-
-  // 下检日期改变
-  bindInspectionDateChange: function (e) {
-    this.setData({
-      regularInspectionDate: e.detail.value
-    })
   },
 
   // 压力改变
@@ -395,54 +398,99 @@ Page({
     }
   },
 
-  // 扫码动作
-  onScan() {
+  // 集格扫码
+  onSetScan: function() {
     var that = this;
     wx.scanCode({
       success: (res) => {
-        let msg = '';
-        if (res.scanType === 'WX_CODE' && res.result === '') {
-          msg = 'Error!'
-          wx.showToast({
-            title: msg,
-            icon: 'none',
-            duration: 2000
-          });
-        } else {
-          //先处理短码，然后处理长码
-          var url = res.result;
-          var shortArr = url.split("/");
-          var code;
-          if(shortArr.length == 4) {
-            code = shortArr[3]
-          } else {
-            var longArr = url.split("=")
-            if (longArr.length>0) {
-              code = longArr[1]
+        if (res.result.indexOf("/set/code/") != -1) {
+          var setCode = res.result.indexOf("/set/code/");
+          var setList = that.data.setList;
+          setCode = res.result.substring(setCode + 10);
+          for(let i = 0; i < setList.length; i++) {
+            if(setList[i].id == setCode) {
+              let setId = setList[i].id;
+              let setNumber = setList[i].setNumber;
+              let setName = setList[i].name;
+              that.setData({
+                setId: setId,
+                setNumber: setNumber,
+                setName: setName,
+                forSetList: [],
+                pfocus: true
+              })
             }
           }
-          if(code.length != 11) {
-            wx.showToast({
-              title: "该气瓶编码不符合规范",
-              icon: 'none',
-              duration: 2000
-            });
-          } else {
-            that.setData({cylinderNumber:code})
-            wx.showToast({
-              title: "扫描成功"
-            });
-          }
+        } else {
+          wx.showToast({
+            title: '该码不符合集格码规范',
+            icon: 'none',
+            mask: true,
+            duration: 1500
+          })
         }
+      },
+      fail: (err) => {
+        that.setData({
+          forSetList: [],
+          snfocus: true
+        })
       }
     })
+  },
+
+  // 气瓶扫码
+  onScan: function () {
+    var that = this;
+    wx.scanCode({
+      success: (res) => {
+        if (res.result.indexOf("0001") != -1) {
+          var cylinderCode = res.result;
+          var cylinderNumber = cylinderCode.substring(cylinderCode.length - 11);
+          if (cylinderNumber.length != 11) {
+            wx.showToast({
+              title: '该气瓶码长度不正确',
+              icon: 'none',
+              mask: true,
+              duration: 1500
+            })
+          } else {
+            that.setData({
+              cylinderNumber: cylinderNumber
+            })
+          }
+        } else {
+          wx.showToast({
+            title: '请扫描气瓶二维码或条码',
+            icon: 'none',
+            mask: true,
+            duration: 1500
+          })
+        }
+      },
+      fail: (err) => {
+        that.setData({
+          cnfocus: true
+        })
+      }
+    })
+  },
+
+  // 手动输入标签码
+  manualInput: function(e) {
+    var that = this;
+    if(e.detail.value.length > 0) {
+      that.setData({
+        cylinderNumber: e.detail.value
+      })
+    }
   },
 
   // 动画
   showAnimation: function () {
     var that = this;
     var animation = wx.createAnimation({
-      duration: 3000,
+      duration: 1000,
       timingFunction: 'ease'
     });
     animation.opacity(1).step();
@@ -470,8 +518,10 @@ Page({
       cylinderManufacturerName: that.data.manuCodes[0].name,
       cylinderManufacturerId: that.data.manuCodes[0].id,
       codeIndex: 0,
-      manufacturingDate: that.getTodayDate(),
-      regularInspectionDate: that.getTodayDate(),
+      mYear: "",
+      mMonth: "",
+      rYear: "",
+      rMonth: "",
       cylinderNumber: '',
       nominalTestPressure: 0,
       weight: 0, 
@@ -488,16 +538,42 @@ Page({
   againReset: function () {
     var that = this;
     that.setData({
+      cylinderCode: '',
       cylinderId: '',
       setId: -1,
       setNumber: "",
       setName: "",
       forSetList: [],
-      cylinderManufacturerName: that.data.manuCodes[0].name,
-      cylinderManufacturerId: that.data.manuCodes[0].id,
-      codeIndex: 0,
-      manufacturingDate: that.getTodayDate(),
-      regularInspectionDate: that.getTodayDate(),
+      mYear: "",
+      mMonth: "",
+      rYear: "",
+      rMonth: "",
+      cylinderNumber: '',
+      nominalTestPressure: 0,
+      weight: 0,
+      volume: 0,
+      wallThickness: 0,
+      disabled: false,
+      opacity: 0.9,
+      hasAdd: false,
+      hasBind: false,
+      codefocus: true
+    })
+  },
+
+  // 不是首次绑定重置data
+  noFirstReset: function () {
+    var that = this;
+    that.setData({
+      cylinderId: '',
+      setId: -1,
+      setNumber: "",
+      setName: "",
+      forSetList: [],
+      mYear: "",
+      mMonth: "",
+      rYear: "",
+      rMonth: "",
       cylinderNumber: '',
       nominalTestPressure: 0,
       weight: 0,
@@ -532,10 +608,10 @@ Page({
       cylinderCode: that.data.cylinderCode,
       cylinderTypeId: that.data.cylinderTypeId,
       gasMediumId: that.data.gasMediumId,
-      manufacturingDate: that.data.manufacturingDate,
+      manufacturingDate: that.data.mYear + '-' + that.data.mMonth + '-28',
       cylinderTypeName: that.data.cylinderTypeName,
       gasMediumName: that.data.gasMediumName,
-      regularInspectionDate: that.data.regularInspectionDate,
+      regularInspectionDate: that.data.rYear + '-' + that.data.rMonth + '-28',
       nominalTestPressure: that.data.nominalTestPressure,
       weight: that.data.weight,
       volume: that.data.volume,
@@ -562,13 +638,13 @@ Page({
         success: res => {
           if (res.data.msg == "成功") {
             that.setData({
-              cylinderId: res.data.data.id
+              cylinderId: res.data.data.id,
+              firstQuery: false
             })
             wx.showModal({
               title: '提示',
               content: "成功绑定,是否继续?",
               success: function (res) {
-                console.log(JSON.stringify(res.confirm));
                 if (res.confirm) {
                   that.againReset();
                   // wx.redirectTo({
@@ -612,11 +688,13 @@ Page({
         },
         success: res => {
           if (res.data.msg == "成功") {
+            that.setData({
+              firstQuery: false
+            })
             wx.showModal({
               title: '提示',
               content: "成功绑定,是否继续?",
               success: function (res) {
-                console.log(JSON.stringify(res.confirm));
                 if (res.confirm) {
                   that.againReset();
                   // wx.redirectTo({
@@ -643,7 +721,10 @@ Page({
 
   checkNull: function(p) {
     if (p == "" || p == null) {
-      alert("请检查有无漏填项！");
+      wx.showToast({
+        title: '请检查有无漏填项！',
+        icon: 'none'
+      })
       return false;
     } else {
       return true;
@@ -652,7 +733,10 @@ Page({
 
   checkUserInfoNull: function(x) {
     if (x == "" || x == null) {
-      alert("登录者信息缺失！");
+      wx.showToast({
+        title: '请检查有无漏填项！',
+        icon: 'none'
+      })
       return false;
     } else {
       return true;
@@ -661,19 +745,209 @@ Page({
 
   checkRule: function(q) {
     if (q == "" || q == null) {
-      alert("请检查有无漏填项！");
+      wx.showToast({
+        title: '请检查有无漏填项！',
+        icon: 'none'
+      })
       return false;
     } else {
       if (q.length != 11) {
-        alert("请保证标签码长度为 11");
+        wx.showToast({
+          title: '请保证标签码长度为 11',
+          icon: 'none'
+        })
         return false;
       } else {
         if (q.substr(0, 4) != "0001") {
-          alert("所填标签码不符合规范");
+          wx.showToast({
+            title: '所填标签码不符合规范',
+            icon: 'none'
+          })
           return false;
         } else {
           return true;
         }
+      }
+    }
+  },
+
+  // 输入框焦点自动转移
+  pInputCheck: function(e) {
+    var that = this;
+    if(e.detail.value.length == 2) {
+      that.setData({
+        wfocus: true
+      })
+    }
+  },
+
+  wInputCheck: function (e) {
+    var that = this;
+    let input = e.detail.value;
+    if(input.indexOf('.') > -1) {
+      let x = input.split('.')[1];
+      if(x.length == 1) {
+        that.setData({
+          vfocus: true
+        })
+      }
+    }
+  },
+
+  vInputCheck: function (e) {
+    var that = this;
+    let input = e.detail.value;
+    if (input.indexOf('.') > -1) {
+      let x = input.split('.')[1];
+      if (x.length == 1) {
+        that.setData({
+          nfocus: true
+        })
+      }
+    }
+  },
+
+  nInputCheck: function (e) {
+    var that = this;
+    let input = e.detail.value;
+    if (input.indexOf('.') > -1) {
+      let x = input.split('.')[1];
+      if (x.length == 1) {
+        that.onScan();
+      }
+    }
+  },
+
+  myInputCheck: function(e) {
+    var that = this;
+    if (e.detail.value.length == 2) {
+      let myYear = e.detail.value;
+      let myNumber = Number(myYear);
+      if(myNumber < 60) {
+        myYear = '20' + myYear;
+      } else {
+        myYear = '19' + myYear;
+      }
+      that.setData({
+        mYear: myYear,
+        mmfocus: true
+      })
+    }
+  },
+
+  mmInputCheck: function(e) {
+    var that = this;
+    let flag = false;
+    if (e.detail.value.length > 0) {
+      that.setData({
+        mMonth: that.addZero(Number(e.detail.value))
+      })
+    }
+    if ((e.detail.value.length - 1) == 2) {
+      let checkTime = 0;
+      let fiveArray = ['氢气', '氮气', '氩气', '氦气'];
+      let threeArray = ['二氧化碳', '氧气', '混合气-腐蚀性', '混合气-非腐蚀性', '高纯空气'];
+      let mYear = that.data.mYear;
+      let mMonth = that.data.mMonth;
+      let todayDate = that.getTodayDate();
+      let tYear = todayDate.split('-')[0];
+      let tMonth = todayDate.split('-')[1];
+      let cylinderTypeName = that.data.cylinderTypeArray[that.data.cylinderTypeIndex].cylinderTypeName;
+      let gasMediumName = that.data.gasMediumArray[that.data.gasMediumIndex].gasMediumName;
+      if (cylinderTypeName == '钢制无缝气瓶' && fiveArray.indexOf(gasMediumName) > -1) {
+        checkTime = 5;
+      }
+      if (cylinderTypeName == '钢制无缝气瓶' && threeArray.indexOf(gasMediumName) > -1) {
+        checkTime = 3;
+      }
+      if (Number(tYear + tMonth) <= Number((Number(mYear) + checkTime) + mMonth)) {
+        that.setData({
+          rYear: Number(mYear) + checkTime,
+          rMonth: mMonth,
+          pfocus: true
+        })
+      } else {
+        that.setData({
+          rYear: '',
+          rMonth: '',
+          ryfocus: true
+        })
+      }
+    }
+  },
+
+  ryInputCheck: function (e) {
+    var that = this;
+    if (e.detail.value.length == 2) {
+      let mrYear = e.detail.value;
+      let mrNumber = Number(mrYear);
+      if (mrNumber < 60) {
+        mrYear = '20' + mrYear;
+      } else {
+        mrYear = '19' + mrYear;
+      }
+      that.setData({
+        rYear: mrYear,
+        rmfocus: true
+      })
+    }
+  },
+
+  rmInputCheck: function (e) {
+    if (e.detail.value.length > 0) {
+      this.setData({
+        rMonth: this.addZero(Number(e.detail.value))
+      })
+    }
+    if ((e.detail.value.length - 1) == 2) {
+      this.setData({
+        pfocus: true
+      })
+    }
+  },
+
+  // 日期获取焦点清除内容
+  mybfocus: function() {
+    this.setData({
+      mYear: ''
+    })
+  },
+
+  mmbfocus: function () {
+    this.setData({
+      mMonth: ''
+    })
+  },
+
+  rybfocus: function () {
+    this.setData({
+      rYear: ''
+    })
+  },
+
+  rmbfocus: function () {
+    this.setData({
+      rMonth: ''
+    })
+  },
+
+  // 计算月份天数
+  getDays: function(date) {
+    let bigMonth = [1, 3, 5, 7, 8, 10, 12];
+    let middleMonth = [4, 6, 9, 11];
+    let smallMonth = [2];
+    let year = date.split('-')[0];
+    let month = date.split('-')[1];
+    let days = 0;
+    if(bigMonth.indexOf(month) > -1) {
+      days = 31;
+    } else if(middleMonth.indexOf(month) > -1) {
+      days = 30;
+    } else if (smallMonth.indexOf(month) > -1) {
+      if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
+        days = 28;
+      } else {
+        days = 29;
       }
     }
   }

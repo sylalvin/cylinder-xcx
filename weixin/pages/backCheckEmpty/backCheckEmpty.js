@@ -68,6 +68,10 @@ Page({
       }, 1000)
       return;
     }
+    // 屏幕保持常亮
+    wx.setKeepScreenOn({
+      keepScreenOn: true,
+    })
     // 执行删除后的初始化气瓶数据
     var setList = app.globalData.backSetList;
     var cylinderList = app.globalData.backCylinderList;
@@ -122,7 +126,7 @@ Page({
                 var area = [];
                 for (let i = 0; i < res.data.data.length; i++) {
                   if (res.data.data[i].projectName == "回厂验空") {
-                  // if (res.data.data[i].projectName == "充前检测") {
+                    // if (res.data.data[i].projectName == "充前检测") {
                     // 流转区域开始
                     wx.request({
                       url: app.globalData.apiUrl + '/getCompanyProjectAreaByCompanyProjectId',
@@ -144,7 +148,7 @@ Page({
                           that.setData({
                             areaArray: area
                           })
-                          if(area.length > 0) {
+                          if (area.length > 0) {
                             that.setData({
                               companyAreaName: area[0].companyAreaName
                             })
@@ -321,7 +325,7 @@ Page({
               mask: true,
               duration: 2500
             })
-          }else{
+          } else {
             if (cylinderList.includes(cylinderNumber)) {
               wx.showToast({
                 title: '该气瓶已扫描',
@@ -356,7 +360,7 @@ Page({
   },
 
   // 根据集格编号查询集格下绑定的气瓶
-  queryCylinderBySetId: function(setId) {
+  queryCylinderBySetId: function (setId) {
     var that = this;
     var qcmappversion = that.data.qcmappversion;
     var setList = that.data.setList;
@@ -371,37 +375,25 @@ Page({
       },
       success: (res) => {
         if ((res.data.data != null) || (res.data.data != [])) { // 集格下有绑定气瓶，集格计数
-          var lastFillTime = res.data.data[0].lastFillTime;
-          var difftimes = 4 * 60 * 60 * 1000;
-          if ((lastFillTime == null) || ((lastFillTime != null) && (util.diff(lastFillTime, new Date()) > difftimes)) ) {
-            setList.push(setId);
-            that.setData({
-              setList: setList
-            })
-            that.countData();
-            wx.showToast({
-              title: "集格编号：" + setId + " 绑定气瓶数量：" + res.data.data.length,
-              icon: 'none',
-              mask: true,
-              duration: 2500
-            })
-            if (res.data.data.length > 0) {
-              for (let i = 0; i < res.data.data.length; i++) {
-                let cylinderNumber = res.data.data[i].cylinderNumber;
-                that.queryCylinderInfoByNumber(setId, cylinderNumber);
-              }
-            } else {
-              wx.showToast({
-                title: 'ID为 ' + setId + ' 的集格未绑定气瓶',
-                icon: 'none',
-                mask: true,
-                duration: 2500
-              })
+          setList.push(setId);
+          that.setData({
+            setList: setList
+          })
+          that.countData();
+          wx.showToast({
+            title: "集格编号：" + setId + " 绑定气瓶数量：" + res.data.data.length,
+            icon: 'none',
+            mask: true,
+            duration: 2500
+          })
+          if (res.data.data.length > 0) {
+            for (let i = 0; i < res.data.data.length; i++) {
+              let cylinderNumber = res.data.data[i].cylinderNumber;
+              that.queryCylinderInfoByNumber(setId, cylinderNumber);
             }
           } else {
-            // 4小时内充装过该集格
             wx.showToast({
-              title: 'ID为 ' + setId + ' 的集格4小时内已充装',
+              title: 'ID为 ' + setId + ' 的集格未绑定气瓶',
               icon: 'none',
               mask: true,
               duration: 2500
@@ -445,45 +437,33 @@ Page({
         },
         success: (res) => {
           if ((res.data.data != "") && (res.data.data != null)) {
-            var lastFillTime = res.data.data.lastFillTime;
-            var difftimes = 4 * 60 * 60 * 1000;
-            if ((lastFillTime == null) || ((lastFillTime != null) && (util.diff(lastFillTime, new Date()) > difftimes))) {
-              let cylinderId = res.data.data.id;
-              let unitId = res.data.data.unitId;
-              let cylinderCode = res.data.data.cylinderCode; // 气瓶码
-              let cylinderTypeName = res.data.data.cylinderTypeName; // 气瓶类型名称
-              let gasMediumName = res.data.data.gasMediumName; // 气瓶介质名称
-              let regularInspectionDate = res.data.data.regularInspectionDate.substring(0, 7); // 气瓶下检日期
-              let cylinderScrapDate = res.data.data.cylinderScrapDate.substring(0, 7); // 气瓶过期日期
+            let cylinderId = res.data.data.id;
+            let unitId = res.data.data.unitId;
+            let cylinderCode = res.data.data.cylinderCode; // 气瓶码
+            let cylinderTypeName = res.data.data.cylinderTypeName; // 气瓶类型名称
+            let gasMediumName = res.data.data.gasMediumName; // 气瓶介质名称
+            let regularInspectionDate = res.data.data.regularInspectionDate.substring(0, 7); // 气瓶下检日期
+            let cylinderScrapDate = res.data.data.cylinderScrapDate.substring(0, 7); // 气瓶过期日期
 
-              let cylinderManufacturingDate = res.data.data.cylinderManufacturingDate.substring(0, 7); // 气瓶生产日期
-              let volume = res.data.data.volume; // 气瓶容积
-              let nominalTestPressure = res.data.data.nominalTestPressure; // 气瓶压力
-              let weight = res.data.data.weight; // 气瓶重量
-              let lastFillTime = res.data.data.lastFillTime; // 气瓶最后充装时间
-              let wallThickness = res.data.data.wallThickness; // 气瓶壁厚
-              cylinderList.push(cylinderNumber);
-              allCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate, cylinderManufacturingDate, volume, nominalTestPressure, weight, lastFillTime, wallThickness });
-              that.setData({
-                cylinderList: cylinderList,
-                allCylinderList: allCylinderList
-              })
-              that.countData();
-              wx.showToast({
-                title: "二维码：" + cylinderNumber + " 介质：" + gasMediumName + " 过期日期：" + cylinderScrapDate,
-                icon: 'none',
-                mask: true,
-                duration: 2500
-              })
-            } else {
-              // 4小时内充装过该气瓶
-              wx.showToast({
-                title: 'ID为 ' + cylinderNumber + ' 的气瓶4小时内已充装',
-                icon: 'none',
-                mask: true,
-                duration: 2500
-              })
-            }
+            let cylinderManufacturingDate = res.data.data.cylinderManufacturingDate.substring(0, 7); // 气瓶生产日期
+            let volume = res.data.data.volume; // 气瓶容积
+            let nominalTestPressure = res.data.data.nominalTestPressure; // 气瓶压力
+            let weight = res.data.data.weight; // 气瓶重量
+            let lastFillTime = res.data.data.lastFillTime; // 气瓶最后充装时间
+            let wallThickness = res.data.data.wallThickness; // 气瓶壁厚
+            cylinderList.push(cylinderNumber);
+            allCylinderList.push({ setId, cylinderNumber, cylinderId, unitId, cylinderCode, cylinderTypeName, gasMediumName, regularInspectionDate, cylinderScrapDate, cylinderManufacturingDate, volume, nominalTestPressure, weight, lastFillTime, wallThickness });
+            that.setData({
+              cylinderList: cylinderList,
+              allCylinderList: allCylinderList
+            })
+            that.countData();
+            wx.showToast({
+              title: "二维码：" + cylinderNumber + " 介质：" + gasMediumName + " 过期日期：" + cylinderScrapDate,
+              icon: 'none',
+              mask: true,
+              duration: 2500
+            })
           } else {
             // 未查询到气瓶信息
             wx.showToast({
@@ -503,7 +483,7 @@ Page({
           })
         }
       })
-    }else{
+    } else {
       let setCylinderList = that.data.setCylinderList;
       let allCylinderList = that.data.allCylinderList;
       wx.request({
@@ -587,7 +567,7 @@ Page({
   },
 
   // 设置全局变量
-  setGlobal: function() {
+  setGlobal: function () {
     var that = this;
     app.globalData.backCylinderList = that.data.cylinderList;
     app.globalData.backSetCylinderList = that.data.setCylinderList;
@@ -604,13 +584,13 @@ Page({
     let setCylinderList = that.data.setCylinderList;
     let allCylinderList = that.data.allCylinderList;
     if (allCylinderList.length > 0) {
-      for (let i = allCylinderList.length-1; i >= 0; i--) {
+      for (let i = allCylinderList.length - 1; i >= 0; i--) {
         let temp = allCylinderList[i];
         // 拼接气瓶信息
         let data = that.data.commonInfo;
         data.cylinderId = allCylinderList[i].cylinderId;
         data.unitId = allCylinderList[i].unitId;
-        if(data.creator != "") {
+        if (data.creator != "") {
           wx.request({
             url: app.globalData.apiUrl + '/addPreDetection',
             method: 'GET',
@@ -627,7 +607,7 @@ Page({
                 indexA = allCylinderList.indexOf(temp);
                 indexSC = setCylinderList.indexOf(temp);
                 indexC = cylinderList.indexOf(temp.cylinderNumber);
-                
+
                 if (indexA > -1) {
                   allCylinderList.splice(indexA, 1);
                   that.setData({
@@ -654,12 +634,12 @@ Page({
                 }
                 if (temp.setId != null) {
                   let count = 0;
-                  for(let j=0; j<allCylinderList.length; j++) {
+                  for (let j = 0; j < allCylinderList.length; j++) {
                     if (allCylinderList[j].setId == temp.setId) {
                       count += 1;
                     }
                   }
-                  if(count == 0) {
+                  if (count == 0) {
                     indexS = setList.indexOf(temp.setId);
                     if (indexS > -1) {
                       setList.splice(indexS, 1);
@@ -671,7 +651,7 @@ Page({
                     }
                   }
                 }
-                
+
                 that.checkData(i + 1);
               } else {
                 wx.showToast({
@@ -718,7 +698,7 @@ Page({
     var qcmappversion = that.data.qcmappversion;
     var allCylinderList = that.data.allCylinderList;
     if (allCylinderList.length > 0) {
-      if(status == null) {
+      if (status == null) {
         that.submitForm();
       } else {
         console.log("正在提交第： " + status + " 条数据...");

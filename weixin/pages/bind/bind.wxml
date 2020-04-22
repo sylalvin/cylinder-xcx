@@ -5,9 +5,8 @@
         <view class="weui-label">钢瓶号</view>
       </view>
       <view class="weui-cell__bd">
-        <input class="weui-input" placeholder="输入钢瓶号/自编码" bindinput="getCylinderByCode"/>
+        <input class="weui-input" placeholder="输入钢瓶号/自编码" focus="{{codefocus}}" bindinput="getCylinderByCode" value="{{cylinderCode}}"/>
       </view>
-      <send-code id="send-btn" bindtap="onSend"></send-code>
     </view>
     <view class="weui-cell weui-cell_select">
       <view class="weui-cell__hd weui-cell__hd_in-select-after">
@@ -43,28 +42,36 @@
       <view class="weui-cell__hd weui-cell__hd_in-select-after">
         <view class="weui-label">生产日期</view>
       </view>
-      <view class="weui-cell__bd">
-        <picker mode="date" value="{{manufacturingDate}}" start="2000-01-01" end="2025-12-31" bindchange="bindManufacturingDateChange">
-          <view class="weui-select weui-select_in-select-after picker">{{manufacturingDate}}</view>
-        </picker>
+      <view class="weui-cell__bd idate">
+        <input class="input_date" type="number" placeholder="年" value="{{mYear}}" focus="{{myfocus}}" bindfocus="mybfocus"  bindinput="myInputCheck"></input>
+        <input class="input_date" type="number" placeholder="月" value="{{mMonth}}" focus="{{mmfocus}}" bindfocus="mmbfocus" bindinput="mmInputCheck"></input>
       </view>
     </view>
     <view class="weui-cell weui-cell_select">
       <view class="weui-cell__hd weui-cell__hd_in-select-after">
         <view class="weui-label">下检日期</view>
       </view>
-      <view class="weui-cell__bd">
-        <picker mode="date" value="{{regularInspectionDate}}" start="{{manufacturingDate}}" end="2025-12-31" bindchange="bindInspectionDateChange">
-          <view class="weui-select weui-select_in-select-after picker">{{regularInspectionDate}}</view>
-        </picker>
+      <view class="weui-cell__bd idate">
+        <input class="input_date" type="number" placeholder="年" value="{{rYear}}" focus="{{ryfocus}}" bindfocus="rybfocus"  bindinput="ryInputCheck"></input>
+        <input class="input_date" type="number" placeholder="月" value="{{rMonth}}" focus="{{rmfocus}}" bindfocus="rmbfocus" bindinput="rmInputCheck"></input>
       </view>
     </view>
-    <view class="weui-cell weui-cell_input">
+    <!-- <view class="weui-cell weui-cell_input">
       <view class="weui-cell__hd">
         <view class="weui-label">集格编号</view>
       </view>
       <view class="weui-cell__bd">
         <input class="weui-input" bindinput="bindinput" placeholder="输入集格编号" value="{{setNumber==null ? '暂未绑定集格' : setNumber}}"/>
+      </view>
+    </view> -->
+
+    <view class="weui-cell weui-cell_select">
+      <view class="weui-cell__hd weui-cell__hd_in-select-after">
+        <view class="weui-label">集格编号</view>
+      </view>
+      <view class="weui-cell__bd idate">
+        <input class="weui-input input_cylinder_scan" placeholder="扫码" bindtap="onSetScan" disabled="disabled"/>
+        <input class="weui-input input_cylinder" adjust-position="true" cursor-spacing="100" placeholder="手动输码" value="{{setNumber==null ? '暂未绑定集格' : setNumber}}" bindinput="bindinput" focus="{{snfocus}}"/>
       </view>
     </view>
       <view class="page-section-spacing" wx:if="{{forSetList.length > 0}}">
@@ -79,7 +86,7 @@
         <view class="weui-label">公称压力</view>
       </view>
       <view class="weui-cell__bd">
-        <input class="weui-input" placeholder="输入公称压力(Mpa)" type="digit" bindblur="onPressureChange" value="{{nominalTestPressure!=0 ? nominalTestPressure: ''}}" />
+        <input class="weui-input" placeholder="输入公称压力(Mpa)" type="digit" adjust-position="true" cursor-spacing="100" bindblur="onPressureChange" bindinput="pInputCheck" value="{{nominalTestPressure!=0 ? nominalTestPressure: ''}}" focus="{{pfocus}}"/>
       </view>
     </view>
         <view class="weui-cell weui-cell_input">
@@ -87,7 +94,7 @@
         <view class="weui-label">钢瓶重量</view>
       </view>
       <view class="weui-cell__bd">
-        <input class="weui-input" placeholder="输入钢瓶重量(Kg)" type="digit" bindblur="onWeightChange" value="{{weight!=0 ? weight: ''}}" />
+        <input class="weui-input" placeholder="输入钢瓶重量(Kg)" type="digit" adjust-position="true" cursor-spacing="100" bindblur="onWeightChange" bindinput="wInputCheck" value="{{weight!=0 ? weight: ''}}" focus="{{wfocus}}"/>
       </view>
     </view>
         <view class="weui-cell weui-cell_input">
@@ -95,7 +102,7 @@
         <view class="weui-label">钢瓶容积</view>
       </view>
       <view class="weui-cell__bd">
-        <input class="weui-input" placeholder="输入钢瓶容积(L)" type="digit" bindblur="onVolumeChange" value="{{volume!=0 ? volume: ''}}" />
+        <input class="weui-input" placeholder="输入钢瓶容积(L)" type="digit" adjust-position="true" cursor-spacing="100" bindblur="onVolumeChange" bindinput="vInputCheck" value="{{volume!=0 ? volume: ''}}" focus="{{vfocus}}"/>
       </view>
     </view>
         <view class="weui-cell weui-cell_input">
@@ -103,26 +110,20 @@
         <view class="weui-label">钢瓶壁厚</view>
       </view>
       <view class="weui-cell__bd">
-        <input class="weui-input" placeholder="输入钢瓶壁厚(mm)" type="digit" bindblur="onNessChange" value="{{wallThickness!=0 ? wallThickness: ''}}" />
+        <input class="weui-input" placeholder="输入钢瓶壁厚(mm)" type="digit" adjust-position="true" cursor-spacing="100" bindblur="onNessChange" bindinput="nInputCheck" value="{{wallThickness!=0 ? wallThickness: ''}}" focus="{{nfocus}}"/>
       </view>
     </view>
-    <view class="weui-cell weui-cell_input">
-      <view class="weui-cell__hd">
+    <view class="weui-cell weui-cell_select">
+      <view class="weui-cell__hd weui-cell__hd_in-select-after">
         <view class="weui-label">标签码</view>
       </view>
-      <view class="weui-cell__bd">
-        <input class="weui-input" placeholder="点击扫码条码/二维码" value="{{cylinderNumber}}" data-label="cylinderNumber" type="text" bindtap="onScan" />
-      </view>
-    </view>
-    <view class="weui-cell weui-cell_input">
-      <view class="weui-cell__hd" style="padding: 10px;">
-        <text style="color: #999;font-size: 12px;">注意：集格编号为模糊查询，在输入五位数及以上会显示查询结果（如有）。</text>
+      <view class="weui-cell__bd idate">
+        <input class="weui-input input_cylinder_scan" placeholder="扫码" bindtap="onScan" disabled="disabled"/>
+        <input class="weui-input input_cylinder" type="number" adjust-position="true" cursor-spacing="100" placeholder="手动输码" value="{{cylinderNumber}}" bindinput="manualInput" focus="{{cnfocus}}"/>
       </view>
     </view>
   </view>
-  <view class="weui-navbar">
-    <view class="weui-navbar__item">
-      <view class="weui-navbar__title" catchtap="onSubmit" style="opacity :{{opacity}};" disabled="{{disabled}}">确定</view>
-    </view>
+  <view class="weui-btn-area">
+    <button class="weui-btn" type="primary" bindtap="onSubmit" style="opacity :{{opacity}};" disabled="{{disabled}}">确 定</button>
   </view>
 </view>

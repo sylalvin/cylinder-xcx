@@ -52,5 +52,12 @@ Page({
     wx.switchTab({
       url: '/pages/index/index',
     })
+  },
+
+  // conScan
+  conScan: function() {
+    wx.redirectTo({
+      url: '/pages/conScan/conScan'
+    })
   }
 })

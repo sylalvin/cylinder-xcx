@@ -1,24 +1,8 @@
 page {
   padding-top: 30rpx;
 }
-.weui-cells {
-  padding-bottom: 150rpx;
-}
 .search_item{
   padding-left: 276rpx;
-}
-.weui-navbar {
-  position: fixed;
-  top: 93%;
-  bottom: 0 !important;
-  border: 0 !important;
-}
-.weui-navbar__item {
-  border-top: 1px #9A9A9A solid !important;
-  background-color: #4F77AB;
-}
-.weui-navbar__title {
-  color: #FFFFFF;
 }
 .item-text{
   padding: 5px;
@@ -31,4 +15,39 @@ page {
 }
 scroll-view{
   background-color: #efefef;
+}
+.idate{
+  padding: 5px 0;
+  display: flex;
+}
+.input_date{
+  flex: 1;
+  border: 1px solid #666;
+  padding: 5px 20px;
+  border-radius: 5px;
+  margin-right: 5px;
+}
+.input_cylinder{
+  flex: 3;
+  border: 1px solid #666;
+  padding: 5px 20px;
+  border-radius: 5px;
+  margin-right: 5px;
+  height: 1.4rem;
+  min-height: 1.4rem;
+  line-height: 1.4rem;
+}
+.input_cylinder_scan{
+  flex: 1;
+  border: 1px solid #666;
+  background-color: greenyellow;
+  padding: 5px 20px;
+  border-radius: 5px;
+  margin-right: 5px;
+  height: 1.4rem;
+  min-height: 1.4rem;
+  line-height: 1.4rem;
+}
+.weui-btn-area{
+  margin: 5px 5px 50px;
 }

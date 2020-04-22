@@ -51,6 +51,10 @@ Page({
 
   onShow: function () {
     var that = this;
+    // 屏幕保持常亮
+    wx.setKeepScreenOn({
+      keepScreenOn: true,
+    })
     // 执行删除后的初始化气瓶数据
     var setList = app.globalData.wareSetList;
     var cylinderList = app.globalData.wareCylinderList;
@@ -152,19 +156,15 @@ Page({
     })
   },
 
-  // bindInputChange2: function(e) {
-  //   var that = this;
-  //   console.log("库区名称：" + e.detail.value);
-  // },
-
   // 模糊查询运单号item
   bindInputChange: function (e) {
     var that = this;
     if (e.detail.value.length > 4) {
       wx.request({
-        url: "http://47.101.208.226:18080/api/searchTransOrderNumber",
-        method: 'POST',
+        url: "https://wx.feifanqishi.net/index.php",
+        method: 'GET',
         data: {
+          'action': 'searchTransOrderNumber',
           'number': e.detail.value
         },
         header: {
@@ -217,7 +217,7 @@ Page({
   showAnimation: function () {
     var that = this;
     var animation = wx.createAnimation({
-      duration: 3000,
+      duration: 1000,
       timingFunction: 'ease'
     });
     animation.opacity(1).step();
@@ -236,16 +236,35 @@ Page({
     })
     if (transId != "") {
       wx.request({
-        url: "http://gas777.iask.in:89/ServiceControl/JavaService.ashx",
+        url: "https://wx.feifanqishi.net/index.php",
         method: 'GET',
         data: {
-          transId: transId
+          'action': 'searchTransByOrderNo',
+          'number': transId
         },
         success: (res) => {
           if ((res.data.data != "") && (res.data.data != null)) {
             that.setData({
               getOrderData: true
             })
+            // 拼接判断司机和押运员
+            let driverName = '';
+            let surpercargoName = '';
+            let driverNameArray = res.data.data.driverName.split(',');
+            let surpercargoNameArray = res.data.data.surpercargo.split(',');
+            let dsArray = driverNameArray.concat(surpercargoNameArray);
+            for (let i = 0; i < dsArray.length; i++) {
+              if (dsArray[i] == "") {
+                dsArray.splice(i, 1);
+                i--;
+              }
+            }
+            if (dsArray.length == 1) {
+              driverName = dsArray[0];
+            } else if (dsArray.length > 1) {
+              driverName = dsArray[0];
+              surpercargoName = dsArray[dsArray.length - 1];
+            }
             // 客户id或仓库id
             if (that.judge(res.data.data.customerName)) {
               that.setData({
@@ -355,12 +374,12 @@ Page({
             }
 
             // 司机id
-            if (that.judge(res.data.data.driverName)) {
+            if (that.judge(driverName)) {
               wx.request({
                 url: app.globalData.apiUrl + '/getEmployeeByName',
                 method: 'POST',
                 data: {
-                  'name': res.data.data.driverName,
+                  'name': driverName,
                   'unitId': 1
                 },
                 header: {
@@ -390,12 +409,12 @@ Page({
             }
 
             // 押运员id
-            if (that.judge(res.data.data.surpercargo)) {
+            if (that.judge(surpercargoName)) {
               wx.request({
                 url: app.globalData.apiUrl + '/getEmployeeByName',
                 method: 'POST',
                 data: {
-                  'name': res.data.data.surpercargo,
+                  'name': surpercargoName,
                   'unitId': 1
                 },
                 header: {
