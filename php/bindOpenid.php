@@ -18,7 +18,7 @@ function tocurl($url, $header){
     return $response;
 }
 
-$header=array('Accept-Language:zh-CN','qcmappversion:1.0.5','Content-Type:application/x-www-form-urlencoded','charset:utf-8');
+$header=array('Accept-Language:zh-CN','qcmappversion:1.0.8','Content-Type:application/x-www-form-urlencoded','charset:utf-8');
 $openid = trim($_POST['openid']);
 $userName = trim($_POST['userName']);
 $password = trim($_POST['password']);
@@ -34,7 +34,7 @@ $password = trim($_POST['password']);
   	  echo json_encode(array('code'=>302,"msg"=>"openid不能为空"));
   	  exit;
   } 
-$url = 'http://47.101.47.89:18090/api/bind?userName='.$userName."&password=".$password."&openid=".$openid; 
+$url = 'https://xch.feifanqishi.net/api/bind?userName='.$userName."&password=".$password."&openid=".$openid; 
 //$url = 'http://localhost:18090/api/bind'; 
 $result = tocurl($url, $header);
 echo $result;
