@@ -46,10 +46,20 @@
             </view>
           </view>
 
+          <view class="weui-cell weui-cell_select">
+            <view class="weui-cell__hd weui-cell__hd_in-select-after">
+              <view class="weui-label">下检日期：</view>
+            </view>
+            <view class="weui-cell__bd idate">
+              <input class="input_date" type="number" placeholder="年" value="{{rYear}}"adjust-position="true" cursor-spacing="100" focus="{{ryfocus}}" bindfocus="rybfocus"  bindinput="ryInputCheck"></input>
+              <input class="input_date" type="number" placeholder="月" value="{{rMonth}}"adjust-position="true" cursor-spacing="100" focus="{{rmfocus}}" bindfocus="rmbfocus" bindinput="rmInputCheck"></input>
+            </view>
+          </view>
+
           <view class="weui-cells weui-cells_after-title">
               <view class="weui-cell">
                   <view class="weui-cell__bd">
-                      <textarea bindinput="bindInputChange" class="weui-textarea" placeholder="填写备注" style="height: 3.3em" maxlength="-1" value="{{cylinderInfo.remark}}" />
+                      <textarea bindinput="bindInputChange" class="weui-textarea" placeholder="填写备注" style="height: 3.3em" maxlength="-1" focus="{{remarkfocus}}" value="{{cylinderInfo.remark}}" />
                   </view>
               </view>
           </view>

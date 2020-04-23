@@ -11,7 +11,7 @@
             </view>
           </view>
 
-          <view class="p20">
+          <view class="p20" style="display: none;">
               <button class="weui-btn" type="warn" plain="true" bindtap="conScan">连 续 扫 码</button>
           </view>
           

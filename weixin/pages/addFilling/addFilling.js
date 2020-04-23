@@ -434,7 +434,7 @@ Page({
                 })
 
                 wx.showToast({
-                  title: "二维码：" + cylinderNumber + " 介质：" + gasMediumName + " 过期日期：" + cylinderScrapDate,
+                  title: "二维码：" + cylinderNumber + " 介质：" + gasMediumName + " 过期日期：" + regularInspectionDate,
                   icon: 'none',
                   mask: true,
                   duration: 2500

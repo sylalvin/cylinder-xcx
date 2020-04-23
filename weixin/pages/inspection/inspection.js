@@ -37,7 +37,12 @@ Page({
     checkboxPass: [],
     init_checkboxPass: [
       { name: 'ifPass', value: '检测通过', checked: 'true' }
-    ]
+    ],
+    rYear: '',
+    rMonth: '',
+    ryfocus: true, // 下检年焦点
+    rmfocus: false, // 下检月焦点
+    remarkfocus: false // 备注焦点
   },
 
   onShow: function () {
@@ -180,8 +185,7 @@ Page({
             wx.showToast({
               title: '该气瓶码长度不正确',
               icon: 'none',
-              mask: true,
-              duration: 2500
+              mask: true
             })
           } else {
             // 查询气瓶信息
@@ -194,8 +198,7 @@ Page({
           wx.showToast({
             title: '请扫描气瓶二维码或条码',
             icon: 'none',
-            mask: true,
-            duration: 2500
+            mask: true
           })
         }
       }
@@ -261,10 +264,9 @@ Page({
             isShow: true
           })
           wx.showToast({
-            title: "二维码：" + cylinderNumber + " 介质：" + gasMediumName + " 过期日期：" + cylinderScrapDate,
+            title: "二维码：" + cylinderNumber + " 介质：" + gasMediumName + " 过期日期：" + regularInspectionDate,
             icon: 'none',
-            mask: true,
-            duration: 2500
+            mask: true
           })
         } else {
           // 未查询到气瓶信息
@@ -274,8 +276,7 @@ Page({
           wx.showToast({
             title: 'ID为 ' + cylinderNumber + ' 的气瓶信息缺失',
             icon: 'none',
-            mask: true,
-            duration: 2500
+            mask: true
           })
         }
       },
@@ -286,8 +287,7 @@ Page({
         wx.showToast({
           title: '查询气瓶接口访问失败',
           icon: 'none',
-          mask: true,
-          duration: 2500
+          mask: true
         })
       }
     })
@@ -318,6 +318,7 @@ Page({
         remark: that.data.cylinderInfo.remark,
         creator: that.data.cylinderInfo.creator
       }
+      data.regularInspectionDate = that.data.rYear + '-' + that.data.rMonth + '-20';
       wx.request({
         url: app.globalData.apiUrl + '/addCylinderTimingDetectionRecord',
         data: data,
@@ -326,33 +327,85 @@ Page({
         },
         method: 'GET',
         success: (res) => {
-          wx.showToast({
-            title: res.data.msg,
-            icon: 'none',
-            duration: 2000
-          })
           if (res.data.msg == "成功") {
             that.setData({
               disabled: true,
               opacity: 0.3
             })
+            wx.showModal({
+              title: '提示',
+              content: "提交成功,再次录入?",
+              success: function (result) {
+                if (result.confirm) {
+                  wx.redirectTo({
+                    url: '/pages/inspection/inspection'
+                  });
+                } else {
+                  wx.switchTab({
+                    url: '/pages/index/index',
+                  })
+                }
+              }
+            });
           }
         },
         fail: (e) => {
           wx.showToast({
             title: '添加定检接口访问失败',
-            icon: 'none',
-            duration: 2000
+            icon: 'none'
           })
         }
       })
     } else {
       wx.showToast({
         title: '您还未添加要定检的气瓶',
-        icon: 'none',
-        duration: 2000
+        icon: 'none'
       })
     }
+  },
+
+  // 日期补零
+  addZero: function (x) {
+    if (x < 10) {
+      return '0' + x;
+    } else {
+      return '' + x;
+    }
+  },
+
+  ryInputCheck: function (e) {
+    var that = this;
+    if (e.detail.value.length == 4) {
+      that.setData({
+        rYear: e.detail.value,
+        rmfocus: true
+      })
+    }
+  },
+
+  rmInputCheck: function (e) {
+    if (e.detail.value.length > 0) {
+      this.setData({
+        rMonth: this.addZero(Number(e.detail.value))
+      })
+    }
+    if ((e.detail.value.length - 1) == 2) {
+      this.setData({
+        remarkfocus: true
+      })
+    }
+  },
+
+  rybfocus: function () {
+    this.setData({
+      rYear: ''
+    })
+  },
+
+  rmbfocus: function () {
+    this.setData({
+      rMonth: ''
+    })
   },
 
   // 页面主要逻辑部分--结束

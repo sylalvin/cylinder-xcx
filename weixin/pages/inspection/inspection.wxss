@@ -46,3 +46,17 @@
 .c_red{
   color: red;
 }
+.idate{
+  padding: 5px 0;
+  display: flex;
+}
+.input_date{
+  flex: 1;
+  border: 1px solid #666;
+  padding: 5px 20px;
+  border-radius: 5px;
+  margin-right: 5px;
+}
+.weui-cell::before{
+  border-top: 0 !important;
+}
