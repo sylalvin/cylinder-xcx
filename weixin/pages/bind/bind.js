@@ -608,10 +608,10 @@ Page({
       cylinderCode: that.data.cylinderCode,
       cylinderTypeId: that.data.cylinderTypeId,
       gasMediumId: that.data.gasMediumId,
-      manufacturingDate: that.data.mYear + '-' + that.data.mMonth + '-28',
+      manufacturingDate: that.data.mYear + '-' + that.data.mMonth + '-' + util.getDaysOfMonth(that.data.mYear + '-' + that.data.mMonth),
       cylinderTypeName: that.data.cylinderTypeName,
       gasMediumName: that.data.gasMediumName,
-      regularInspectionDate: that.data.rYear + '-' + that.data.rMonth + '-28',
+      regularInspectionDate: that.data.rYear + '-' + that.data.rMonth + '-' + util.getDaysOfMonth(that.data.rYear + '-' + that.data.rMonth),
       nominalTestPressure: that.data.nominalTestPressure,
       weight: that.data.weight,
       volume: that.data.volume,
@@ -626,7 +626,9 @@ Page({
       data.setId = that.data.setId;
       data.setNumber = that.data.setNumber;
     }
-    if (that.checkNull(data.cylinderCode) && that.checkNull(data.cylinderTypeId) && that.checkNull(data.cylinderTypeName) && that.checkNull(data.gasMediumId) && that.checkNull(data.gasMediumName) && that.checkNull(data.cylinderManufacturerName) && that.checkNull(data.manufacturingDate) && that.checkNull(data.nominalTestPressure) && that.checkNull(data.weight) && that.checkNull(data.volume) && that.checkNull(data.wallThickness) && that.checkRule(data.cylinderNumber) && that.checkUserInfoNull(data.employeeId) && that.checkUserInfoNull(data.employeeName)) {
+    if (that.checkNull(data.cylinderCode) && that.checkNull(data.cylinderTypeId) && that.checkNull(data.cylinderTypeName) && that.checkNull(data.gasMediumId) && that.checkNull(data.gasMediumName) && that.checkNull(data.cylinderManufacturerName) && that.checkNull(that.data.mYear) && that.checkNull(that.data.mMonth) && that.checkNull(that.data.rYear) && that.checkNull(that.data.rMonth) && that.checkNull(data.nominalTestPressure) && that.checkNull(data.weight) && that.checkNull(data.volume) && that.checkNull(data.wallThickness) && that.checkRule(data.cylinderNumber) && that.checkUserInfoNull(data.employeeId) && that.checkUserInfoNull(data.employeeName)) {
+      data.manufacturingDate = that.data.mYear + '-' + that.data.mMonth + '-' + util.getDaysOfMonth(that.data.mYear + '-' + that.data.mMonth);
+      data.regularInspectionDate = that.data.rYear + '-' + that.data.rMonth + '-' + util.getDaysOfMonth(that.data.rYear + '-' + that.data.rMonth);
       wx.request({
         url: app.globalData.apiUrl + '/addCylinder',
         method: "POST",
@@ -720,6 +722,7 @@ Page({
   },
 
   checkNull: function(p) {
+    p = String(p);
     if (p == "" || p == null) {
       wx.showToast({
         title: '请检查有无漏填项！',
@@ -732,6 +735,7 @@ Page({
   },
 
   checkUserInfoNull: function(x) {
+    x = String(x);
     if (x == "" || x == null) {
       wx.showToast({
         title: '请检查有无漏填项！',
@@ -744,6 +748,7 @@ Page({
   },
 
   checkRule: function(q) {
+    q = String(q);
     if (q == "" || q == null) {
       wx.showToast({
         title: '请检查有无漏填项！',
@@ -929,26 +934,5 @@ Page({
     this.setData({
       rMonth: ''
     })
-  },
-
-  // 计算月份天数
-  getDays: function(date) {
-    let bigMonth = [1, 3, 5, 7, 8, 10, 12];
-    let middleMonth = [4, 6, 9, 11];
-    let smallMonth = [2];
-    let year = date.split('-')[0];
-    let month = date.split('-')[1];
-    let days = 0;
-    if(bigMonth.indexOf(month) > -1) {
-      days = 31;
-    } else if(middleMonth.indexOf(month) > -1) {
-      days = 30;
-    } else if (smallMonth.indexOf(month) > -1) {
-      if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
-        days = 28;
-      } else {
-        days = 29;
-      }
-    }
   }
 })

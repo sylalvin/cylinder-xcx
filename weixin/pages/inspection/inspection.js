@@ -318,44 +318,46 @@ Page({
         remark: that.data.cylinderInfo.remark,
         creator: that.data.cylinderInfo.creator
       }
-      data.regularInspectionDate = that.data.rYear + '-' + that.data.rMonth + '-20';
-      wx.request({
-        url: app.globalData.apiUrl + '/addCylinderTimingDetectionRecord',
-        data: data,
-        header: {
-          'qcmappversion': qcmappversion
-        },
-        method: 'GET',
-        success: (res) => {
-          if (res.data.msg == "成功") {
-            that.setData({
-              disabled: true,
-              opacity: 0.3
-            })
-            wx.showModal({
-              title: '提示',
-              content: "提交成功,再次录入?",
-              success: function (result) {
-                if (result.confirm) {
-                  wx.redirectTo({
-                    url: '/pages/inspection/inspection'
-                  });
-                } else {
-                  wx.switchTab({
-                    url: '/pages/index/index',
-                  })
+      if ( that.checkNull(data.unitId) && that.checkNull(data.cylinderId) && that.checkNull(data.appearance) && that.checkNull(data.result) && that.checkNull(data.valve) && that.checkNull(data.pressure) && that.checkNull(data.volume) && that.checkNull(data.creator) && that.checkPass() && that.checkRegularInspectionDate() ) {
+        data.regularInspectionDate = that.data.rYear + '-' + that.data.rMonth + '-' + util.getDaysOfMonth(that.data.rYear + '-' + that.data.rMonth);
+        wx.request({
+          url: app.globalData.apiUrl + '/addCylinderTimingDetectionRecord',
+          data: data,
+          header: {
+            'qcmappversion': qcmappversion
+          },
+          method: 'GET',
+          success: (res) => {
+            if (res.data.msg == "成功") {
+              that.setData({
+                disabled: true,
+                opacity: 0.3
+              })
+              wx.showModal({
+                title: '提示',
+                content: "提交成功,再次录入?",
+                success: function (result) {
+                  if (result.confirm) {
+                    wx.redirectTo({
+                      url: '/pages/inspection/inspection'
+                    });
+                  } else {
+                    wx.switchTab({
+                      url: '/pages/index/index',
+                    })
+                  }
                 }
-              }
-            });
+              });
+            }
+          },
+          fail: (e) => {
+            wx.showToast({
+              title: '添加定检接口访问失败',
+              icon: 'none'
+            })
           }
-        },
-        fail: (e) => {
-          wx.showToast({
-            title: '添加定检接口访问失败',
-            icon: 'none'
-          })
-        }
-      })
+        })
+      }
     } else {
       wx.showToast({
         title: '您还未添加要定检的气瓶',
@@ -371,6 +373,38 @@ Page({
     } else {
       return '' + x;
     }
+  },
+
+  // 如果是检测项全部通过，检测未通过 备注必填
+  checkPass: function () {
+    var that = this;
+    if ((that.data.cylinderInfo.appearance == 1) && (that.data.cylinderInfo.valve == 1) && (that.data.cylinderInfo.pressure == 1) && (that.data.cylinderInfo.volume == 1) && (that.data.cylinderInfo.ifPass == 0)) {
+      if(that.data.cylinderInfo.remark == "") {
+        wx.showToast({
+          title: '请填写未通过备注',
+          icon: 'none'
+        })
+        return false;
+      }
+      return true;
+    }
+    return true;
+  },
+
+  // 如果是检测通过 下检日期必填
+  checkRegularInspectionDate: function () {
+    var that = this;
+    if (that.data.cylinderInfo.ifPass == 1) {
+      if ((that.data.rYear == "") || (that.data.rMonth == "")) {
+        wx.showToast({
+          title: '请填写下检日期',
+          icon: 'none'
+        })
+        return false;
+      }
+      return true;
+    }
+    return true;
   },
 
   ryInputCheck: function (e) {
@@ -406,6 +440,19 @@ Page({
     this.setData({
       rMonth: ''
     })
+  },
+
+  checkNull: function (p) {
+    p = String(p);
+    if ((p == "") || (p == null)) {
+      wx.showToast({
+        title: '请检查有无漏填项！',
+        icon: 'none'
+      })
+      return false;
+    } else {
+      return true;
+    }
   },
 
   // 页面主要逻辑部分--结束

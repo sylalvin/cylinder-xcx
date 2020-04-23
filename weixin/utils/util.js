@@ -52,6 +52,27 @@ function checkLogin() {
     return true;
   }
 }
+// 计算月份天数 date:2020-04
+function getDaysOfMonth(date) {
+  let bigMonth = ["01", "03", "05", "07", "08", "10", "12"];
+  let middleMonth = ["04", "06", "09", "11"];
+  let smallMonth = ["02"];
+  let year = date.split('-')[0];
+  let month = date.split('-')[1];
+  let days = 0;
+  if (bigMonth.indexOf(month) > -1) {
+    days = 31;
+  } else if (middleMonth.indexOf(month) > -1) {
+    days = 30;
+  } else if (smallMonth.indexOf(month) > -1) {
+    if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
+      days = 29;
+    } else {
+      days = 28;
+    }
+  }
+  return days;
+}
 
 module.exports = {
   formatTime: formatTime,
@@ -59,5 +80,6 @@ module.exports = {
   getObjectKeys: getObjectKeys,
   putElementToFirst: putElementToFirst,
   diff: diff,
-  checkLogin: checkLogin
+  checkLogin: checkLogin,
+  getDaysOfMonth: getDaysOfMonth
 }
