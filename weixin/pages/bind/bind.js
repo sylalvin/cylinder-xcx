@@ -48,7 +48,15 @@ Page({
     rmfocus: false, // 下检月焦点
     snfocus: false, // 集格二维码焦点
     cnfocus: false, // 气瓶二维码焦点
-    firstQuery: true
+    firstQuery: true,
+    lastCylinderTypeIndex: null, // 上一个绑定气瓶类型index
+    lastGasMediumArray: [], // 上一个绑定介质种类
+    lastGasMediumIndex: null, // 上一个绑定所选介质index
+    lastCodeIndex: null, // 上一个绑定制造商index
+  },
+
+  onShow: function() {
+    
   },
 
   onLoad: function (options) {
@@ -152,10 +160,6 @@ Page({
     });
   },
 
-  onShow: function() {
-    // 初始化完成
-  },
-
   initDone: function() {
     var that = this;
     if ((that.data.cylinderTypeArray.length > 0) && (that.data.gasMediumArray.length > 0) && (that.data.manuCodes.length > 0) && (that.data.setList.length > 0)) {
@@ -249,6 +253,13 @@ Page({
       data: data,
       success: res => {
         if (res.data.data != null) {
+          // 设置上一次绑瓶数据
+          that.setData({
+            lastCylinderTypeIndex: that.data.cylinderTypeIndex,
+            lastGasMediumArray: that.data.gasMediumArray,
+            lastGasMediumIndex: that.data.gasMediumIndex,
+            lastCodeIndex: that.data.codeIndex
+          })
           let cylinderTypeArray = that.data.cylinderTypeArray;
           let gasMediumArray = that.data.gasMediumArray;
           let manuCodes = that.data.manuCodes;
@@ -313,11 +324,26 @@ Page({
             hasAdd: false,
             hasBind: false
           })
+          if(that.data.lastCylinderTypeIndex != null) {
+            // 设置上一次绑瓶数据
+            that.setData({
+              cylinderTypeIndex: that.data.lastCylinderTypeIndex,
+              gasMediumArray: that.data.lastGasMediumArray,
+              gasMediumIndex: that.data.lastGasMediumIndex,
+              codeIndex: that.data.lastCodeIndex
+            })
+          }
           if(that.data.firstQuery) {
             that.reset();
           } else {
             that.noFirstReset();
           }
+          that.setData({
+            lastCylinderTypeIndex: null,
+            lastGasMediumArray: [],
+            lastGasMediumIndex: null,
+            lastCodeIndex: null
+          })
         }
       },
       error: function (e) {
@@ -699,6 +725,21 @@ Page({
               success: function (res) {
                 if (res.confirm) {
                   that.againReset();
+                  if (that.data.lastCylinderTypeIndex != null) {
+                    // 设置上一次绑瓶数据
+                    that.setData({
+                      cylinderTypeIndex: that.data.lastCylinderTypeIndex,
+                      gasMediumArray: that.data.lastGasMediumArray,
+                      gasMediumIndex: that.data.lastGasMediumIndex,
+                      codeIndex: that.data.lastCodeIndex
+                    })
+                  }
+                  that.setData({
+                    lastCylinderTypeIndex: null,
+                    lastGasMediumArray: [],
+                    lastGasMediumIndex: null,
+                    lastCodeIndex: null
+                  })
                   // wx.redirectTo({
                   //   url: '/pages/bind/bind'
                   // });

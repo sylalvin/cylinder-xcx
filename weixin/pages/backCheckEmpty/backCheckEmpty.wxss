@@ -43,3 +43,9 @@
   width: 20%;
   float: right;
 }
+.radio-group{
+  text-align: center;
+}
+.radio{
+  margin: auto 20px !important;
+}

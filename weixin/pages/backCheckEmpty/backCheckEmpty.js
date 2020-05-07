@@ -32,9 +32,14 @@ Page({
       appearance: 1,
       safety: 1,
       ifPass: 1,
+      empty: 1,
       companyAreaId: 1,
       remark: ""
     },
+    bottleType: [
+      { name: '空瓶', value: '1', checked: 'true' },
+      { name: '满瓶', value: '0' }
+    ],
     checkboxItems: [],
     checkboxPass: [],
     init_checkboxItems: [
@@ -123,10 +128,9 @@ Page({
             method: 'GET',
             success: (res) => {
               if (res.data.data) {
-                var area = [];
                 for (let i = 0; i < res.data.data.length; i++) {
                   if (res.data.data[i].projectName == "回厂验空") {
-                    // if (res.data.data[i].projectName == "充前检测") {
+                  // if (res.data.data[i].projectName == "充前检测") {
                     // 流转区域开始
                     wx.request({
                       url: app.globalData.apiUrl + '/getCompanyProjectAreaByCompanyProjectId',
@@ -139,17 +143,18 @@ Page({
                         'qcmappversion': qcmappversion
                       },
                       method: 'GET',
-                      success: (res) => {
-                        if (res.data.data) {
+                      success: (res1) => {
+                        if (res1.data.data) {
                           var area = [];
-                          for (let i = 0; i < res.data.data.length; i++) {
-                            area.push({ companyAreaId: res.data.data[i].companyAreaId, companyAreaName: res.data.data[i].companyAreaName });
+                          for (let i = 0; i < res1.data.data.length; i++) {
+                            area.push({ companyAreaId: res1.data.data[i].companyAreaId, companyAreaName: res1.data.data[i].companyAreaName });
                           }
                           that.setData({
                             areaArray: area
                           })
                           if (area.length > 0) {
                             that.setData({
+                              'commonInfo.companyAreaId': area[0].companyAreaId,
                               companyAreaName: area[0].companyAreaName
                             })
                           }
@@ -172,12 +177,9 @@ Page({
                     // 流转区域结束
                   }
                 }
-                that.setData({
-                  areaArray: area
-                })
               } else {
                 wx.showToast({
-                  title: '流转区不存在',
+                  title: res.data.msg,
                   icon: 'none',
                   duration: 2000
                 })
@@ -185,7 +187,7 @@ Page({
             },
             fail: (e) => {
               wx.showToast({
-                title: '获取气瓶流转区接口访问失败',
+                title: 'getCompanyProjectByCompanyId 接口访问失败',
                 icon: 'none',
                 duration: 2000
               })
@@ -266,6 +268,14 @@ Page({
         "commonInfo.ifPass": 0
       })
     }
+  },
+
+  // 气瓶满空
+  radioChange: function (e) {
+    var that = this;
+    that.setData({
+      "commonInfo.empty": e.detail.value
+    })
   },
 
   // 普通选择器
@@ -579,109 +589,69 @@ Page({
   submitForm: function () {
     var that = this;
     var qcmappversion = that.data.qcmappversion;
-    let setList = that.data.setList;
-    let cylinderList = that.data.cylinderList;
-    let setCylinderList = that.data.setCylinderList;
     let allCylinderList = that.data.allCylinderList;
+    let cylinderIdList = "";
+    let unitId = 1;
     if (allCylinderList.length > 0) {
-      for (let i = allCylinderList.length - 1; i >= 0; i--) {
-        let temp = allCylinderList[i];
-        // 拼接气瓶信息
-        let data = that.data.commonInfo;
-        data.cylinderId = allCylinderList[i].cylinderId;
-        data.unitId = allCylinderList[i].unitId;
-        if (data.creator != "") {
-          wx.request({
-            url: app.globalData.apiUrl + '/addPreDetection',
-            method: 'GET',
-            data: data,
-            header: {
-              'qcmappversion': qcmappversion
-            },
-            success: (res) => {
-              if (res.data.code == "200") {
-                let indexS = -2;
-                let indexC = -2;
-                let indexSC = -2;
-                let indexA = -2;
-                indexA = allCylinderList.indexOf(temp);
-                indexSC = setCylinderList.indexOf(temp);
-                indexC = cylinderList.indexOf(temp.cylinderNumber);
-
-                if (indexA > -1) {
-                  allCylinderList.splice(indexA, 1);
-                  that.setData({
-                    allCylinderList: allCylinderList
-                  })
-                  that.setGlobal();
-                  that.countData();
-                }
-                if (indexSC > -1) {
-                  setCylinderList.splice(indexSC, 1);
-                  that.setData({
-                    setCylinderList: setCylinderList
-                  })
-                  that.setGlobal();
-                  that.countData();
-                }
-                if (indexC > -1) {
-                  cylinderList.splice(indexC, 1);
-                  that.setData({
-                    cylinderList: cylinderList
-                  })
-                  that.setGlobal();
-                  that.countData();
-                }
-                if (temp.setId != null) {
-                  let count = 0;
-                  for (let j = 0; j < allCylinderList.length; j++) {
-                    if (allCylinderList[j].setId == temp.setId) {
-                      count += 1;
-                    }
-                  }
-                  if (count == 0) {
-                    indexS = setList.indexOf(temp.setId);
-                    if (indexS > -1) {
-                      setList.splice(indexS, 1);
-                      that.setData({
-                        setList: setList
-                      })
-                      that.setGlobal();
-                      that.countData();
-                    }
-                  }
-                }
-
-                that.checkData(i + 1);
-              } else {
-                wx.showToast({
-                  title: 'ID为 ' + data.cylinderId + ' 的气瓶上传失败',
-                  icon: 'none',
-                  duration: 2000
-                })
-                that.checkData();
-              }
-            },
-            fail: (e) => {
-              wx.showToast({
-                title: '添加接口访问失败,5秒后再次请求',
-                icon: 'none',
-                mask: true,
-                duration: 2500
-              })
-              setTimeout(function () {
-                that.checkData();
-              }, 5000)
-            }
-          })
+      unitId = allCylinderList[0].unitId;
+      for (let i = 0; i < allCylinderList.length; i++) {
+        let tempCylinderId = allCylinderList[i].cylinderId;
+        if (i == allCylinderList.length - 1) {
+          cylinderIdList = cylinderIdList + tempCylinderId;
         } else {
-          wx.showToast({
-            title: '创建人不能为空',
-            icon: "none",
-            duration: 2000
-          })
-          return;
+          cylinderIdList = cylinderIdList + tempCylinderId + ',';
         }
+      }
+      // 拼接气瓶信息
+      let data = that.data.commonInfo;
+      data.cylinderIdList = cylinderIdList;
+      data.unitId = unitId;
+      if (data.creator != "") {
+        wx.request({
+          url: app.globalData.apiUrl + '/addPreDetection',
+          method: 'POST',
+          data: data,
+          header: {
+            'qcmappversion': qcmappversion,
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          success: (res) => {
+            if (res.data.code == "200") {
+              that.setData({
+                cylinderList: [],
+                setList: [],
+                setCylinderList: [],
+                allCylinderList: [],
+                disabled: true,
+                opacity: 0.3
+              })
+              that.setGlobal();
+              that.countData();
+              wx.showToast({
+                title: '提交成功',
+                icon: 'none'
+              })
+            } else {
+              wx.showToast({
+                title: res.data.msg,
+                icon: 'none'
+              })
+            }
+          },
+          fail: (e) => {
+            wx.showToast({
+              title: '添加接口访问失败',
+              icon: 'none',
+              mask: true
+            })
+          }
+        })
+      } else {
+        wx.showToast({
+          title: '创建人不能为空',
+          icon: "none"
+        })
+        return;
       }
     } else {
       wx.showToast({
@@ -692,29 +662,6 @@ Page({
     }
   },
 
-  // 上传数据
-  checkData: function (status = null) {
-    var that = this;
-    var qcmappversion = that.data.qcmappversion;
-    var allCylinderList = that.data.allCylinderList;
-    if (allCylinderList.length > 0) {
-      if (status == null) {
-        that.submitForm();
-      } else {
-        console.log("正在提交第： " + status + " 条数据...");
-      }
-    } else {
-      that.setData({
-        disabled: true,
-        opacity: 0.3
-      })
-      wx.showToast({
-        title: '提交成功',
-        icon: 'none',
-        duration: 2000
-      })
-    }
-  },
   // 页面主要逻辑部分--结束
 
   /**

@@ -39,6 +39,16 @@
             </view>
           </view>
 
+          <view class="weui-cells">
+            <view class="weui-cell webox">
+              <radio-group class="radio-group" bindchange="radioChange">
+                <radio class="radio" wx:for="{{bottleType}}" wx:key="name" value="{{item.value}}" checked="{{item.checked}}">
+                    <text>{{item.name}}</text>
+                </radio>
+              </radio-group>
+            </view>
+          </view>
+
           <view class="weui-cells weui-cells_after-title">
             <view class="weui-cell weui-cell_select">
                   <view class="weui-cell__hd weui-cell__hd_in-select-after" style="flex: 2">

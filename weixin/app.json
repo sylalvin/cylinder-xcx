@@ -24,7 +24,9 @@
     "pages/fillingDelete/fillingDelete",
     "pages/cylinderDetail/cylinderDetail",
     "pages/editCheckFilling/editCheckFilling",
-    "pages/checkItemsFilling/checkItemsFilling"
+    "pages/checkItemsFilling/checkItemsFilling",
+    "pages/backIndex/backIndex",
+    "pages/outIndex/outIndex"
   ],
   "window": {
     "backgroundTextStyle": "light",

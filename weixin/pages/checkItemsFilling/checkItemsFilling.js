@@ -78,7 +78,6 @@ Page({
             method: 'GET',
             success: (res) => {
               if (res.data.data) {
-                var area = [];
                 for (let i = 0; i < res.data.data.length; i++) {
                   if (res.data.data[i].projectName == "充装") {
                     // if (res.data.data[i].projectName == "充前检测") {
@@ -94,11 +93,11 @@ Page({
                         'qcmappversion': qcmappversion
                       },
                       method: 'GET',
-                      success: (res) => {
-                        if (res.data.data) {
+                      success: (res1) => {
+                        if (res1.data.data) {
                           var area = [];
-                          for (let i = 0; i < res.data.data.length; i++) {
-                            area.push({ companyAreaId: res.data.data[i].companyAreaId, companyAreaName: res.data.data[i].companyAreaName });
+                          for (let i = 0; i < res1.data.data.length; i++) {
+                            area.push({ companyAreaId: res1.data.data[i].companyAreaId, companyAreaName: res1.data.data[i].companyAreaName });
                           }
                           that.setData({
                             areaArray: area
@@ -128,12 +127,9 @@ Page({
                     // 流转区域结束
                   }
                 }
-                that.setData({
-                  areaArray: area
-                })
               } else {
                 wx.showToast({
-                  title: '流转区不存在',
+                  title: res.data.msg,
                   icon: 'none',
                   duration: 2000
                 })
@@ -141,7 +137,7 @@ Page({
             },
             fail: (e) => {
               wx.showToast({
-                title: '获取气瓶流转区接口访问失败',
+                title: 'getCompanyProjectByCompanyId 接口访问失败',
                 icon: 'none',
                 duration: 2000
               })

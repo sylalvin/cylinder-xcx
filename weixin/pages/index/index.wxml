@@ -57,7 +57,7 @@
           </view>
           <view class="sort_box">
             <view class="item">
-              <navigator url="/pages/backCheckEmpty/backCheckEmpty">
+              <navigator url="/pages/backIndex/backIndex">
                 <view class="icon"><image src="../../images/func_1.png" class="icon"></image></view>
                 <text>回厂验空</text>
               </navigator>
@@ -69,7 +69,7 @@
               </navigator>
             </view>
             <view class="item">
-              <navigator url="/pages/outCheckFull/outCheckFull">
+              <navigator url="/pages/outIndex/outIndex">
                 <view class="icon"><image src="../../images/func_1.png" class="icon"></image></view>
                 <text>充后验满</text>
               </navigator>

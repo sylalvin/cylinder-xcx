@@ -40,7 +40,7 @@ Page({
   onPullDownRefresh: function () {
     var that = this;
     that.fillingTimes();
-    that.returnBeginDate();
+    // that.returnBeginDate();
   },
 
   /**
