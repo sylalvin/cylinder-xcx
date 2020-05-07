@@ -6,7 +6,7 @@
                     <view class="weui-cell__bd">{{index + 1}}. 添加时间 : {{ item.date }}</view>
                     <view class="weui-cell__bd weui-cell__left">批次号码 : {{ item.batch }}</view>
                     <view class="weui-cell__bd weui-cell__left">气瓶数量 : <text class="count">{{ item.cylinderCount }}</text></view>
-                    <view class="weui-cell__bd weui-cell__left">备注 : {{ item.remark == "" ? "未填写" : item.remark }}</view>
+                    <view class="weui-cell__bd weui-cell__left">备注 : {{ item.remark == null ? "未填写" : item.remark }}</view>
                 </view>
             </block>
 
