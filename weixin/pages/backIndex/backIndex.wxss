@@ -1,3 +1,7 @@
+.page__bd {
+  padding-bottom: 100px;
+}
+
 .weui-cells {
   margin-top: 0; 
   margin-bottom: 0.2em;
@@ -24,6 +28,14 @@
 
 .weui-loadmore {
   width: 100%;
+  position: fixed;
+  bottom: 7%;
+  margin: auto;
+}
+
+.weui-loadmore_line {
+  border-top: none;
+  margin-top: 0;
 }
 
 .weui-loadmore__tips_in-line {

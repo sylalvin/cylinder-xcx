@@ -16,6 +16,10 @@
   padding-left: 48rpx;
 }
 
+.page__bd {
+  padding-bottom: 100px;
+}
+
 .count {
   color: red;
   font-size: 26px;
@@ -24,6 +28,14 @@
 
 .weui-loadmore {
   width: 100%;
+  position: fixed;
+  bottom: 7%;
+  margin: auto;
+}
+
+.weui-loadmore_line {
+  border-top: none;
+  margin-top: 0;
 }
 
 .weui-loadmore__tips_in-line {
