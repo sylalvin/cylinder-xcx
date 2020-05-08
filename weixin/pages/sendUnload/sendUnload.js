@@ -34,6 +34,8 @@ Page({
       waybillNumber: "",
       unitId: 1,
       cylinderNum: 0,
+      lat: '',
+      lng: '',
       cylinderRecordList: []
     },
     bottleType: [
@@ -750,6 +752,15 @@ Page({
   submitForm: function () {
     var that = this;
     var qcmappversion = that.data.qcmappversion;
+    // 增加气瓶位置信息
+    wx.getLocation({
+      success: function (res) {
+        that.setData({
+          'orderData.lat': res.latitude,
+          'orderData.lng': res.longitude
+        })
+      }
+    })
     wx.showModal({
       title: '确认信息',
       content: "提交前请保证信息无误，确认提交？",
@@ -780,6 +791,7 @@ Page({
               })
               if ((that.judge(that.data.orderData.creator)) && (that.judge(that.data.orderData.waybillNumber))) {
                 var data = that.data.orderData;
+                console.log(JSON.stringify(data));
                 wx.request({
                   url: app.globalData.apiUrl + '/addTransmitReceiveRecord',
                   method: 'POST',

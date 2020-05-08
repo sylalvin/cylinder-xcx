@@ -34,6 +34,8 @@ Page({
       waybillNumber: "",
       unitId: 1,
       cylinderNum: 0,
+      lat: '',
+      lng: '',
       cylinderRecordList: []
     },
     actionTypeList: [
@@ -763,6 +765,15 @@ Page({
   submitForm: function () {
     var that = this;
     var qcmappversion = that.data.qcmappversion;
+    // 增加气瓶位置信息
+    wx.getLocation({
+      success: function (res) {
+        that.setData({
+          'orderData.lat': res.latitude,
+          'orderData.lng': res.longitude
+        })
+      }
+    })
     wx.showModal({
       title: '确认信息',
       content: "提交前请保证信息无误，确认提交？",
