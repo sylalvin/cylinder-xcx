@@ -202,6 +202,18 @@ Page({
     })
   },
 
+  changeMarkers: function (e) {
+    console.log("点击：===" + JSON.stringify(e));
+    this.setData({
+      'orderData.lat': e.detail.latitude,
+      'orderData.lng': e.detail.longitude,
+      latitude: e.detail.latitude,
+      longitude: e.detail.longitude,
+      'markers[0].latitude': e.detail.latitude,
+      'markers[0].longitude': e.detail.longitude
+    })
+  },
+
   // 动画
   showAnimation: function () {
     var that = this;
@@ -754,6 +766,7 @@ Page({
     var qcmappversion = that.data.qcmappversion;
     // 增加气瓶位置信息
     wx.getLocation({
+      type: 'gcj02',
       success: function (res) {
         that.setData({
           'orderData.lat': res.latitude,
