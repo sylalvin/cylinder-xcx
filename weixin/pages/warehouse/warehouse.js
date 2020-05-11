@@ -767,7 +767,6 @@ Page({
     var qcmappversion = that.data.qcmappversion;
     // 增加气瓶位置信息
     wx.getLocation({
-      type: 'gcj02',
       success: function (res) {
         that.setData({
           'orderData.lat': res.latitude,
