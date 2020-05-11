@@ -14,7 +14,7 @@
               <view class="weui-loadmore__tips weui-loadmore__tips_in-line">暂无数据</view>
             </view>
 
-            <view class="weui-loadmore weui-loadmore_line">
+            <view wx:else class="weui-loadmore weui-loadmore_line">
               <view class="weui-loadmore__tips weui-loadmore__tips_in-line">今日提交：<text class="count">{{todayOutTimes}}</text> （集格以集格内瓶数算）</view>
             </view>
 
