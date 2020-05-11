@@ -28,9 +28,13 @@ Page({
       }, 1000)
       return;
     }
+  },
+
+  onShow: function () {
+    var that = this;
     wx.getStorage({
       key: 'pj_employee_name',
-      success: function(res) {
+      success: function (res) {
         that.setData({
           'name': res.data
         })
@@ -48,7 +52,7 @@ Page({
 
   // logout
   logout: function() {
-    wx.clearStorage();
+    wx.clearStorageSync();
     wx.switchTab({
       url: '/pages/index/index',
     })
