@@ -84,6 +84,12 @@ App({
     wareSetCylinderList: [],
     wareAllCylinderList: [],
 
+    // 出库全局配置数据
+    stockCylinderList: [],
+    stockSetList: [],
+    stockSetCylinderList: [],
+    stockAllCylinderList: [],
+
     // 定检
     inspectionCylinderInfo: {},
 

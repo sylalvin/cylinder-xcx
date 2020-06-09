@@ -112,7 +112,7 @@
             </view>
             <view class="item">
               <navigator url="/pages/maintain/maintain">
-                <view class="icon"><image src="../../images/func_10.png" class="icon"></image></view>
+                <view class="icon"><image src="../../images/func_9.png" class="icon"></image></view>
                 <text>气瓶维护</text>
               </navigator>
             </view>
@@ -120,6 +120,12 @@
               <navigator url="/pages/scrap/scrap">
                 <view class="icon"><image src="../../images/func_11.png" class="icon"></image></view>
                 <text>报废</text>
+              </navigator>
+            </view>
+            <view class="item">
+              <navigator url="/pages/outStock/outStock">
+                <view class="icon"><image src="../../images/func_7.png" class="icon"></image></view>
+                <text>出库</text>
               </navigator>
             </view>
             <view class="empty_item">

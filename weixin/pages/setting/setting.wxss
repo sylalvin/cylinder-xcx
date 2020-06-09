@@ -18,7 +18,7 @@
 .user{
   width: 60px;
   height: 60px;
-  margin-top: calc(50% - 30px);
+  margin-top: calc(50% - 25px);
 }
 .p20{
   padding: 20px;

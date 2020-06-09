@@ -77,6 +77,9 @@ Page({
       case "ware":
         allCylinderList = app.globalData.wareAllCylinderList;
         break;
+      case "stock":
+        allCylinderList = app.globalData.stockAllCylinderList;
+        break;
       case "fill":
         allCylinderList = app.globalData.fillAllCylinderList;
         break;

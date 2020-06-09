@@ -27,6 +27,8 @@
     "pages/checkItemsFilling/checkItemsFilling",
     "pages/backIndex/backIndex",
     "pages/outIndex/outIndex",
+    "pages/outStock/outStock",
+    "pages/outStockDelete/outStockDelete",
     "pages/demo/demo"
   ],
   "window": {
