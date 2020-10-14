@@ -40,3 +40,6 @@
 .weui-navbar__title {
   color: #FFFFFF;
 }
+.p-0 {
+  padding: 0;
+}

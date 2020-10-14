@@ -38,6 +38,7 @@ Page({
     init_checkboxPass: [
       { name: 'ifPass', value: '检测通过', checked: 'true' }
     ],
+    purenessArray: ["普", "2N", "3N", "4N", "5N", "6N", "4.5N"],
     rYear: '',
     rMonth: '',
     ryfocus: true, // 下检年焦点
@@ -109,7 +110,6 @@ Page({
    */
   onReady: function () {
     var that = this;
-
     wx.getStorage({
       key: 'pj_employee_name',
       success: (res) => {
@@ -226,13 +226,15 @@ Page({
           let cylinderTypeName = res.data.data.cylinderTypeName; // 气瓶类型名称
           let gasMediumName = res.data.data.gasMediumName; // 气瓶介质名称
           let regularInspectionDate = res.data.data.regularInspectionDate.substring(0, 7); // 气瓶下检日期
+          regularInspectionDate = util.lastMonth(regularInspectionDate);
           let cylinderScrapDate = res.data.data.cylinderScrapDate.substring(0, 7); // 气瓶过期日期
-
+          cylinderScrapDate = util.lastMonth(cylinderScrapDate);
           let cylinderManufacturingDate = res.data.data.cylinderManufacturingDate.substring(0, 7); // 气瓶生产日期
           let volume = res.data.data.volume; // 气瓶容积
           let nominalTestPressure = res.data.data.nominalTestPressure; // 气瓶压力
           let weight = res.data.data.weight; // 气瓶重量
           let lastFillTime = res.data.data.lastFillTime; // 气瓶最后充装时间
+          let lastFillPureness = that.data.purenessArray[res.data.data.lastFillPureness] ? that.data.purenessArray[res.data.data.lastFillPureness - 1] : "暂无记录"; // 气瓶最后充装纯度
           let wallThickness = res.data.data.wallThickness; // 气瓶壁厚
           // 定检公共变量
           app.globalData.inspectionCylinderInfo = {
@@ -250,6 +252,7 @@ Page({
             "weight": weight,
             "lastFillTime": lastFillTime,
             "wallThickness": wallThickness,
+            "lastFillPureness": lastFillPureness
           }
 
           that.setData({
@@ -452,6 +455,15 @@ Page({
       return false;
     } else {
       return true;
+    }
+  },
+
+  // 日期补零
+  addZero: function(x) {
+    if(x < 10) {
+      return '0' + x;
+    } else {
+      return '' + x;
     }
   },
 

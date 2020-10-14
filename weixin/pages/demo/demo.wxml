@@ -7,3 +7,5 @@
   polyline="{{polyline}}"
   show-location>
 </map>
+
+<canvas canvas-id="canvas1"></canvas>

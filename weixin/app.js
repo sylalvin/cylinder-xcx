@@ -24,6 +24,11 @@ App({
     updateManager.onUpdateFailed(function () {
       // 新的版本下载失败
     })
+
+    // 屏幕保持常亮
+    wx.setKeepScreenOn({
+      keepScreenOn: true
+    })
   },
   globalData: {
     userInfo: null,
@@ -44,10 +49,12 @@ App({
     // apiUrl: "http://47.101.47.89:18090/api", // 测试
     // apiUrl: "http://localhost:18090/api", // 测试192.168.31.65
     apiUrl: "https://xch.feifanqishi.net/api",
-    qcmappversion: '1.0.8',
+    qcmappversion: '1.0.9',
 
     // 充装全局数据配置
     fillList: [], // 充装任务列表
+    scanLogs: [], // 任务显示记录
+    pageNo: 1, // 查询充装任务的页码
     cylinderFillList: [], // 某个充装任务下气瓶列表
     fillCylinderList: [], // 充装不属于集格的气瓶列表
     fillSetList: [], // 充装集格列表

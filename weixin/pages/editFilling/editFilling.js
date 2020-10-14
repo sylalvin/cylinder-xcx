@@ -1,6 +1,7 @@
 const sliderWidth = 96;
 var app = getApp();
 var util = require('../../utils/util');
+const { json2Form } = require('../../utils/util');
 Page({
 
   /**
@@ -96,14 +97,14 @@ Page({
           var pureness = that.data.purenessItems[(list[0].pureness - 1)];
           // 备注默认显示从服务器获取到的第一条数据的备注内容
           that.setData({
-            "cylinderCheckList": list,
+            // "cylinderFillList": list,
             "scan_sum": list.length,
             "gasMediumName": list[0].mediemName,
             "productionBatch": list[0].productionBatch,
             "pureness": pureness,
-            "companyAreaId": list[0].companyAreaId,
-            "areaName": list[0].areaName,
-            "remark": list[0].remark
+            // "companyAreaId": list[0].companyAreaId,
+            // "areaName": list[0].areaName,
+            // "remark": list[0].remark
           })
         }
       }
@@ -141,17 +142,17 @@ Page({
   setEndTime: function (e) {
     let day = new Date();
     var now_hour, now_minute, now_second;
-    if (day.getHours() < 9) {
+    if (day.getHours() < 10) {
       now_hour = "0" + day.getHours();
     } else {
       now_hour = day.getHours();
     }
-    if (day.getMinutes() < 9) {
+    if (day.getMinutes() < 10) {
       now_minute = "0" + day.getMinutes();
     } else {
       now_minute = day.getMinutes();
     }
-    if (day.getSeconds() < 9) {
+    if (day.getSeconds() < 10) {
       now_second = "0" + day.getSeconds();
     } else {
       now_second = day.getSeconds();
@@ -196,7 +197,11 @@ Page({
       });
       return false;
     }
-    // 
+    // 防重复提交
+    wx.showLoading({
+      title: '正在提交',
+      mask: true
+    })
     var cylinderCheckList = that.data.cylinderFillList;
     wx.request({
       url: app.globalData.apiUrl + '/v2/updateDetection',
@@ -212,15 +217,18 @@ Page({
         cylinderCheckList: JSON.stringify(cylinderCheckList)
       },
       success: res => {
+        wx.hideLoading();
         if (res.data.code == 200) {
           wx.showToast({
-            title: "修改成功",
+            title: "提交成功",
             icon: 'none',
-            duration: 3000
+            duration: 1000
           });
-          wx.navigateTo({
-            url: '/pages/filling/filling'
-          })
+          setTimeout(function() {
+            wx.redirectTo({
+              url: '/pages/filling/filling'
+            })
+          }, 1000)
         } else {
           wx.showToast({
             title: "添加失败，请检查网络或信息",

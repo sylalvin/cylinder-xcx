@@ -52,6 +52,15 @@ function checkLogin() {
     return true;
   }
 }
+
+// 判断为空
+function checkEmpty(s) {
+  if((s === null) || (s === 0) || (s === "") || (s === false) || (s === undefined)) {
+    return false;
+  }
+  return true;
+}
+
 // 计算月份天数 date:2020-04
 function getDaysOfMonth(date) {
   let bigMonth = ["01", "03", "05", "07", "08", "10", "12"];
@@ -74,6 +83,37 @@ function getDaysOfMonth(date) {
   return days;
 }
 
+// 返回上月份2020-04
+function lastMonth(date) {
+  let fyear = parseInt(date.split('-')[0]);
+  let fmonth = parseInt(date.split('-')[1]);
+  if(fmonth == 1) {
+    fyear = fyear - 1;
+    fmonth = 12;
+    return fyear + '-' + fmonth;
+  } else {
+    fmonth = formatNumber(fmonth - 1);
+    return fyear + '-' + fmonth;
+  }
+}
+
+// 返回日期2020-04
+function compareDate(date) {
+  let fyear = date.split('-')[0];
+  let fmonth = date.split('-')[1];
+  let fdate = parseInt(fyear + fmonth);
+  let stime = new Date();
+  let syear = stime.getFullYear();
+  let smonth = stime.getMonth() + 1;
+  smonth = formatNumber(smonth);
+  let sdate = parseInt(String(syear) + String(smonth));
+  if(sdate > fdate) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
 module.exports = {
   formatTime: formatTime,
   json2Form: json2Form,
@@ -81,5 +121,8 @@ module.exports = {
   putElementToFirst: putElementToFirst,
   diff: diff,
   checkLogin: checkLogin,
-  getDaysOfMonth: getDaysOfMonth
+  getDaysOfMonth: getDaysOfMonth,
+  checkEmpty: checkEmpty,
+  compareDate: compareDate,
+  lastMonth: lastMonth
 }

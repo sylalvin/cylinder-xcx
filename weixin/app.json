@@ -29,7 +29,9 @@
     "pages/outIndex/outIndex",
     "pages/outStock/outStock",
     "pages/outStockDelete/outStockDelete",
-    "pages/demo/demo"
+    "pages/demo/demo",
+    "pages/outStockIndex/outStockIndex",
+    "pages/analysis/analysis"
   ],
   "window": {
     "backgroundTextStyle": "light",

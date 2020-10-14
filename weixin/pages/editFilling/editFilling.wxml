@@ -52,7 +52,7 @@
           <input class="weui-input" type="digit" value="{{pureness}}" disabled ="disabled" />
         </view>
       </view>
-      <view class="weui-cell weui-cell_input">
+      <!-- <view class="weui-cell weui-cell_input">
         <view class="weui-cell__hd">
           <view class="weui-label">充后流向</view>
         </view>
@@ -62,7 +62,7 @@
       </view>
       <view class="weui-cell weui-cell_textarea">
         <textarea class="weui-textarea" placeholder="填写备注" bindinput="onChangeRemark" data-label="wallThickness" value="{{remark}}" type="digit" disabled="disabled"/>
-      </view>
+      </view> -->
     </view>
   </view>
   <view wx:if="{{!ishideBottom}}" class="weui-navbar">

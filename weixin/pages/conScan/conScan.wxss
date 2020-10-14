@@ -1,26 +1,62 @@
 /* pages/conScan/conScan.wxss */
 .camera{
-  width: 300px;
-  height: 300px;
-  margin: auto;
+  width: 310px;
+  height: 310px;
+  position: absolute;
+  top: 25px;
+  left: calc(50% - 155px);
+}
+.out-view{
+  width: 310px;
+  height: 310px;
+  border: 5px dashed #ccc;
+  margin: 20px auto;
+  position: relative;
+}
+.all-border{
+  width: 20px;
+  height: 20px;
+  position: absolute;
+}
+.top-left{
+  top: -5px;
+  left: -5px;
+  border-top: 5px solid rgb(20, 117, 28);
+  border-left: 5px solid rgb(20, 117, 28)
+}
+.top-right{
+  top: -5px;
+  left: 290px;
+  border-top: 5px solid rgb(20, 117, 28);
+  border-right: 5px solid rgb(20, 117, 28)
+}
+.bottom-left{
+  top: 290px;
+  left: -5px;
+  border-left: 5px solid rgb(20, 117, 28);
+  border-bottom: 5px solid rgb(20, 117, 28)
+}
+.bottom-right{
+  top: 290px;
+  left: 290px;
+  border-bottom: 5px solid rgb(20, 117, 28);
+  border-right: 5px solid rgb(20, 117, 28)
 }
 .line{
   background:rgb(5, 207, 5);
-  height:5px;
-  width:180px;
-  margin-left: calc(50% - 90px);
+  height:2px;
+  width:200px;
+  margin-left: calc(50% - 100px);
   position: absolute;
-  top: 20px;
-  opacity: 1;
+  top: 45px;
+  opacity: 0;
+  /* z-index: 99999; */
 }
 .input{
   border: 1px solid #666;
   padding-left: 20px;
   border-radius: 5px;
   margin: 10px;
-}
-.camera_outside{
-  z-index: 1;
 }
 .line_outside{
   z-index: 9999;

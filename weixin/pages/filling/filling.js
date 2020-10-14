@@ -6,16 +6,18 @@ Page({
    */
   data: {
     scanLogs: [],
-    todayFillingTimes: 0,
     fillList: [],
-    cylinderFillList: []
+    windowHeight: 1000,
+    pageNo: 1,
+    pageSize: 10,
+    loading: false,
+    dataStatusText: "暂无数据"
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    var that = this;
     if (!util.checkLogin()) {
       wx.showToast({
         title: '您还未登录,请先登录',
@@ -30,17 +32,28 @@ Page({
       }, 1000)
       return;
     }
-    that.getGlobal();
-    that.fillingTimes();
   },
-
+  /**
+   * 生命周期函数--监听页面初次渲染完成
+   * 初始化数据
+   */
+  onReady: function () {
+    var that = this;
+    wx.getSystemInfo({
+      success: (result) => {
+        that.setData({
+          windowHeight: result.windowHeight
+        })
+      },
+    })
+    that.fillingTimes("top");
+  },
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh: function () {
     var that = this;
-    that.fillingTimes();
-    // that.returnBeginDate();
+    that.fillingTimes("top");
   },
 
   /**
@@ -51,15 +64,22 @@ Page({
   },
 
   // 今日充装次数及内容
-  fillingTimes: function() {
+  fillingTimes: function(position) {
     var that = this;
+    that.setData({
+      loading: false
+    })
+    if(position == "top") {
+      that.setData({
+        pageNo: 1
+      })
+    }
     wx.showLoading({
       title: '加载中',
     })
-    var beginDate = that.returnBeginDate();
 
     wx.request({
-      url: app.globalData.apiUrl + '/getDetectionMissionVoListByEmployeeId',
+      url: app.globalData.apiUrl + '/getDetectionMissionVoListInDateAndNotFinishedByEmployeeId',
       method: "POST",
       header: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -67,25 +87,39 @@ Page({
       },
       data: {
         "employeeId": wx.getStorageSync('pj_employee_id'),
-        "begin": beginDate
+        "unitId": 1,
+        "pageSize": that.data.pageSize,
+        "pageNo": that.data.pageNo
       },
       success: res => {
-        // 获取数据后，停止刷新动作
-        wx.hideLoading();
-        wx.stopPullDownRefresh();
 
         let returnData = res.data.data;
         if ((returnData != null) && (returnData != [])) {
           if (returnData.length > 0) {
-            let scanLogs = [];
-            let todayFillingTimes = 0;
+            if(returnData.length < 10) {
+              that.setData({
+                dataStatusText: "已经到底了"
+              })
+            }else{
+              that.setData({
+                dataStatusText: "向上滑动加载更多"
+              })
+            }
             let fillList = that.data.fillList;
+            let scanLogs = that.data.scanLogs;
+            if(position == "top") {
+              scanLogs = [];
+              fillList = [];
+            }
             for (let j = 0; j < returnData.length; j++) {
-              console.log(j);
-              let temp = [];
-              scanLogs.push({ "id": returnData[j].id, "beginDate": returnData[j].beginDate, "name": returnData[j].mediemName, "quantity": returnData[j].yqDetectionVoList.length, "productionBatch": returnData[j].productionBatch, "status": returnData[j].status == 1 ? "充气中" : "已完成" });
-              todayFillingTimes += returnData[j].yqDetectionVoList.length;
-              if (that.data.fillList[j] == undefined) {
+              // 判断是否fillList中已存在temp
+                if(!fillList.some(function(item){
+                  return item[0] == returnData[j].id
+                })) {
+                let temp = [];
+                if(returnData[j].yqDetectionVoList == null) {
+                  continue
+                }
                 for (let k = 0; k < returnData[j].yqDetectionVoList.length; k++) {
                   returnData[j].yqDetectionVoList[k].beforeColor == null ? returnData[j].yqDetectionVoList[k].beforeColor = 1 : returnData[j].yqDetectionVoList[k].beforeColor;
 
@@ -105,24 +139,72 @@ Page({
 
                   returnData[j].yqDetectionVoList[k].afterAppearance == null ? returnData[j].yqDetectionVoList[k].afterAppearance = 1 : returnData[j].yqDetectionVoList[k].afterAppearance;
 
-                  returnData[j].yqDetectionVoList[k].afterTemperature == null ? returnData[j].yqDetectionVoList[k].ifPass = 1 : returnData[j].yqDetectionVoList[k].ifPass = 0;
-
                   returnData[j].yqDetectionVoList[k].afterTemperature == null ? returnData[j].yqDetectionVoList[k].afterTemperature = 1 : returnData[j].yqDetectionVoList[k].afterTemperature;
+
+                  returnData[j].yqDetectionVoList[k].ifPass == null ? returnData[j].yqDetectionVoList[k].ifPass = 1 : returnData[j].yqDetectionVoList[k].ifPass = 1; // 默认通过
                 }
                 temp.push(returnData[j].id);
                 temp.push(returnData[j].yqDetectionVoList);
+                
+                scanLogs.push({ "id": returnData[j].id, "beginDate": returnData[j].beginDate, "name": returnData[j].mediemName, "quantity": returnData[j].yqDetectionVoList.length, "productionBatch": returnData[j].productionBatch, "status": returnData[j].status == 1 ? "充气中" : "已完成" });
                 fillList.push(temp);
               }
             }
 
             that.setData({
               scanLogs: scanLogs,
-              todayFillingTimes: todayFillingTimes,
-              fillList: fillList
+              fillList: fillList,
+              pageNo: that.data.pageNo + 1,
+              loading: true
             })
 
             that.setGlobal();
+
+            // 获取数据后，停止刷新动作
+            wx.hideLoading();
+            wx.stopPullDownRefresh();
+            if(scanLogs.length == 0) {
+              that.setData({
+                dataStatusText: "暂无数据"
+              })
+            }
+          }else{
+            wx.hideLoading();
+            wx.stopPullDownRefresh();
+            if(that.data.pageNo == 1) {
+              that.setData({
+                scanLogs: [],
+                fillList: [],
+                pageNo: 1,
+                loading: true,
+                dataStatusText: "暂无数据"
+              })
+            }else {
+              that.setData({
+                loading: true,
+                dataStatusText: "已经到底了"
+              })
+            }
+            that.setGlobal();
           }
+        }else{
+          wx.hideLoading();
+          wx.stopPullDownRefresh();
+          if(that.data.pageNo == 1) {
+            that.setData({
+              scanLogs: [],
+              fillList: [],
+              pageNo: 1,
+              loading: true,
+              dataStatusText: "暂无数据"
+            })
+          }else {
+            that.setData({
+              loading: true,
+              dataStatusText: "已经到底了"
+            })
+          }
+          that.setGlobal();
         }
       },
       fail: function (res) {
@@ -168,10 +250,12 @@ Page({
   getGlobal: function () {
     var that = this;
     var fillList = app.globalData.fillList;
-    var cylinderFillList = app.globalData.cylinderFillList;
+    var scanLogs = app.globalData.scanLogs;
+    var pageNo = app.globalData.pageNo;
     that.setData({
       fillList: fillList,
-      cylinderFillList: cylinderFillList
+      scanLogs: scanLogs,
+      pageNo: pageNo
     })
   },
 
@@ -179,7 +263,8 @@ Page({
   setGlobal: function () {
     var that = this;
     app.globalData.fillList = that.data.fillList;
-    app.globalData.cylinderFillList = that.data.cylinderFillList;
+    app.globalData.scanLogs = that.data.scanLogs;
+    app.globalData.pageNo = that.data.pageNo;
   },
 
   checkRule: function(x) {
@@ -187,6 +272,27 @@ Page({
       return '0' + x;
     } else {
       return x;
+    }
+  },
+
+  jumpDetectionDetail: function(e) {
+    var detectionId = e.currentTarget.dataset.detectionId;
+    wx.redirectTo({
+      url: '/pages/editFilling/editFilling?detectionMissionId=' + detectionId
+    })
+  },
+
+  upper: function() {
+    var that = this;
+    if(that.data.loading) {
+      that.fillingTimes("top")
+    }
+  },
+
+  lower: function() {
+    var that = this;
+    if(that.data.loading) {
+      that.fillingTimes("lower")
     }
   },
 

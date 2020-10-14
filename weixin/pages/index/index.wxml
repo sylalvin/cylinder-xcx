@@ -123,9 +123,15 @@
               </navigator>
             </view>
             <view class="item">
-              <navigator url="/pages/outStock/outStock">
+              <navigator url="/pages/outStockIndex/outStockIndex">
                 <view class="icon"><image src="../../images/func_7.png" class="icon"></image></view>
                 <text>出库</text>
+              </navigator>
+            </view>
+            <view class="item">
+              <navigator url="/pages/analysis/analysis">
+                <view class="icon"><image src="../../images/func_8.png" class="icon"></image></view>
+                <text>分析</text>
               </navigator>
             </view>
             <view class="empty_item">

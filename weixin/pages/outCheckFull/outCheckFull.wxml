@@ -44,7 +44,7 @@
               </view> 
           </view>
 
-          <view class="weui-cells weui-cells_after-title">
+          <view class="weui-cells weui-cells_after-title" style="display: {{display == 'block' ? 'none' : 'block'}}">
               <view class="weui-cell">
                   <view class="weui-cell__bd">
                       <textarea bindinput="bindInputChange" class="weui-textarea" placeholder="填写备注" style="height: 3.3em" maxlength="-1" value="{{commonInfo.remark}}" />
@@ -58,4 +58,13 @@
         </view>
 
     </view>
+    <view class="mask" style="display :{{display}};"></view>
+    <view style="display :{{display}};">
+      <mtoast id='mtoast'>
+      </mtoast>
+    </view>
+
+    <my-modal show="{{showModal}}" nostart="{{nostart}}" bindstart="start">
+      <text style="color: red;">{{errorString}}</text>
+    </my-modal>
 </view>

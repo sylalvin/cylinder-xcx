@@ -316,6 +316,18 @@ Page({
               duration: 2000,
               mask: true
             })
+          } else {
+            that.setData({
+              disabled: false,
+              opacity: 0.9,
+              hasBind: false
+            })
+            wx.showToast({
+              title: '该气瓶已添加，未绑定二维码',
+              icon: "none",
+              duration: 2000,
+              mask: true
+            })
           }
         } else {
           that.setData({
@@ -631,6 +643,7 @@ Page({
     var that = this;
     var data = {
       unitId: 1,
+      fillingUnit: "上海化学工业区浦江特种气体有限公司",
       cylinderCode: that.data.cylinderCode,
       cylinderTypeId: that.data.cylinderTypeId,
       gasMediumId: that.data.gasMediumId,
@@ -642,7 +655,6 @@ Page({
       weight: that.data.weight,
       volume: that.data.volume,
       wallThickness: that.data.wallThickness,
-      cylinderNumber: that.data.cylinderNumber,
       cylinderManufacturerName: that.data.cylinderManufacturerName,
       cylinderManufacturerId: that.data.cylinderManufacturerId,
       employeeId: that.data.employeeId,
@@ -652,7 +664,7 @@ Page({
       data.setId = that.data.setId;
       data.setNumber = that.data.setNumber;
     }
-    if (that.checkNull(data.cylinderCode) && that.checkNull(data.cylinderTypeId) && that.checkNull(data.cylinderTypeName) && that.checkNull(data.gasMediumId) && that.checkNull(data.gasMediumName) && that.checkNull(data.cylinderManufacturerName) && that.checkNull(that.data.mYear) && that.checkNull(that.data.mMonth) && that.checkNull(that.data.rYear) && that.checkNull(that.data.rMonth) && that.checkNull(data.nominalTestPressure) && that.checkNull(data.weight) && that.checkNull(data.volume) && that.checkNull(data.wallThickness) && that.checkRule(data.cylinderNumber) && that.checkUserInfoNull(data.employeeId) && that.checkUserInfoNull(data.employeeName)) {
+    if (that.checkNull(data.cylinderCode, "钢瓶号不能为空") && that.checkNull(data.cylinderTypeId, "气瓶类型不能为空") && that.checkNull(data.cylinderTypeName, "气瓶类型不能为空") && that.checkNull(data.gasMediumId, "充装介质不能为空") && that.checkNull(data.gasMediumName, "充装介质不能为空") && that.checkNull(data.cylinderManufacturerName, "制造代码不能为空") && that.checkNull(that.data.mYear, "生产日期年份不能为空") && that.checkNull(that.data.mMonth, "生产日期月份不能为空") && that.checkNull(that.data.rYear, "下检日期年份不能为空") && that.checkNull(that.data.rMonth, "下检日期月份不能为空") && that.checkNull(data.nominalTestPressure, "公称压力不能为空") && that.checkNull(data.weight, "钢瓶重量不能为空") && that.checkNull(data.volume, "钢瓶容积不能为空") && that.checkNull(data.wallThickness, "钢瓶壁厚不能为空") && that.checkUserInfoNull(data.employeeId, "员工 ID 不能为空，请重启小程序再次操作") && that.checkUserInfoNull(data.employeeName, "员工姓名不能为空，请重启小程序再次操作")) {
       data.manufacturingDate = that.data.mYear + '-' + that.data.mMonth + '-' + util.getDaysOfMonth(that.data.mYear + '-' + that.data.mMonth);
       data.regularInspectionDate = that.data.rYear + '-' + that.data.rMonth + '-' + util.getDaysOfMonth(that.data.rYear + '-' + that.data.rMonth);
       wx.request({
@@ -666,26 +678,15 @@ Page({
         success: res => {
           if (res.data.msg == "成功") {
             that.setData({
+              hasAdd: true,
               cylinderId: res.data.data.id,
               firstQuery: false
             })
-            wx.showModal({
-              title: '提示',
-              content: "成功绑定,是否继续?",
-              success: function (res) {
-                if (res.confirm) {
-                  that.againReset();
-                  // wx.redirectTo({
-                  //   url: '/pages/bind/bind'
-                  // });
-                } else {
-                  wx.switchTab({
-                    url: '/pages/index/index',
-                  })
-                }
-              }
-            });
+            that.addNumber(that.data.cylinderId);
           } else {
+            that.setData({
+              hasAdd: false
+            })
             wx.showToast({
               title: res.data.msg,
               icon: 'none',
@@ -699,7 +700,7 @@ Page({
 
   addNumber: function (cylinderId = null) {
     var that = this;
-    if (that.checkNull(cylinderId) && that.checkRule(that.data.cylinderNumber) && that.checkUserInfoNull(that.data.employeeId) && that.checkUserInfoNull(that.data.employeeName)) {
+    if (that.checkNull(cylinderId, "钢瓶 ID 不能为空") && that.checkRule(that.data.cylinderNumber, "标签码不能为空") && that.checkUserInfoNull(that.data.employeeId, "员工 ID 不能为空，请重启小程序再次操作") && that.checkUserInfoNull(that.data.employeeName, "员工姓名不能为空，请重启小程序再次操作")) {
       wx.request({
         url: app.globalData.apiUrl + '/addNumber',
         method: "POST",
@@ -710,7 +711,7 @@ Page({
         data: {
           unitId: 1,
           cylinderId: cylinderId,
-          cylinderNumber: that.data.cylinderNumber,
+          number: that.data.cylinderNumber,
           employeeId: that.data.employeeId,
           employeeName: that.data.employeeName
         },
@@ -752,9 +753,9 @@ Page({
             });
           } else {
             wx.showToast({
-              title: res.data.msg,
+              title: res.data.msg + '，请换其他二维码再次提交！',
               icon: 'none',
-              duration: 2000
+              duration: 2500
             });
           }
         }
@@ -762,11 +763,11 @@ Page({
     }
   },
 
-  checkNull: function(p) {
+  checkNull: function(p, msg) {
     p = String(p);
-    if (p == "" || p == null) {
+    if (p == "" || p == null || p == 0) {
       wx.showToast({
-        title: '请检查有无漏填项！',
+        title: msg,
         icon: 'none'
       })
       return false;
@@ -775,12 +776,13 @@ Page({
     }
   },
 
-  checkUserInfoNull: function(x) {
+  checkUserInfoNull: function(x, msg) {
     x = String(x);
-    if (x == "" || x == null) {
+    if (x == "" || x == null || x == 0) {
       wx.showToast({
-        title: '请检查有无漏填项！',
-        icon: 'none'
+        title: msg,
+        icon: 'none',
+        duration: 4000
       })
       return false;
     } else {
@@ -788,11 +790,11 @@ Page({
     }
   },
 
-  checkRule: function(q) {
+  checkRule: function(q, msg) {
     q = String(q);
-    if (q == "" || q == null) {
+    if (q == "" || q == null || q == 0) {
       wx.showToast({
-        title: '请检查有无漏填项！',
+        title: msg,
         icon: 'none'
       })
       return false;
@@ -866,14 +868,8 @@ Page({
 
   myInputCheck: function(e) {
     var that = this;
-    if (e.detail.value.length == 2) {
+    if (e.detail.value.length == 4) {
       let myYear = e.detail.value;
-      let myNumber = Number(myYear);
-      if(myNumber < 60) {
-        myYear = '20' + myYear;
-      } else {
-        myYear = '19' + myYear;
-      }
       that.setData({
         mYear: myYear,
         mmfocus: true
@@ -883,55 +879,22 @@ Page({
 
   mmInputCheck: function(e) {
     var that = this;
-    let flag = false;
     if (e.detail.value.length > 0) {
       that.setData({
         mMonth: that.addZero(Number(e.detail.value))
       })
     }
     if ((e.detail.value.length - 1) == 2) {
-      let checkTime = 0;
-      let fiveArray = ['氢气', '氮气', '氩气', '氦气'];
-      let threeArray = ['二氧化碳', '氧气', '混合气-腐蚀性', '混合气-非腐蚀性', '高纯空气'];
-      let mYear = that.data.mYear;
-      let mMonth = that.data.mMonth;
-      let todayDate = that.getTodayDate();
-      let tYear = todayDate.split('-')[0];
-      let tMonth = todayDate.split('-')[1];
-      let cylinderTypeName = that.data.cylinderTypeArray[that.data.cylinderTypeIndex].cylinderTypeName;
-      let gasMediumName = that.data.gasMediumArray[that.data.gasMediumIndex].gasMediumName;
-      if (cylinderTypeName == '钢制无缝气瓶' && fiveArray.indexOf(gasMediumName) > -1) {
-        checkTime = 5;
-      }
-      if (cylinderTypeName == '钢制无缝气瓶' && threeArray.indexOf(gasMediumName) > -1) {
-        checkTime = 3;
-      }
-      if (Number(tYear + tMonth) <= Number((Number(mYear) + checkTime) + mMonth)) {
         that.setData({
-          rYear: Number(mYear) + checkTime,
-          rMonth: mMonth,
-          pfocus: true
-        })
-      } else {
-        that.setData({
-          rYear: '',
-          rMonth: '',
           ryfocus: true
         })
-      }
     }
   },
 
   ryInputCheck: function (e) {
     var that = this;
-    if (e.detail.value.length == 2) {
+    if (e.detail.value.length == 4) {
       let mrYear = e.detail.value;
-      let mrNumber = Number(mrYear);
-      if (mrNumber < 60) {
-        mrYear = '20' + mrYear;
-      } else {
-        mrYear = '19' + mrYear;
-      }
       that.setData({
         rYear: mrYear,
         rmfocus: true

@@ -3,23 +3,23 @@
     <view class="page__bd">
         <view class="weui-tab__panel">
           <view class="weui-tab__content">
-            <block wx:for="{{scanLogs}}" wx:key="index" wx:for-item='item'>
-              <navigator url="/pages/editFilling/editFilling?detectionMissionId={{ item.id }}" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
-                <view class="weui-cells weui-cells_after-title weui-cell__ft_in-access">
-                    <view class="weui-cell__bd">{{index + 1}}. 开始时间: {{ item.beginDate }}</view>
-                    <view class="weui-cell__bd weui-cell__left">充装介质: {{ item.name }}</view>
-                    <view class="weui-cell__bd weui-cell__left">气瓶数量: {{ item.quantity }}</view>
-                    <view class="weui-cell__bd weui-cell__left">批次号码: {{ item.productionBatch }}</view>
-                    <view class="weui-cell__bd weui-cell__left">完成状态: {{ item.status }}</view>
+            <scroll-view scroll-y="true" style="height: {{windowHeight - 50}}px; padding-bottom: 5%;margin-bottom: 1%;" bindscrolltoupper="upper" bindscrolltolower="lower">
+              <block wx:for="{{scanLogs}}" wx:key="index" wx:for-item='item'>
+                <view data-detection-Id="{{ item.id }}" bindtap="jumpDetectionDetail" class="weui-cell weui-cell_access p-0" hover-class="weui-cell_active">
+                  <view class="weui-cells weui-cells_after-title weui-cell__ft_in-access">
+                      <view class="weui-cell__bd weui-cell__left" style="color: red;">{{index + 1}} >>> {{ item.name }}</view>
+                      <view class="weui-cell__bd weui-cell__left">开始时间: {{ item.beginDate }}</view>
+                      <!-- <view class="weui-cell__bd weui-cell__left">充装介质: {{ item.name }}</view> -->
+                      <view class="weui-cell__bd weui-cell__left">气瓶数量: {{ item.quantity }}</view>
+                      <view class="weui-cell__bd weui-cell__left">批次号码: {{ item.productionBatch }}</view>
+                      <view class="weui-cell__bd weui-cell__left">完成状态: {{ item.status }}</view>
+                  </view>
                 </view>
-              </navigator>
-            </block>
-            <view wx:if="{{ scanLogs.length == 0 }}" class="weui-loadmore weui-loadmore_line">
-              <view class="weui-loadmore__tips weui-loadmore__tips_in-line">暂无数据</view>
-            </view>
-            <view class="weui-loadmore weui-loadmore_line">
-              <view class="weui-loadmore__tips weui-loadmore__tips_in-line">今日充装：{{todayFillingTimes}} （集格以集格内瓶数算）</view>
-            </view>
+              </block>
+              <view class="weui-loadmore weui-loadmore_line">
+                <view class="weui-loadmore__tips weui-loadmore__tips_in-line">{{dataStatusText}}</view>
+              </view>
+            </scroll-view>
           </view>
         </view>
       </view>

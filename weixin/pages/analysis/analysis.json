@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "分析",
+  "usingComponents":{
+    "my-modal": "../common/mmodal/mmodal"
+  }
+}

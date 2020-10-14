@@ -7,8 +7,7 @@ Page({
   data: {
     scanFlag: true,
     time: 2,
-    flash: "off",
-    animationData: {}
+    flash: "off"
   },
 
   /**
@@ -22,28 +21,6 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    var that = this;
-    wx.setKeepScreenOn({
-      keepScreenOn: true,
-    })
-    // 此动画不能适应手机
-    var animation = wx.createAnimation({
-      duration: 2000,
-      timingFunction: 'linear'
-    })
-    animation.translateY(260).opacity(0).step();
-    animation.translateY(0).opacity(1).step();
-    that.setData({
-      animationData: animation.export()
-    })
-    //连续动画关键步骤
-    setInterval(function () {
-      animation.translateY(260).opacity(0).step();
-      animation.translateY(0).opacity(1).step();
-      that.setData({
-        animationData: animation.export()
-      })
-    }, 2000)
   },
 
   /**

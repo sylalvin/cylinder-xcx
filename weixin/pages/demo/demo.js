@@ -1,4 +1,4 @@
-// pages/demo/demo.js
+var Charts = require('../../utils/wxcharts.js');
 Page({
 
   /**
@@ -37,7 +37,6 @@ Page({
     var map = wx.createMapContext("map", this);
     wx.getLocation({
       success: function(res) {
-        console.log(JSON.stringify(res));
         that.setData({
           latitude: res.latitude,
           longitude: res.longitude,
@@ -60,7 +59,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-
+    
   },
 
   /**
