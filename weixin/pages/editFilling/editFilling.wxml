@@ -52,6 +52,14 @@
           <input class="weui-input" type="digit" value="{{pureness}}" disabled ="disabled" />
         </view>
       </view>
+      <view class="weui-cell weui-cell_input">
+        <view class="weui-cell__hd">
+          <view class="weui-label">压力</view>
+        </view>
+        <view class="weui-cell__bd">
+          <input class="weui-input" type="digit" value="{{pressure ? pressure : '13.5MPA'}}" disabled ="disabled" />
+        </view>
+      </view>
       <!-- <view class="weui-cell weui-cell_input">
         <view class="weui-cell__hd">
           <view class="weui-label">充后流向</view>

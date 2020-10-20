@@ -134,6 +134,12 @@
                 <text>分析</text>
               </navigator>
             </view>
+            <view class="item">
+              <navigator url="/pages/inOut/inOut">
+                <view class="icon"><image src="../../images/func_7.png" class="icon"></image></view>
+                <text>InOut扫描</text>
+              </navigator>
+            </view>
             <view class="empty_item">
               <view class="icon"></view>
               <text></text>

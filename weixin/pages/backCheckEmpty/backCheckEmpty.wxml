@@ -83,7 +83,7 @@
       </mtoast>
     </view>
 
-    <my-modal show="{{showModal}}" nostart="{{nostart}}" bindstart="start">
+    <my-modal show="{{showModal}}" nostart="{{nostart}}" bindstart="start" bindcloseModal="closeModal">
       <text style="color: red;">{{errorString}}</text>
     </my-modal>
 </view>

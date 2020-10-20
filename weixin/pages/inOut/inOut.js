@@ -7,12 +7,6 @@ Page({
    */
   data: {
     qcmappversion: '1.0.0',
-    showProgress: false,
-    progress: {
-      sum: 0,
-      percent: 0,
-      content: ""
-    },
     disabled: false,
     opacity: 0.9,
     duration: 2000,
@@ -27,37 +21,18 @@ Page({
     allCylinderList: [],
     commonInfo: {
       creator: "",
-      color: 1,
-      valve: 1,
-      residualPressure: 1,
-      appearance: 1,
-      safety: 1,
-      ifPass: 1,
       empty: 1,
-      companyAreaId: 1,
-      remark: ""
+      workAreaId: 1
     },
     bottleType: [
-      { name: '空瓶', value: '1', checked: 'true' },
-      { name: '满瓶', value: '0' }
+      { name: '进（In）', value: '1', checked: 'true' },
+      { name: '出（Out）', value: '0' }
     ],
-    checkboxItems: [],
-    checkboxPass: [],
-    init_checkboxItems: [
-      { name: 'color', value: '瓶身颜色', checked: 'true' },
-      { name: 'valve', value: '阀口螺纹', checked: 'true' },
-      { name: 'residualPressure', value: '瓶内余压', checked: 'true' },
-      { name: 'appearance', value: '气瓶外观', checked: 'true' },
-      { name: 'safety', value: '安全附件', checked: 'true' }
-    ],
-    init_checkboxPass: [
-      { name: 'ifPass', value: '检测通过：', checked: 'true' }
-    ],
-    areaArray: [],
-    areaIndex: 0,
-    companyAreaName: "",
-    display: 'none', // 自定义toast的mask
+    areaArray: [{workAreaId: 1, workAreaName: "S0"},{workAreaId: 2, workAreaName: "残留气体处理"},{workAreaId: 3, workAreaName: "烘箱"},{workAreaId: 4, workAreaName: "充装"},{workAreaId: 5, workAreaName: "分析"},{workAreaId: 6, workAreaName: "充后检"},{workAreaId: 7, workAreaName: "S3"},{workAreaId: 8, workAreaName: "运输"},{workAreaId: 9, workAreaName: "S4"}],
+    areaIndex: wx.getStorageSync('workInfo') ? Number(wx.getStorageSync('workInfo')) : 0,
+    workAreaName: "",
     purenessArray: ["普", "2N", "3N", "4N", "5N", "6N", "4.5N"],
+    display: 'none', // 自定义toast的mask
     showModal: false, // 自定义modal
     errorString: "", // 错误信息
     nostart: false // 是否连续扫描
@@ -65,7 +40,6 @@ Page({
 
   onShow: function () {
     var that = this;
-    
     if (!util.checkLogin()) {
       wx.showToast({
         title: '您还未登录,请先登录',
@@ -80,11 +54,16 @@ Page({
       }, 2000)
       return;
     }
+    if(wx.getStorageSync('workInfo') && (Number(wx.getStorageSync('workInfo')) != that.data.areaIndex)) {
+      that.setData({
+        areaIndex: Number(wx.getStorageSync('workInfo'))
+      })
+    }
     // 执行删除后的初始化气瓶数据
-    var setList = app.globalData.backSetList;
-    var cylinderList = app.globalData.backCylinderList;
-    var setCylinderList = app.globalData.backSetCylinderList;
-    var allCylinderList = app.globalData.backAllCylinderList;
+    var setList = app.globalData.inOutSetList;
+    var cylinderList = app.globalData.inOutCylinderList;
+    var setCylinderList = app.globalData.inOutSetCylinderList;
+    var allCylinderList = app.globalData.inOutAllCylinderList;
     that.setData({
       setList: setList,
       cylinderList: cylinderList,
@@ -120,7 +99,7 @@ Page({
           })
           var qcmappversion = that.data.qcmappversion;
 
-          wx.request({
+          wx.request({ // 获取工作区域
             url: app.globalData.apiUrl + '/getCompanyProjectByCompanyId',
             data: {
               'unitId': 1
@@ -130,54 +109,10 @@ Page({
             },
             method: 'GET',
             success: (res) => {
-              if (res.data.data) {
-                for (let i = 0; i < res.data.data.length; i++) {
-                  if (res.data.data[i].projectName == "回厂验空") {
-                  // if (res.data.data[i].projectName == "充前检测") {
-                    // 流转区域开始
-                    wx.request({
-                      url: app.globalData.apiUrl + '/getCompanyProjectAreaByCompanyProjectId',
-                      data: {
-                        'companyProjectId': res.data.data[i].projectId,
-                        'unitId': res.data.data[i].unitId,
-                        'projectId': 1
-                      },
-                      header: {
-                        'qcmappversion': qcmappversion
-                      },
-                      method: 'GET',
-                      success: (res1) => {
-                        if (res1.data.data) {
-                          var area = [];
-                          for (let i = 0; i < res1.data.data.length; i++) {
-                            area.push({ companyAreaId: res1.data.data[i].companyAreaId, companyAreaName: res1.data.data[i].companyAreaName });
-                          }
-                          that.setData({
-                            areaArray: area
-                          })
-                          if (area.length > 0) {
-                            that.setData({
-                              'commonInfo.companyAreaId': area[0].companyAreaId,
-                              companyAreaName: area[0].companyAreaName
-                            })
-                          }
-                        } else {
-                          that.errorModalNoStart("流转区不存在");
-                        }
-                      },
-                      fail: (e) => {
-                        that.errorModalNoStart("获取气瓶流转区接口访问失败");
-                      }
-                    })
-                    // 流转区域结束
-                  }
-                }
-              } else {
-                that.errorModalNoStart(res.data.msg);
-              }
+              
             },
             fail: (e) => {
-              that.errorModalNoStart("getCompanyProjectByCompanyId 接口访问失败");
+              
             }
           })
         } else {
@@ -207,49 +142,7 @@ Page({
     })
   },
 
-  // 检测内容发生改变触发事件
-  checkboxItemsChange: function (e) {
-    var that = this;
-    var changeArray = e.detail.value;
-
-    // e.detail.value 为选中的数组
-    var dic = { 'color': 1, 'valve': 1, 'residualPressure': 1, 'appearance': 1, 'safety': 1 };
-    for (let key in dic) {
-      if (changeArray.includes(key)) {
-        dic[key] = 1;
-      } else {
-        dic[key] = 0;
-      }
-    }
-    var startData = that.data.commonInfo;
-    for (var key in startData) {
-      for (var jkey in dic) {
-        if (key == jkey) {
-          startData[key] = dic[jkey];
-        }
-      }
-    }
-    that.setData({
-      commonInfo: startData
-    })
-  },
-
-  // 检测结果发生改变触发事件
-  checkboxPassChange: function (e) {
-    var that = this;
-    // e.detail.value 为选中的数组
-    if (e.detail.value.length > 0) {
-      that.setData({
-        "commonInfo.ifPass": 1
-      })
-    } else {
-      that.setData({
-        "commonInfo.ifPass": 0
-      })
-    }
-  },
-
-  // 气瓶满空
+  // 气瓶进出
   radioChange: function (e) {
     var that = this;
     that.setData({
@@ -260,20 +153,15 @@ Page({
   // 普通选择器
   bindPickerChange: function (e) {
     var that = this;
-    var companyAreaId = that.data.areaArray[e.detail.value].companyAreaId;
-    var companyAreaName = that.data.areaArray[e.detail.value].companyAreaName;
+    var workAreaId = that.data.areaArray[e.detail.value].workAreaId;
+    var workAreaName = that.data.areaArray[e.detail.value].workAreaName;
     that.setData({
       areaIndex: e.detail.value,
-      'commonInfo.companyAreaId': companyAreaId,
-      companyAreaName: companyAreaName
+      'commonInfo.workAreaId': workAreaId,
+      workAreaName: workAreaName
     })
-  },
-
-  bindInputChange: function (e) {
-    var that = this;
-    that.setData({
-      'commonInfo.remark': e.detail.value
-    })
+    var workInfo = e.detail.value;
+    wx.setStorageSync('workInfo', workInfo)
   },
 
   // 页面主要逻辑部分--开始
@@ -592,16 +480,7 @@ Page({
   initData: function () {
     var that = this;
     that.setData({
-      checkboxItems: that.data.init_checkboxItems,
-      checkboxPass: that.data.init_checkboxPass,
-      'commonInfo.color': 1,
-      'commonInfo.valve': 1,
-      'commonInfo.residualPressure': 1,
-      'commonInfo.appearance': 1,
-      'commonInfo.safety': 1,
-      'commonInfo.ifPass': 1,
-      'commonInfo.companyAreaId': 1,
-      'commonInfo.remark': ""
+      'commonInfo.workAreaId': 1
     })
   },
 
@@ -619,10 +498,10 @@ Page({
   // 设置全局变量
   setGlobal: function () {
     var that = this;
-    app.globalData.backCylinderList = that.data.cylinderList;
-    app.globalData.backSetCylinderList = that.data.setCylinderList;
-    app.globalData.backSetList = that.data.setList;
-    app.globalData.backAllCylinderList = that.data.allCylinderList;
+    app.globalData.inOutCylinderList = that.data.cylinderList;
+    app.globalData.inOutSetCylinderList = that.data.setCylinderList;
+    app.globalData.inOutSetList = that.data.setList;
+    app.globalData.inOutAllCylinderList = that.data.allCylinderList;
   },
 
   // 提交
@@ -632,72 +511,87 @@ Page({
       disabled: true,
       opacity: 0.3
     })
-    var qcmappversion = that.data.qcmappversion;
-    let allCylinderList = that.data.allCylinderList;
-    let cylinderIdList = "";
-    let unitId = 1;
-    if (allCylinderList.length > 0) {
-      unitId = allCylinderList[0].unitId;
-      for (let i = 0; i < allCylinderList.length; i++) {
-        let tempCylinderId = allCylinderList[i].cylinderId;
-        if (i == allCylinderList.length - 1) {
-          cylinderIdList = cylinderIdList + String(tempCylinderId);
-        } else {
-          cylinderIdList = cylinderIdList + String(tempCylinderId) + ',';
-        }
-      }
-      // 拼接气瓶信息
-      let data = that.data.commonInfo;
-      data.cylinderIdList = cylinderIdList;
-      data.unitId = unitId;
-      if (data.creator != "") {
-        wx.request({
-          url: app.globalData.apiUrl + '/addPreDetection',
-          method: 'POST',
-          data: data,
-          header: {
-            'qcmappversion': qcmappversion,
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          success: (res) => {
-            if (res.data.code == "200") {
-              that.setData({
-                cylinderList: [],
-                setList: [],
-                setCylinderList: [],
-                allCylinderList: [],
-              })
-              that.setGlobal();
-              that.countData();
-              that.successShowToastNoStart(res.data.msg);
-              setTimeout(function () {
-                wx.redirectTo({
-                  url: '/pages/backIndex/backIndex',
-                })
-              }, that.data.duration)
-            } else {
-              that.setData({
-                disabled: false,
-                opacity: 0.9,
-              })
-              that.errorModalNoStart(JSON.stringify(res.data.msg));
-            }
-          },
-          fail: (e) => {
-            that.errorModalNoStart("添加接口访问失败");
-          }
-        })
-      } else {
-        that.errorModalNoStart("创建人不能为空");
-        return;
-      }
-    } else {
-      that.setData({
-        disabled: false,
-        opacity: 0.9
+    console.log(that.data.commonInfo);
+    that.setData({
+      cylinderList: [],
+      setList: [],
+      setCylinderList: [],
+      allCylinderList: [],
+    })
+    that.setGlobal();
+    that.countData();
+    that.successShowToastNoStart("提交成功");
+    setTimeout(function () {
+      wx.switchTab({
+        url: '/pages/index/index'
       })
-      that.errorModalNoStart("您还未录入数据");
-    }
+    }, that.data.duration)
+    // var qcmappversion = that.data.qcmappversion;
+    // let allCylinderList = that.data.allCylinderList;
+    // let cylinderIdList = "";
+    // let unitId = 1;
+    // if (allCylinderList.length > 0) {
+    //   unitId = allCylinderList[0].unitId;
+    //   for (let i = 0; i < allCylinderList.length; i++) {
+    //     let tempCylinderId = allCylinderList[i].cylinderId;
+    //     if (i == allCylinderList.length - 1) {
+    //       cylinderIdList = cylinderIdList + String(tempCylinderId);
+    //     } else {
+    //       cylinderIdList = cylinderIdList + String(tempCylinderId) + ',';
+    //     }
+    //   }
+    //   // 拼接气瓶信息
+    //   let data = that.data.commonInfo;
+    //   data.cylinderIdList = cylinderIdList;
+    //   data.unitId = unitId;
+    //   if (data.creator != "") {
+    //     wx.request({
+    //       url: app.globalData.apiUrl + '/addPreDetection',
+    //       method: 'POST',
+    //       data: data,
+    //       header: {
+    //         'qcmappversion': qcmappversion,
+    //         "Content-Type": "application/x-www-form-urlencoded",
+    //       },
+    //       success: (res) => {
+    //         if (res.data.code == "200") {
+    //           that.setData({
+    //             cylinderList: [],
+    //             setList: [],
+    //             setCylinderList: [],
+    //             allCylinderList: [],
+    //           })
+    //           that.setGlobal();
+    //           that.countData();
+    //           that.successShowToastNoStart(res.data.msg);
+    //           setTimeout(function () {
+    //             wx.redirectTo({
+    //               url: '/pages/backIndex/backIndex',
+    //             })
+    //           }, that.data.duration)
+    //         } else {
+    //           that.setData({
+    //             disabled: false,
+    //             opacity: 0.9,
+    //           })
+    //           that.errorModalNoStart(JSON.stringify(res.data.msg));
+    //         }
+    //       },
+    //       fail: (e) => {
+    //         that.errorModalNoStart("添加接口访问失败");
+    //       }
+    //     })
+    //   } else {
+    //     that.errorModalNoStart("创建人不能为空");
+    //     return;
+    //   }
+    // } else {
+    //   that.setData({
+    //     disabled: false,
+    //     opacity: 0.9
+    //   })
+    //   that.errorModalNoStart("您还未录入数据");
+    // }
   },
 
   // 日期补零
@@ -770,6 +664,20 @@ Page({
   },
 
   // 页面主要逻辑部分--结束
+
+  /**
+   * 页面相关事件处理函数--监听用户下拉动作
+   */
+  onPullDownRefresh: function () {
+
+  },
+
+  /**
+   * 页面上拉触底事件的处理函数
+   */
+  onReachBottom: function () {
+
+  },
 
   /**
    * 用户点击右上角分享

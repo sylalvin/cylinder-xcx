@@ -7,26 +7,26 @@
   </view>
   <view class="weui-tab">
     <view class="weui-cells weui-cells_after-title">
-      <view class="weui-cell weui-cell_select" style="display: {{display == 'block' ? 'none' : 'flex'}}">
-        <view class="weui-cell__hd weui-cell__hd_in-select-after">
+      <view class="weui-cell" style="display: {{display == 'block' ? 'none' : 'flex'}}">
+        <view class="weui-cell__hd">
           <view class="weui-label">充装介质</view>
         </view>
         <view class="weui-cell__bd">
           <input class="weui-input" placeholder="充装介质" type="text" value="{{gasMediumName}}" />
         </view>
       </view>
-      <view class="weui-cell weui-cell_input" style="display: {{display == 'block' ? 'none' : 'flex'}}">
+      <view class="weui-cell" style="display: {{display == 'block' ? 'none' : 'flex'}}">
         <view class="weui-cell__hd">
           <view class="weui-label">开始时间</view>
         </view>
-        <view class="input__bd">
+        <view class="weui-cell__bd_2">
           <input class="self-input" value="{{submitData.beginDate}}" placeholder="开始时间" type="text" />
         </view>
-        <view class="weui-cell__bd">
+        <view class="weui-cell__bd_1">
           <button class="setTime" bindtap="setBeginTime">开始</button>
         </view>
       </view>
-      <view class="weui-cell weui-cell_input" style="display: {{display == 'block' ? 'none' : 'flex'}}">
+      <view class="weui-cell" style="display: {{display == 'block' ? 'none' : 'flex'}}">
         <view class="weui-cell__hd">
           <view class="weui-label">生产批次</view>
         </view>
@@ -34,8 +34,8 @@
           <input class="weui-input" placeholder="输入生产批次编号" bindblur="onChangeProductionBatch" type="digit" />
         </view>
       </view>
-      <view class="weui-cell  weui-cell_select">
-        <view class="weui-cell__hd  weui-cell__hd_in-select-after">
+      <view class="weui-cell">
+        <view class="weui-cell__hd">
           <view class="weui-label">纯度</view>
         </view>
         <view class="weui-cell__bd">
@@ -44,8 +44,32 @@
           </picker>
         </view>
       </view>
-      <view class="weui-cell  weui-cell_select">
-        <view class="weui-cell__hd  weui-cell__hd_in-select-after">
+      <view class="weui-cell" style="display: {{display == 'block' ? 'none' : 'flex'}}">
+        <view class="weui-cell__hd">
+          <view class="weui-label">压力</view>
+        </view>
+        <view class="weui-cell__bd">
+          <view class="weui-cell second" style="display: {{display == 'block' ? 'none' : 'flex'}};padding: 5px 0;">
+            <view class="weui-cell__bd_2">
+              <input value="{{pressureMPA}}" placeholder="充装量值" bindinput="onChangePressureMPA" type="digit" />
+            </view>
+            <view class="weui-cell__bd_1 unit">
+              <text>MPA</text>
+            </view>
+          </view>
+          <!-- <view style="height: 1px;background-color: #d9d9d9"></view> -->
+          <view class="weui-cell second" style="display: {{display == 'block' ? 'none' : 'flex'}};padding: 5px 0;">
+            <view class="weui-cell__bd_2">
+              <input value="{{pressureKG}}" placeholder="充装量值" bindinput="onChangePressureKG" type="digit" />
+            </view>
+            <view class="weui-cell__bd_1 unit">
+              <text>KG</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="weui-cell">
+        <view class="weui-cell__hd">
           <view class="weui-label">充后流向</view>
         </view>
         <view class="weui-cell__bd">
@@ -59,6 +83,7 @@
       </view>
     </view>
   </view>
+
   <view class="weui-navbar">
       <view class="weui-navbar__item">
         <view class="weui-navbar__title" bindtap="addCylinder">添加气瓶</view>
@@ -75,7 +100,7 @@
       </mtoast>
     </view>
 
-    <my-modal show="{{showModal}}" nostart="{{nostart}}" bindstart="start">
+    <my-modal show="{{showModal}}" nostart="{{nostart}}" bindstart="start" bindcloseModal="closeModal">
       <text style="color: red;">{{errorString}}</text>
     </my-modal>
 </view>  

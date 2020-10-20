@@ -24,6 +24,7 @@ Page({
       unitId: 1,
       employeeId: 0,
       pureness: 1,
+      pressure: "",
       team: "",
       beginDate: "",
       productionBatch: "",
@@ -41,7 +42,9 @@ Page({
     display: 'none', // 自定义toast的mask
     showModal: false, // 自定义modal
     errorString: "", // 错误信息
-    nostart: false // 是否连续扫描
+    nostart: false, // 是否连续扫描
+    pressureMPA: "",
+    pressureKG: ""
   },
 
   /**
@@ -205,6 +208,20 @@ Page({
     });
   },
 
+  onChangePressureMPA: function (e) {
+    this.setData({
+      "pressureMPA": e.detail.value,
+      "pressureKG": ""
+    });
+  },
+
+  onChangePressureKG: function (e) {
+    this.setData({
+      "pressureKG": e.detail.value,
+      "pressureMPA": ""
+    });
+  },
+
   viewCylinder: function (e) {
     var that = this;
     var allCylinderList = that.data.allCylinderList;
@@ -327,7 +344,6 @@ Page({
                 if(!effect) {
                   that.errorModal("集格：" + data.setNumber + "的过期日期为" + regularInspectionDate + "。该集格已过期，请先检验再使用！");
                 } else {
-                  let errorHeaderString = "";
                   let errorString = "";
                   for (let i = 0; i < data.cylinderList.length; i++) {
                     let cylinderScrapDate = "";
@@ -335,46 +351,38 @@ Page({
                       cylinderScrapDate = data.cylinderList[i].cylinderScrapDate.substring(0, 7);
                       cylinderScrapDate = util.lastMonth(cylinderScrapDate);
                       if(util.compareDate(cylinderScrapDate)) {
-                        console.log("未报废");
                         let regularInspectionDate = "";
                         if(util.checkEmpty(data.cylinderList[i].regularInspectionDate)) {
                           regularInspectionDate = data.cylinderList[i].regularInspectionDate.substring(0, 7);
                           regularInspectionDate = util.lastMonth(regularInspectionDate);
                           if(!util.compareDate(regularInspectionDate)) {
-                            console.log("过期");
-                            errorString += data.cylinderList[i].cylinderNumber + "-" + cylinderScrapDate + '-' + regularInspectionDate + "-" + data.cylinderList[i].gasMediumName + "\r\n";
+                            errorString += data.cylinderList[i].cylinderNumber + "-" + regularInspectionDate + "-（已过期）\r\n";
                           } else {
                             // 判断是否是第一次扫描或者是不是同种介质
                             if (that.data.gasMediumName == "") {
                               that.setData({
-                                gasMediumName: data.cylinderList[i].gasMediumName
+                                gasMediumName: data.cylinderList[0].gasMediumName
                               })
-                            } else {
-                              if (data.cylinderList[i].gasMediumName != that.data.gasMediumName) {
-                                var hasExist = errorString.indexOf(data.cylinderList[i].cylinderNumber);
-                                if(hasExist != -1) {
-                                  errorHeaderString = "气瓶介质存在异常\r\n";
-                                  errorString += data.cylinderList[i].cylinderNumber + "-" + cylinderScrapDate + '-' + regularInspectionDate + "-" + data.cylinderList[i].gasMediumName + "\r\n";
-                                }
+                            }
+                            if (data.cylinderList[i].gasMediumName != that.data.gasMediumName) {
+                              var hasExist = errorString.indexOf(data.cylinderList[i].cylinderNumber);
+                              if(hasExist == -1) {
+                                errorString += data.cylinderList[i].cylinderNumber + "-" + data.cylinderList[i].gasMediumName + "-（介质异常）\r\n";
                               }
                             }
                           }
                         } else {
-                          console.log("定检日期为空");
-                          errorString += data.cylinderList[i].cylinderNumber + "-" + cylinderScrapDate + "-空" + "-" + data.cylinderList[i].gasMediumName + "\r\n";
+                          errorString += data.cylinderList[i].cylinderNumber + "-（下检日期为空）\r\n";
                         }
                       } else {
-                        console.log("报废");
-                        errorString += data.cylinderList[i].cylinderNumber + "-" + cylinderScrapDate + "-" + data.cylinderList[i].gasMediumName + "\r\n";
+                        errorString += data.cylinderList[i].cylinderNumber + "-" + cylinderScrapDate + "-（已报废）\r\n";
                       }
                     } else {
-                      console.log("报废日期为空");
-                      errorString += data.cylinderList[i].cylinderNumber + "-空" + "-" + data.cylinderList[i].gasMediumName + "\r\n";
+                      errorString += data.cylinderList[i].cylinderNumber + "-（报废日期为空）\r\n";
                     }
                   }
                   if (errorString != "") {
-                    console.log(errorHeaderString, errorString);
-                    that.errorModal(errorHeaderString + data.setNumber + "中的错误气瓶：" + "\r\n" + errorString);
+                    that.errorModal(data.setNumber + "中的错误气瓶：" + "\r\n" + errorString);
                   } else {
                     that.successShowMyToast("集格：" + data.setNumber + " \r\n绑定气瓶数量：" + data.cylinderList.length + " \r\n集格过期日期：" + regularInspectionDate);
                     setList.push(setId);
@@ -389,7 +397,6 @@ Page({
                   }
                 }
               } else {
-                let errorHeaderString = "";
                 let errorString = "";
                 for (let i = 0; i < data.cylinderList.length; i++) {
                   let cylinderScrapDate = "";
@@ -397,46 +404,38 @@ Page({
                     cylinderScrapDate = data.cylinderList[i].cylinderScrapDate.substring(0, 7);
                     cylinderScrapDate = util.lastMonth(cylinderScrapDate);
                     if(util.compareDate(cylinderScrapDate)) {
-                      console.log("未报废");
                       let regularInspectionDate = "";
                       if(util.checkEmpty(data.cylinderList[i].regularInspectionDate)) {
                         regularInspectionDate = data.cylinderList[i].regularInspectionDate.substring(0, 7);
                         regularInspectionDate = util.lastMonth(regularInspectionDate);
                         if(!util.compareDate(regularInspectionDate)) {
-                          console.log("过期");
-                          errorString += data.cylinderList[i].cylinderNumber + "-" + cylinderScrapDate + '-' + regularInspectionDate + "-" + data.cylinderList[i].gasMediumName + "\r\n";
+                          errorString += data.cylinderList[i].cylinderNumber + "-" + regularInspectionDate + "-（已过期）\r\n";
                         } else {
                           // 判断是否是第一次扫描或者是不是同种介质
                           if (that.data.gasMediumName == "") {
                             that.setData({
-                              gasMediumName: data.cylinderList[i].gasMediumName
+                              gasMediumName: data.cylinderList[0].gasMediumName
                             })
-                          } else {
-                            if (data.cylinderList[i].gasMediumName != that.data.gasMediumName) {
-                              var hasExist = errorString.indexOf(data.cylinderList[i].cylinderNumber);
-                              if(hasExist != -1) {
-                                errorHeaderString = "气瓶介质存在异常\r\n";
-                                errorString += data.cylinderList[i].cylinderNumber + "-" + cylinderScrapDate + '-' + regularInspectionDate + "-" + data.cylinderList[i].gasMediumName + "\r\n";
-                              }
+                          }
+                          if (data.cylinderList[i].gasMediumName != that.data.gasMediumName) {
+                            var hasExist = errorString.indexOf(data.cylinderList[i].cylinderNumber);
+                            if(hasExist == -1) {
+                              errorString += data.cylinderList[i].cylinderNumber + "-" + data.cylinderList[i].gasMediumName + "-（介质异常）\r\n";
                             }
                           }
                         }
                       } else {
-                        console.log("定检日期为空");
-                        errorString += data.cylinderList[i].cylinderNumber + "-" + cylinderScrapDate + "-空" + "-" + data.cylinderList[i].gasMediumName + "\r\n";
+                        errorString += data.cylinderList[i].cylinderNumber + "-（下检日期为空）\r\n";
                       }
                     } else {
-                      console.log("报废");
-                      errorString += data.cylinderList[i].cylinderNumber + "-" + cylinderScrapDate + "-" + data.cylinderList[i].gasMediumName + "\r\n";
+                      errorString += data.cylinderList[i].cylinderNumber + "-" + cylinderScrapDate + "-（已报废）\r\n";
                     }
                   } else {
-                    console.log("报废日期为空");
-                    errorString += data.cylinderList[i].cylinderNumber + "-空" + "-" + data.cylinderList[i].gasMediumName + "\r\n";
+                    errorString += data.cylinderList[i].cylinderNumber + "-（报废日期为空）\r\n";
                   }
                 }
                 if (errorString != "") {
-                  console.log(errorHeaderString, errorString);
-                  that.errorModal(errorHeaderString + data.setNumber + "中的错误气瓶：" + "\r\n" + errorString);
+                  that.errorModal(data.setNumber + "中的错误气瓶：" + "\r\n" + errorString);
                 } else {
                   that.successShowMyToast("集格：" + data.setNumber + " \r\n绑定气瓶数量：" + data.cylinderList.length + " \r\n集格过期日期：尚无记录");
                   setList.push(setId);
@@ -482,7 +481,6 @@ Page({
           'qcmappversion': qcmappversion
         },
         success: (res) => {
-          console.log("222" + JSON.stringify(res));
           if ((res.data.data != "") && (res.data.data != null)) {
             var lastFillTime = res.data.data.lastFillTime;
             var difftimes = 4 * 60 * 60 * 1000;
@@ -675,6 +673,18 @@ Page({
       that.errorModalNoStart("请添加开始时间");
       return false;
     }
+    if (that.data.pressureMPA != "") {
+      that.setData({
+        'submitData.pressure': that.data.pressureMPA + 'MPA'
+      })
+    } else if (that.data.pressureKG != "") {
+      that.setData({
+        'submitData.pressure': that.data.pressureKG + 'KG'
+      })
+    } else {
+      that.errorModalNoStart("压力为空，请在压力填写处任选一项填写", "温馨提示");
+      return false;
+    }
     wx.showModal({
       title: '确认信息',
       content: "提交前请保证信息无误，确认提交？",
@@ -795,38 +805,6 @@ Page({
     setTimeout(that.start, that.data.duration);
   },
 
-  // 异常弹窗提示
-  // errorModalNoStart: function(errorMsg, title = "错误提醒", confirmText = "关闭", confirmColor = "#576B95") {
-  //   var that = this;
-  //   wx.showModal({
-  //     title: title,
-  //     content: errorMsg,
-  //     showCancel: false,
-  //     confirmText: confirmText,
-  //     confirmColor: confirmColor,
-  //     success (res) {
-  //       if (res.confirm) {
-  //         console.log("");
-  //       }
-  //     }
-  //   })
-  // },
-
-  // errorModal: function(errorMsg, title = "错误提醒", confirmText = "关闭", confirmColor = "#576B95") {
-  //   var that = this;
-  //   wx.showModal({
-  //     title: title,
-  //     content: errorMsg,
-  //     showCancel: false,
-  //     confirmText: confirmText,
-  //     confirmColor: confirmColor,
-  //     success (res) {
-  //       if (res.confirm) {
-  //         that.start();
-  //       }
-  //     }
-  //   })
-  // }
   errorModalNoStart: function(errorMsg) {
     var that = this;
     that.setData({
@@ -846,4 +824,12 @@ Page({
       nostart: false
     })
   },
+
+  closeModal: function() {
+    var that = this;
+    that.setData({
+      display: 'none',
+      showModal: false,
+    })
+  }
 })

@@ -31,7 +31,9 @@
     "pages/outStockDelete/outStockDelete",
     "pages/demo/demo",
     "pages/outStockIndex/outStockIndex",
-    "pages/analysis/analysis"
+    "pages/analysis/analysis",
+    "pages/inOut/inOut",
+    "pages/inOutDelete/inOutDelete"
   ],
   "window": {
     "backgroundTextStyle": "light",

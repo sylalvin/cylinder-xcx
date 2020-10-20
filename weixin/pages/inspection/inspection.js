@@ -43,7 +43,8 @@ Page({
     rMonth: '',
     ryfocus: true, // 下检年焦点
     rmfocus: false, // 下检月焦点
-    remarkfocus: false // 备注焦点
+    remarkfocus: false, // 备注焦点
+    allowSubmit: true
   },
 
   onShow: function () {
@@ -227,7 +228,7 @@ Page({
           let gasMediumName = res.data.data.gasMediumName; // 气瓶介质名称
           let regularInspectionDate = res.data.data.regularInspectionDate.substring(0, 7); // 气瓶下检日期
           regularInspectionDate = util.lastMonth(regularInspectionDate);
-          let cylinderScrapDate = res.data.data.cylinderScrapDate.substring(0, 7); // 气瓶过期日期
+          let cylinderScrapDate = res.data.data.cylinderScrapDate.substring(0, 7); // 气瓶报废日期
           cylinderScrapDate = util.lastMonth(cylinderScrapDate);
           let cylinderManufacturingDate = res.data.data.cylinderManufacturingDate.substring(0, 7); // 气瓶生产日期
           let volume = res.data.data.volume; // 气瓶容积
@@ -267,7 +268,7 @@ Page({
             isShow: true
           })
           wx.showToast({
-            title: "二维码：" + cylinderNumber + " 介质：" + gasMediumName + " 过期日期：" + regularInspectionDate,
+            title: "二维码：" + cylinderNumber + " 介质：" + gasMediumName + " 过期日期：" + regularInspectionDate + " 报废日期：" + cylinderScrapDate,
             icon: 'none',
             mask: true
           })
@@ -307,6 +308,16 @@ Page({
 
   // 提交
   submitForm: function () {
+    if(!this.data.allowSubmit) {
+      wx.showModal({
+        title: '错误提醒',
+        content: '由于所填下检日期大于报废日期，您已取消修改！',
+        showCancel: false,
+        confirmText: "我知道了",
+        success (res) {}
+      })
+      return;
+    }
     var that = this;
     var qcmappversion = that.data.qcmappversion;
     if (that.data.isShow) {
@@ -427,9 +438,37 @@ Page({
       })
     }
     if ((e.detail.value.length - 1) == 2) {
+      var that = this;
       this.setData({
-        remarkfocus: true
+        rmfocus: false
       })
+      let regularInspectionDate = this.data.rYear + '-' + this.data.rMonth;
+      regularInspectionDate = util.lastMonth(regularInspectionDate);
+      let cylinderScrapDate = this.data.cylinderInfo.cylinderScrapDate;
+      if(!this.compareRandC(regularInspectionDate, cylinderScrapDate)) {
+        wx.showModal({
+          title: '错误提醒',
+          content: '修改后，该气瓶下检日期将大于报废日期，请认真核对',
+          cancelText: "取消修改",
+          confirmText: "仍然修改",
+          confirmColor: "#ff0000",
+          success (res) {
+            if (res.confirm) {
+              that.setData({
+                allowSubmit: true
+              })
+            } else if (res.cancel) {
+              that.setData({
+                allowSubmit: false
+              })
+            }
+          }
+        })
+      } else {
+        this.setData({
+          allowSubmit: true
+        })
+      }
     }
   },
 
@@ -464,6 +503,21 @@ Page({
       return '0' + x;
     } else {
       return '' + x;
+    }
+  },
+
+  // 返回日期2020-04
+  compareRandC: function(date1, date2) {
+    let fyear = date1.split('-')[0];
+    let fmonth = date1.split('-')[1];
+    let fdate = parseInt(fyear + fmonth);
+    let lyear = date2.split('-')[0];
+    let lmonth = date2.split('-')[1];
+    let ldate = parseInt(lyear + lmonth);
+    if(ldate < fdate) { // 报废日期小于下检日期
+      return false;
+    } else {
+      return true;
     }
   },
 

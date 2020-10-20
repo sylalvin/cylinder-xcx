@@ -499,26 +499,21 @@ Page({
                     cylinderScrapDate = data.cylinderList[i].cylinderScrapDate.substring(0, 7);
                     cylinderScrapDate = util.lastMonth(cylinderScrapDate);
                     if(util.compareDate(cylinderScrapDate)) {
-                      console.log("未报废");
                       let regularInspectionDate = "";
                       if(util.checkEmpty(data.cylinderList[i].regularInspectionDate)) {
                         regularInspectionDate = data.cylinderList[i].regularInspectionDate.substring(0, 7);
                         regularInspectionDate = util.lastMonth(regularInspectionDate);
                         if(!util.compareDate(regularInspectionDate)) {
-                          console.log("过期");
-                          errorString += data.cylinderList[i].cylinderNumber + "-" + cylinderScrapDate + '-' + regularInspectionDate + "\r\n";
+                          errorString += data.cylinderList[i].cylinderNumber + "-" + regularInspectionDate + "-（已过期）\r\n";
                         }
                       } else {
-                        console.log("定检日期为空");
-                        errorString += data.cylinderList[i].cylinderNumber + "-" + cylinderScrapDate + "-空 \r\n";
+                        errorString += data.cylinderList[i].cylinderNumber + "-（下检日期为空）\r\n";
                       }
                     } else {
-                      console.log("报废");
-                      errorString += data.cylinderList[i].cylinderNumber + "-" + cylinderScrapDate + "\r\n";
+                      errorString += data.cylinderList[i].cylinderNumber + "-" + cylinderScrapDate + "-（已报废）\r\n";
                     }
                   } else {
-                    console.log("报废日期为空");
-                    errorString += data.cylinderList[i].cylinderNumber + "-空 \r\n";
+                    errorString += data.cylinderList[i].cylinderNumber + "-（报废日期为空）\r\n";
                   }
                 }
                 if (errorString != "") {
@@ -544,26 +539,21 @@ Page({
                   cylinderScrapDate = data.cylinderList[i].cylinderScrapDate.substring(0, 7);
                   cylinderScrapDate = util.lastMonth(cylinderScrapDate);
                   if(util.compareDate(cylinderScrapDate)) {
-                    console.log("未报废2");
                     let regularInspectionDate = "";
                     if(util.checkEmpty(data.cylinderList[i].regularInspectionDate)) {
                       regularInspectionDate = data.cylinderList[i].regularInspectionDate.substring(0, 7);
                       regularInspectionDate = util.lastMonth(regularInspectionDate);
                       if(!util.compareDate(regularInspectionDate)) {
-                        console.log("过期2");
-                        errorString += data.cylinderList[i].cylinderNumber + "-" + cylinderScrapDate + '-' + regularInspectionDate + "\r\n";
+                        errorString += data.cylinderList[i].cylinderNumber + "-" + regularInspectionDate + "-（已过期）\r\n";
                       }
                     } else {
-                      console.log("定检日期为空2");
-                      errorString += data.cylinderList[i].cylinderNumber + "-" + cylinderScrapDate + "-空 \r\n";
+                      errorString += data.cylinderList[i].cylinderNumber + "-（下检日期为空）\r\n";
                     }
                   } else {
-                    console.log("报废2");
-                    errorString += data.cylinderList[i].cylinderNumber + "-" + cylinderScrapDate + "\r\n";
+                    errorString += data.cylinderList[i].cylinderNumber + "-" + cylinderScrapDate + "-（已报废）\r\n";
                   }
                 } else {
-                  console.log("报废日期为空2");
-                  errorString += data.cylinderList[i].cylinderNumber + "-空 \r\n";
+                  errorString += data.cylinderList[i].cylinderNumber + "-（报废日期为空）\r\n";
                 }
               }
               if (errorString != "") {
@@ -911,38 +901,6 @@ Page({
     setTimeout(that.start, that.data.duration);
   },
 
-  // 异常弹窗提示
-  // errorModalNoStart: function(errorMsg, title = "错误提醒", confirmText = "关闭", confirmColor = "#576B95") {
-  //   var that = this;
-  //   wx.showModal({
-  //     title: title,
-  //     content: errorMsg,
-  //     showCancel: false,
-  //     confirmText: confirmText,
-  //     confirmColor: confirmColor,
-  //     success (res) {
-  //       if (res.confirm) {
-          
-  //       }
-  //     }
-  //   })
-  // },
-
-  // errorModal: function(errorMsg, title = "错误提醒", confirmText = "关闭", confirmColor = "#576B95") {
-  //   var that = this;
-  //   wx.showModal({
-  //     title: title,
-  //     content: errorMsg,
-  //     showCancel: false,
-  //     confirmText: confirmText,
-  //     confirmColor: confirmColor,
-  //     success (res) {
-  //       if (res.confirm) {
-  //         that.start();
-  //       }
-  //     }
-  //   })
-  // },
   errorModalNoStart: function(errorMsg) {
     var that = this;
     that.setData({
@@ -960,6 +918,14 @@ Page({
       showModal: true,
       errorString: errorMsg,
       nostart: false
+    })
+  },
+
+  closeModal: function() {
+    var that = this;
+    that.setData({
+      display: 'none',
+      showModal: false,
     })
   },
 

@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "InOut扫描",
+  "usingComponents":{
+    "mtoast": "../common/mtoast/mtoast",
+    "my-modal": "../common/mmodal/mmodal"
+  }
+}

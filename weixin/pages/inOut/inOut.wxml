@@ -1,12 +1,25 @@
 <view class="page">
     <view class="page__bd">
-      <navigator url="/pages/sendDelete/sendDelete" hover-class="navigator-hover">
+      <navigator url="/pages/inOutDelete/inOutDelete" hover-class="navigator-hover">
         <view class="weui-cells">
           <view class="weui-cell pa">
-            <view style="display: inline-block; vertical-align: middle;text-align: center;">已扫描气瓶： {{scan_sum}} 个</view>
+            <view style="display: inline-block; vertical-align: middle;text-align: center;">扫描：{{scan_number}} 散瓶：{{scan_bulk}} 集格：{{scan_set}} 总气瓶数：{{scan_sum}}</view>
           </view>
         </view>
       </navigator>
+
+          <view class="weui-cells weui-cells_after-title">
+            <view class="weui-cell weui-cell_select">
+                  <view class="weui-cell__hd weui-cell__hd_in-select-after" style="flex: 2">
+                      <view class="weui-label">工作区域：</view>
+                  </view>
+                  <view class="weui-cell__bd" style="flex: 3">
+                      <picker bindchange="bindPickerChange" value="{{areaIndex}}" range="{{areaArray}}" range-key="{{'workAreaName'}}">
+                          <view class="weui-select weui-select_in-select-after">{{areaArray[areaIndex]['workAreaName']}}</view>
+                      </picker>
+                  </view>
+              </view> 
+          </view>
 
           <view class="weui-cells">
             <view class="weui-cell webox">
@@ -18,28 +31,13 @@
             </view>
           </view>
 
-          <view class="weui-cells__title">运单号（发货单号）</view>
-          <view class="weui-cells weui-cells_after-title"  style="display: {{display == 'block' ? 'none' : 'block'}}">
-            <view class="weui-cell weui-cell_input">
-              <input bindinput="bindInputChange" class="weui-input w80" placeholder="请输入发货单号" value="{{inputValue}}"/>
-              <view bindtap="scanInvoice" class="weui-vcode-btn w20">扫一扫</view>
-            </view>
-          </view>
-
-          <view class="page-section-spacing" wx:if="{{forTransNumberList.length > 0}}">
-            <scroll-view scroll-y="true" style="height: 300rpx;">
-              <view animation="{{animationData}}" style="opacity: 0;" class="item-text" wx:for="{{forTransNumberList}}" wx:key="index">
-                <text bindtap="onSelectItem" data-set-index="{{index}}">{{item}}</text>
-              </view>
-            </scroll-view>
-          </view>
-
-
         <view class="weui-btn-area">
             <button class="weui-btn" type="default" bindtap="addCylinder" style="opacity :{{opacity}};" disabled="{{disabled}}">添 加 气 瓶</button><button class="weui-btn" type="primary" bindtap="submitForm" style="opacity :{{opacity}};" disabled="{{disabled}}">提 交</button>
         </view>
 
+
     </view>
+
     <view class="mask" style="display :{{display}};"></view>
     <view style="display :{{display}};">
       <mtoast id='mtoast'>

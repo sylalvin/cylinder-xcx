@@ -46,9 +46,9 @@ App({
     },
     
     // apiUrl: "http://47.101.208.226:18090/api", // 生产
-    // apiUrl: "http://47.101.47.89:18090/api", // 测试
+    apiUrl: "http://47.101.47.89:18090/api", // 测试
     // apiUrl: "http://localhost:18090/api", // 测试192.168.31.65
-    apiUrl: "https://xch.feifanqishi.net/api",
+    // apiUrl: "https://xch.feifanqishi.net/api",
     qcmappversion: '1.0.9',
 
     // 充装全局数据配置
@@ -96,6 +96,12 @@ App({
     stockSetList: [],
     stockSetCylinderList: [],
     stockAllCylinderList: [],
+
+    // InOut扫描全局配置数据
+    inOutCylinderList: [],
+    inOutSetList: [],
+    inOutSetCylinderList: [],
+    inOutAllCylinderList: [],
 
     // 定检
     inspectionCylinderInfo: {},

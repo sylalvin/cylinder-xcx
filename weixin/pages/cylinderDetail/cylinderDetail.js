@@ -3,7 +3,7 @@ var util = require('../../utils/util');
 Page({
 
   /**
-   * 此详情页作为回厂验空、充后验满、发瓶卸货、客户回瓶、厂外流转、定期检测、维修、气瓶维护、报废共用；
+   * 此详情页作为回厂验空、充后验满、发瓶卸货、客户回瓶、厂外流转、定期检测、维修、气瓶维护、报废、出库、分析、inOut共用；
    * 数据对象
    * { 
    *    cylinderNumber, --气瓶二维码编号
@@ -84,6 +84,9 @@ Page({
         break;
       case "fill":
         allCylinderList = app.globalData.fillAllCylinderList;
+        break;
+      case "inOut":
+        allCylinderList = app.globalData.inOutAllCylinderList;
         break;
       case "scrap":
         cylinderInfo = app.globalData.scrapCylinderInfo;

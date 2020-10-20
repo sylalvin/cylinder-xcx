@@ -16,6 +16,7 @@ Page({
     productionBatch: "",
     purenessItems: ["普", "2N", "3N", "4N", "5N", "6N"],
     pureness: "暂无",
+    pressure: "",
     areaName: "",
     companyAreaId: 0,
     remark: "暂无",

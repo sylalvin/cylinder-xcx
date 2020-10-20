@@ -50,18 +50,18 @@ Component({
    */
   methods: {
     cancel () {
-      console.log('cancel');
       this.setData({
         show: false
       })
     },
     confirm () {
-      console.log('confirm');
       this.setData({
         show: false
       })
-      if(!this.nostart) {
+      if(!this.data.nostart) {
         this.triggerEvent('start');
+      } else {
+        this.triggerEvent('closeModal');
       }
     }
   }
